@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetroGames4.net - Ultimate Arcade Vault</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tone.js for Retro Audio Effects -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        neon: {
+                            pink: '#ff007f',
+                            cyan: '#00f3ff',
+                            purple: '#9d00ff',
+                            yellow: '#ffe600',
+                            dark: '#0a0a12',
+                            card: '#121225'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Courier New', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;700&display=swap');
+        
+        .font-arcade {
+            font-family: 'Press Start 2P', monospace;
+        }
+        .font-heading {
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        /* Retro CRT Scanline Overlay */
+        .scanlines {
+            background: linear-gradient(
+                rgba(18, 16, 16, 0) 50%, 
+                rgba(0, 0, 0, 0.25) 50%
+            ), linear-gradient(
+                90deg,
+                rgba(255, 0, 0, 0.03),
+                rgba(0, 255, 0, 0.01),
+                rgba(0, 0, 255, 0.03)
+            );
+            background-size: 100% 3px, 6px 100%;
+            pointer-events: none;
+        }
+
+        /* Neon Glow Utility Effects */
+        .glow-pink {
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.6), inset 0 0 15px rgba(255, 0, 127, 0.3);
+        }
+        .glow-cyan {
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.6), inset 0 0 15px rgba(0, 243, 255, 0.3);
+        }
+        .text-glow-cyan {
+            text-shadow: 0 0 8px rgba(0, 243, 255, 0.8);
+        }
+        .text-glow-pink {
+            text-shadow: 0 0 10px rgba(255, 0, 127, 0.8);
+        }
+
+        /* Synthwave Grid Background */
+        .synth-grid {
+            background-image: 
+                linear-gradient(to right, rgba(0, 243, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 0, 127, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a12;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ff007f;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00f3ff;
+        }
+    </style>
+</head>
+<body class="bg-neon-dark text-gray-100 font-sans min-h-screen relative overflow-x-hidden flex flex-col justify-between">
+    
+    <!-- CRT Overlay Layer -->
+    <div class="fixed inset-0 scanlines z-50 opacity-40"></div>
+
+    <!-- Navigation Bar -->
+    <header class="sticky top-0 z-40 bg-neon-dark/90 backdrop-blur-md border-b border-neon-cyan/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-lg bg-neon-pink flex items-center justify-center glow-pink group-hover:rotate-6 transition-transform">
+                    <i class="fa-solid font-arcade text-white text-lg">🎮</i>
+                </div>
+                <span class="font-arcade text-xs sm:text-sm text-neon-cyan tracking-wider text-glow-cyan">
+                    RETROGAMES<span class="text-neon-pink">4</span>.NET
+                </span>
+            </a>
+
+            <!-- Desktop Nav Links -->
+            <nav class="hidden md:flex items-center gap-8 font-heading text-lg font-bold tracking-wider">
+                <a href="#hero" class="hover:text-neon-cyan transition-colors">HOME</a>
+                <a href="#arcade" class="hover:text-neon-pink transition-colors">ARCADE ROOM</a>
+                <a href="#catalog" class="hover:text-neon-cyan transition-colors">GAMES VAULT</a>
+                <a href="#leaderboard" class="hover:text-neon-pink transition-colors">LEADERBOARD</a>
+            </nav>
+
+            <!-- Sound & Play Action -->
+            <div class="flex items-center gap-4">
+                <button id="soundToggleBtn" onclick="toggleSound()" class="p-2.5 rounded-lg border border-neon-cyan/50 text-neon-cyan hover:bg-neon-cyan/10 transition-colors" title="Toggle Sound FX">
+                    <i id="soundIcon" class="fa-solid fa-volume-high"></i>
+                </button>
+                <a href="#arcade" class="font-arcade text-[10px] sm:text-xs px-4 py-2.5 rounded bg-neon-pink hover:bg-neon-pink/80 text-white font-bold tracking-wider glow-pink transition-all transform hover:-translate-y-0.5">
+                    PLAY NOW
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Banner -->
+    <section id="hero" class="relative pt-12 pb-20 md:py-28 synth-grid overflow-hidden border-b border-neon-purple/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center max-w-3xl mx-auto space-y-6">
+                <div class="inline-block px-3 py-1 rounded-full bg-neon-purple/20 border border-neon-purple text-neon-cyan font-arcade text-[10px] sm:text-xs mb-2 animate-pulse">
+                    ⚡ PRESS START TO ENTER THE RETROVERSE ⚡
+                </div>
+                
+                <h1 class="text-4xl sm:text-6xl font-heading font-extrabold uppercase tracking-tight text-white leading-none">
+                    Relive The Golden Age Of <span class="text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan via-neon-pink to-neon-yellow text-glow-pink">Arcade Gaming</span>
+                </h1>
+
+                <p class="text-gray-300 text-base sm:text-lg max-w-2xl mx-auto font-light leading-relaxed">
+                    Welcome to <strong class="text-neon-cyan">retrogames4.net</strong>! Play classic retro-inspired mini games, break high scores, and explore curated arcade nostalgia right inside your browser.
+                </p>
+
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                    <a href="#arcade" onclick="playRetroSound('click')" class="w-full sm:w-auto font-arcade text-xs px-8 py-4 rounded bg-neon-cyan text-neon-dark font-bold hover:bg-cyan-300 glow-cyan transition-all transform hover:scale-105">
+                        <i class="fa-solid fa-gamepad mr-2"></i> LAUNCH ARCADE
+                    </a>
+                    <a href="#catalog" onclick="playRetroSound('click')" class="w-full sm:w-auto font-arcade text-xs px-8 py-4 rounded border-2 border-neon-pink text-neon-pink hover:bg-neon-pink/10 transition-all">
+                        BROWSE VAULT
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Background Lighting Blobs -->
+        <div class="absolute top-1/2 left-1/4 w-72 h-72 bg-neon-pink/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute top-1/3 right-1/4 w-72 h-72 bg-neon-cyan/20 rounded-full blur-3xl pointer-events-none"></div>
+    </section>
+
+    <!-- Interactive Canvas Game Section -->
+    <section id="arcade" class="py-16 bg-neon-dark/90 relative border-b border-neon-cyan/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
+                <div>
+                    <h2 class="text-3xl font-heading font-bold text-white tracking-wide">
+                        <i class="fa-solid fa-gamepad text-neon-pink mr-2"></i> RETRO BREAKOUT MINI-GAME
+                    </h2>
+                    <p class="text-sm text-gray-400">Use Left/Right arrow keys or touch buttons to smash all neon bricks!</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="bg-neon-card px-4 py-2 rounded border border-neon-pink/40 font-arcade text-xs text-neon-yellow">
+                        SCORE: <span id="gameScore">0000</span>
+                    </div>
+                    <button id="startBtn" onclick="startGame()" class="font-arcade text-xs px-4 py-2 bg-neon-pink text-white rounded hover:bg-neon-pink/80 glow-pink">
+                        RESTART
+                    </button>
+                </div>
+            </div>
+
+            <!-- Game Canvas Container -->
+            <div class="relative w-full max-w-4xl mx-auto aspect-[16/9] bg-black rounded-xl overflow-hidden border-2 border-neon-cyan glow-cyan flex flex-col items-center justify-center">
+                <canvas id="arcadeCanvas" class="w-full h-full block bg-black"></canvas>
+                
+                <!-- Onscreen Touch Controls for Mobile -->
+                <div class="absolute bottom-4 left-4 right-4 flex justify-between md:hidden pointer-events-none">
+                    <button id="btnLeft" class="pointer-events-auto bg-neon-card/80 border border-neon-cyan text-neon-cyan w-16 h-16 rounded-full flex items-center justify-center text-xl active:bg-neon-cyan active:text-black">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <button id="btnRight" class="pointer-events-auto bg-neon-card/80 border border-neon-cyan text-neon-cyan w-16 h-16 rounded-full flex items-center justify-center text-xl active:bg-neon-cyan active:text-black">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <!-- Overlay message when game is stopped/ended -->
+                <div id="gameOverlay" class="absolute inset-0 bg-black/85 flex flex-col items-center justify-center text-center p-6 space-y-4">
+                    <h3 id="overlayTitle" class="font-arcade text-xl sm:text-2xl text-neon-pink">READY PLAYER ONE?</h3>
+                    <p id="overlaySub" class="text-gray-300 text-sm max-w-md">Click Start Game to launch retro ball & paddle demo.</p>
+                    <button onclick="startGame()" class="font-arcade text-xs px-6 py-3 bg-neon-cyan text-neon-dark font-bold rounded glow-cyan hover:scale-105 transition-transform">
+                        START GAME
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Games Catalog Grid -->
+    <section id="catalog" class="py-16 bg-neon-dark synth-grid">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-12">
+                <h2 class="text-3xl font-heading font-bold text-white tracking-wide uppercase">
+                    FEATURED RETRO CLASSICS
+                </h2>
+                <div class="w-20 h-1 bg-neon-pink mx-auto my-3 rounded-full"></div>
+                <p class="text-gray-400 text-sm">Explore our expanding vault of pixel-perfect retro titles.</p>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="flex flex-wrap justify-center gap-2 mb-10 font-arcade text-[10px]">
+                <button onclick="filterVault('all')" class="vault-filter-btn px-4 py-2 rounded bg-neon-pink text-white font-bold">ALL</button>
+                <button onclick="filterVault('arcade')" class="vault-filter-btn px-4 py-2 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-cyan">ARCADE</button>
+                <button onclick="filterVault('action')" class="vault-filter-btn px-4 py-2 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-cyan">ACTION</button>
+                <button onclick="filterVault('puzzle')" class="vault-filter-btn px-4 py-2 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-cyan">PUZZLE</button>
+            </div>
+
+            <!-- Games Grid -->
+            <div id="gamesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Game Card 1 -->
+                <div class="game-card arcade bg-neon-card rounded-xl border border-neon-purple/40 overflow-hidden hover:border-neon-pink transition-all duration-300 hover:-translate-y-2 group">
+                    <div class="h-48 bg-gray-800 relative overflow-hidden flex items-center justify-center">
+                        <div class="absolute inset-0 bg-gradient-to-t from-neon-card to-transparent z-10"></div>
+                        <i class="fa-solid fa-ghost text-6xl text-neon-pink group-hover:scale-125 transition-transform duration-300"></i>
+                        <span class="absolute top-3 right-3 z-20 font-arcade text-[9px] px-2 py-1 rounded bg-neon-purple text-white">ARCADE</span>
+                    </div>
+                    <div class="p-6 relative z-20 space-y-3">
+                        <h3 class="font-heading text-2xl font-bold text-white group-hover:text-neon-cyan">CYBER MAZE</h3>
+                        <p class="text-gray-400 text-xs leading-relaxed">Navigate neon labyrinths, collect glowing dots, and evade rogue AI security bots.</p>
+                        <div class="flex items-center justify-between pt-2">
+                            <span class="text-xs text-neon-yellow font-mono"><i class="fa-solid fa-star"></i> 4.9 / 5.0</span>
+                            <button onclick="launchDemo('Cyber Maze')" class="font-arcade text-[10px] px-3 py-1.5 rounded bg-neon-cyan/20 border border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-black transition-colors">LAUNCH</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Card 2 -->
+                <div class="game-card action bg-neon-card rounded-xl border border-neon-purple/40 overflow-hidden hover:border-neon-pink transition-all duration-300 hover:-translate-y-2 group">
+                    <div class="h-48 bg-gray-800 relative overflow-hidden flex items-center justify-center">
+                        <div class="absolute inset-0 bg-gradient-to-t from-neon-card to-transparent z-10"></div>
+                        <i class="fa-solid fa-shuttle-space text-6xl text-neon-cyan group-hover:scale-125 transition-transform duration-300"></i>
+                        <span class="absolute top-3 right-3 z-20 font-arcade text-[9px] px-2 py-1 rounded bg-neon-pink text-white">ACTION</span>
+                    </div>
+                    <div class="p-6 relative z-20 space-y-3">
+                        <h3 class="font-heading text-2xl font-bold text-white group-hover:text-neon-pink">NEON DEFENDER</h3>
+                        <p class="text-gray-400 text-xs leading-relaxed">Classic vertical space shooter! Upgrade your ship weapons and defeat cosmic bosses.</p>
+                        <div class="flex items-center justify-between pt-2">
+                            <span class="text-xs text-neon-yellow font-mono"><i class="fa-solid fa-star"></i> 4.8 / 5.0</span>
+                            <button onclick="launchDemo('Neon Defender')" class="font-arcade text-[10px] px-3 py-1.5 rounded bg-neon-cyan/20 border border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-black transition-colors">LAUNCH</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Card 3 -->
+                <div class="game-card puzzle bg-neon-card rounded-xl border border-neon-purple/40 overflow-hidden hover:border-neon-pink transition-all duration-300 hover:-translate-y-2 group">
+                    <div class="h-48 bg-gray-800 relative overflow-hidden flex items-center justify-center">
+                        <div class="absolute inset-0 bg-gradient-to-t from-neon-card to-transparent z-10"></div>
+                        <i class="fa-solid fa-cubes text-6xl text-neon-yellow group-hover:scale-125 transition-transform duration-300"></i>
+                        <span class="absolute top-3 right-3 z-20 font-arcade text-[9px] px-2 py-1 rounded bg-neon-yellow text-black">PUZZLE</span>
+                    </div>
+                    <div class="p-6 relative z-20 space-y-3">
+                        <h3 class="font-heading text-2xl font-bold text-white group-hover:text-neon-yellow">BLOCK STACKER</h3>
+                        <p class="text-gray-400 text-xs leading-relaxed">Stack falling polyomino blocks into complete lines under increasing battle speeds.</p>
+                        <div class="flex items-center justify-between pt-2">
+                            <span class="text-xs text-neon-yellow font-mono"><i class="fa-solid fa-star"></i> 4.9 / 5.0</span>
+                            <button onclick="launchDemo('Block Stacker')" class="font-arcade text-[10px] px-3 py-1.5 rounded bg-neon-cyan/20 border border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-black transition-colors">LAUNCH</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hall of Fame / Leaderboard Section -->
+    <section id="leaderboard" class="py-16 bg-neon-dark/95 border-t border-neon-purple/30">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-heading font-bold text-white tracking-wide uppercase">
+                    🏆 HALL OF FAME
+                </h2>
+                <p class="text-gray-400 text-xs font-arcade mt-1 text-neon-cyan">RETROGAMES4 HIGH SCORES</p>
+            </div>
+
+            <div class="bg-neon-card rounded-xl border border-neon-cyan/30 overflow-hidden shadow-2xl">
+                <div class="p-4 bg-neon-purple/20 border-b border-neon-cyan/20 flex justify-between font-arcade text-xs text-neon-cyan">
+                    <span>RANK / PLAYER</span>
+                    <span>SCORE</span>
+                </div>
+                <div class="divide-y divide-gray-800 font-mono text-sm">
+                    <div class="p-4 flex justify-between items-center hover:bg-neon-pink/10 transition-colors">
+                        <span class="flex items-center gap-3">
+                            <span class="font-arcade text-xs text-neon-yellow w-6">1ST</span>
+                            <span class="text-white font-bold">CYBER_KING99</span>
+                        </span>
+                        <span class="text-neon-pink font-bold">999,850</span>
+                    </div>
+                    <div class="p-4 flex justify-between items-center hover:bg-neon-pink/10 transition-colors">
+                        <span class="flex items-center gap-3">
+                            <span class="font-arcade text-xs text-gray-300 w-6">2ND</span>
+                            <span class="text-white font-bold">PIXEL_QUEEN</span>
+                        </span>
+                        <span class="text-neon-pink font-bold">874,200</span>
+                    </div>
+                    <div class="p-4 flex justify-between items-center hover:bg-neon-pink/10 transition-colors">
+                        <span class="flex items-center gap-3">
+                            <span class="font-arcade text-xs text-amber-600 w-6">3RD</span>
+                            <span class="text-white font-bold">NEON_WAVE</span>
+                        </span>
+                        <span class="text-neon-pink font-bold">752,110</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black border-t border-neon-cyan/20 py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-4">
+            <div class="font-arcade text-xs text-neon-cyan">
+                RETROGAMES<span class="text-neon-pink">4</span>.NET
+            </div>
+            <p class="text-gray-500 text-xs">
+                Hosted via GitHub Pages & Custom Domain Setup. All retro designs and code contained in single HTML environment.
+            </p>
+            <p class="text-gray-600 text-[10px]">
+                &copy; 2026 RETROGAMES4.NET - ALL RIGHTS RESERVED.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Sound Effects using Synth (Tone.js) ---
+        let soundEnabled = true;
+        const synth = new Tone.Synth().toDestination();
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('soundIcon');
+            icon.className = soundEnabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
+            if (soundEnabled) playRetroSound('click');
+        }
+
+        function playRetroSound(type) {
+            if (!soundEnabled) return;
+            Tone.start();
+            try {
+                if (type === 'click') {
+                    synth.triggerAttackRelease("C5", "16n");
+                } else if (type === 'hit') {
+                    synth.triggerAttackRelease("G4", "16n");
+                } else if (type === 'win') {
+                    synth.triggerAttackRelease("C6", "8n");
+                } else if (type === 'over') {
+                    synth.triggerAttackRelease("C3", "4n");
+                }
+            } catch (e) {
+                // Ignore audio context errors before user interaction
+            }
+        }
+
+        // --- Breakout Arcade Canvas Game Logic ---
+        const canvas = document.getElementById('arcadeCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('gameScore');
+        const overlay = document.getElementById('gameOverlay');
+        const overlayTitle = document.getElementById('overlayTitle');
+        const overlaySub = document.getElementById('overlaySub');
+
+        let animationFrameId;
+        let score = 0;
+
+        // Resize Canvas dynamically
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Game state variables
+        let paddle = { x: 0, width: 100, height: 12, speed: 8 };
+        let ball = { x: 0, y: 0, dx: 4, dy: -4, radius: 7 };
+        let bricks = [];
+        const brickRowCount = 4;
+        const brickColumnCount = 7;
+        let rightPressed = false;
+        let leftPressed = false;
+
+        // Initialize Paddle & Bricks
+        function initGameObjects() {
+            paddle.width = Math.max(80, canvas.width * 0.15);
+            paddle.x = (canvas.width - paddle.width) / 2;
+            
+            ball.x = canvas.width / 2;
+            ball.y = canvas.height - 40;
+            ball.dx = 4;
+            ball.dy = -4;
+
+            bricks = [];
+            const brickWidth = (canvas.width - 60) / brickColumnCount;
+            const brickHeight = 18;
+
+            for (let c = 0; c < brickColumnCount; c++) {
+                bricks[c] = [];
+                for (let r = 0; r < brickRowCount; r++) {
+                    bricks[c][r] = { 
+                        x: 30 + c * (brickWidth + 4), 
+                        y: 40 + r * (brickHeight + 6), 
+                        width: brickWidth,
+                        height: brickHeight,
+                        status: 1 
+                    };
+                }
+            }
+        }
+
+        // Keyboard & Touch Listeners
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'd') rightPressed = true;
+            if (e.key === 'ArrowLeft' || e.key === 'a') leftPressed = true;
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'd') rightPressed = false;
+            if (e.key === 'ArrowLeft' || e.key === 'a') leftPressed = false;
+        });
+
+        // Touch Control Triggers
+        const btnLeft = document.getElementById('btnLeft');
+        const btnRight = document.getElementById('btnRight');
+        btnLeft.addEventListener('touchstart', (e) => { e.preventDefault(); leftPressed = true; });
+        btnLeft.addEventListener('touchend', (e) => { e.preventDefault(); leftPressed = false; });
+        btnRight.addEventListener('touchstart', (e) => { e.preventDefault(); rightPressed = true; });
+        btnRight.addEventListener('touchend', (e) => { e.preventDefault(); rightPressed = false; });
+
+        // Collision Detection
+        function collisionDetection() {
+            for (let c = 0; c < brickColumnCount; c++) {
+                for (let r = 0; r < brickRowCount; r++) {
+                    let b = bricks[c][r];
+                    if (b.status === 1) {
+                        if (ball.x > b.x && ball.x < b.x + b.width && ball.y > b.y && ball.y < b.y + b.height) {
+                            ball.dy = -ball.dy;
+                            b.status = 0;
+                            score += 100;
+                            scoreEl.innerText = String(score).padStart(4, '0');
+                            playRetroSound('hit');
+
+                            if (score === brickRowCount * brickColumnCount * 100) {
+                                endGame(true);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Draw Loop
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Bricks
+            for (let c = 0; c < brickColumnCount; c++) {
+                for (let r = 0; r < brickRowCount; r++) {
+                    if (bricks[c][r].status === 1) {
+                        ctx.beginPath();
+                        ctx.rect(bricks[c][r].x, bricks[c][r].y, bricks[c][r].width, bricks[c][r].height);
+                        ctx.fillStyle = r % 2 === 0 ? '#ff007f' : '#00f3ff';
+                        ctx.shadowColor = ctx.fillStyle;
+                        ctx.shadowBlur = 8;
+                        ctx.fill();
+                        ctx.closePath();
+                    }
+                }
+            }
+
+            // Draw Paddle
+            ctx.beginPath();
+            ctx.rect(paddle.x, canvas.height - paddle.height - 10, paddle.width, paddle.height);
+            ctx.fillStyle = '#ffe600';
+            ctx.shadowColor = '#ffe600';
+            ctx.shadowBlur = 10;
+            ctx.fill();
+            ctx.closePath();
+
+            // Draw Ball
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.shadowColor = '#00f3ff';
+            ctx.shadowBlur = 12;
+            ctx.fill();
+            ctx.closePath();
+
+            // Collision with left/right walls
+            if (ball.x + ball.dx > canvas.width - ball.radius || ball.x + ball.dx < ball.radius) {
+                ball.dx = -ball.dx;
+                playRetroSound('hit');
+            }
+
+            // Collision with ceiling
+            if (ball.y + ball.dy < ball.radius) {
+                ball.dy = -ball.dy;
+                playRetroSound('hit');
+            } 
+            // Collision with paddle or bottom
+            else if (ball.y + ball.dy > canvas.height - paddle.height - 15) {
+                if (ball.x > paddle.x && ball.x < paddle.x + paddle.width) {
+                    ball.dy = -Math.abs(ball.dy);
+                    playRetroSound('hit');
+                } else if (ball.y + ball.dy > canvas.height - ball.radius) {
+                    endGame(false);
+                    return;
+                }
+            }
+
+            // Move Paddle
+            if (rightPressed && paddle.x < canvas.width - paddle.width) {
+                paddle.x += paddle.speed;
+            } else if (leftPressed && paddle.x > 0) {
+                paddle.x -= paddle.speed;
+            }
+
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+
+            collisionDetection();
+            animationFrameId = requestAnimationFrame(draw);
+        }
+
+        function startGame() {
+            score = 0;
+            scoreEl.innerText = '0000';
+            overlay.classList.add('hidden');
+            resizeCanvas();
+            initGameObjects();
+            cancelAnimationFrame(animationFrameId);
+            playRetroSound('click');
+            draw();
+        }
+
+        function endGame(isWin) {
+            cancelAnimationFrame(animationFrameId);
+            overlay.classList.remove('hidden');
+            if (isWin) {
+                overlayTitle.innerText = "STAGE CLEARED!";
+                overlaySub.innerText = `Awesome! Final Score: ${score}`;
+                playRetroSound('win');
+            } else {
+                overlayTitle.innerText = "GAME OVER";
+                overlaySub.innerText = `Final Score: ${score}. Try again to break high scores!`;
+                playRetroSound('over');
+            }
+        }
+
+        // Vault Filtering function
+        function filterVault(category) {
+            playRetroSound('click');
+            const cards = document.querySelectorAll('.game-card');
+            cards.forEach(card => {
+                if (category === 'all' || card.classList.contains(category)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function launchDemo(title) {
+            playRetroSound('click');
+            alert(`Loading demo instance for [${title}] on retrogames4.net!`);
+        }
+    </script>
+</body>
+</html>
