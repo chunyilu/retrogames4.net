@@ -127,7 +127,7 @@
                 <button id="soundToggleBtn" onclick="toggleSound()" class="p-2.5 rounded-lg border border-neon-cyan/50 text-neon-cyan hover:bg-neon-cyan/10 transition-colors" title="Toggle Sound FX">
                     <i id="soundIcon" class="fa-solid fa-volume-high"></i>
                 </button>
-                <a href="#arcade" class="font-arcade text-[10px] sm:text-xs px-4 py-2.5 rounded bg-neon-pink hover:bg-neon-pink/80 text-white font-bold tracking-wider glow-pink transition-all transform hover:-translate-y-0.5">
+                <a href="#arcade" class="font-arcade text-[10px] sm:text-xs px-4 py-2.5 rounded bg-neon-pink hover:bg-neon-pink/80 text-white font-bold tracking-wider glow-pink transition-all transform hover:scale-105">
                     PLAY NOW
                 </a>
             </div>
@@ -147,14 +147,14 @@
                 </h1>
 
                 <p class="text-gray-300 text-base sm:text-lg max-w-2xl mx-auto font-light leading-relaxed">
-                    Welcome to <strong class="text-neon-cyan">retrogames4.net</strong>! Play classic retro-inspired mini games, break high scores, and explore curated arcade nostalgia right inside your browser.
+                    Welcome to <strong class="text-neon-cyan">retrogames4.net</strong>! Play classic retro-inspired mini games, break high scores, and explore curated arcade nostalgia right inside your browser!
                 </p>
 
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                     <a href="#arcade" onclick="playRetroSound('click')" class="w-full sm:w-auto font-arcade text-xs px-8 py-4 rounded bg-neon-cyan text-neon-dark font-bold hover:bg-cyan-300 glow-cyan transition-all transform hover:scale-105">
                         <i class="fa-solid fa-gamepad mr-2"></i> LAUNCH ARCADE
                     </a>
-                    <a href="#catalog" onclick="playRetroSound('click')" class="w-full sm:w-auto font-arcade text-xs px-8 py-4 rounded border-2 border-neon-pink text-neon-pink hover:bg-neon-pink/10 transition-all">
+                    <a href="#catalog" onclick="playRetroSound('click')" class="w-full sm:w-auto font-arcade text-xs px-8 py-4 rounded border-2 border-neon-pink text-neon-pink hover:bg-neon-pink/10 transition-all transform hover:scale-105">
                         BROWSE VAULT
                     </a>
                 </div>
@@ -192,10 +192,10 @@
                 
                 <!-- Onscreen Touch Controls for Mobile -->
                 <div class="absolute bottom-4 left-4 right-4 flex justify-between md:hidden pointer-events-none">
-                    <button id="btnLeft" class="pointer-events-auto bg-neon-card/80 border border-neon-cyan text-neon-cyan w-16 h-16 rounded-full flex items-center justify-center text-xl active:bg-neon-cyan active:text-black">
+                    <button id="btnLeft" class="pointer-events-auto bg-neon-card/80 border border-neon-cyan text-neon-cyan w-16 h-16 rounded-full flex items-center justify-center text-xl active:bg-neon-cyan/20 transition-colors">
                         <i class="fa-solid fa-arrow-left"></i>
                     </button>
-                    <button id="btnRight" class="pointer-events-auto bg-neon-card/80 border border-neon-cyan text-neon-cyan w-16 h-16 rounded-full flex items-center justify-center text-xl active:bg-neon-cyan active:text-black">
+                    <button id="btnRight" class="pointer-events-auto bg-neon-card/80 border border-neon-cyan text-neon-cyan w-16 h-16 rounded-full flex items-center justify-center text-xl active:bg-neon-cyan/20 transition-colors">
                         <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
@@ -245,7 +245,9 @@
                         <p class="text-gray-400 text-xs leading-relaxed">Navigate neon labyrinths, collect glowing dots, and evade rogue AI security bots.</p>
                         <div class="flex items-center justify-between pt-2">
                             <span class="text-xs text-neon-yellow font-mono"><i class="fa-solid fa-star"></i> 4.9 / 5.0</span>
-                            <button onclick="launchDemo('Cyber Maze')" class="font-arcade text-[10px] px-3 py-1.5 rounded bg-neon-cyan/20 border border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-black transition-colors">LAUNCH</button>
+                            <button onclick="launchDemo('Cyber Maze')" class="font-arcade text-[10px] px-3 py-1.5 rounded bg-neon-cyan/20 border border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-neon-dark transition-colors">
+                                DEMO
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -262,7 +264,9 @@
                         <p class="text-gray-400 text-xs leading-relaxed">Classic vertical space shooter! Upgrade your ship weapons and defeat cosmic bosses.</p>
                         <div class="flex items-center justify-between pt-2">
                             <span class="text-xs text-neon-yellow font-mono"><i class="fa-solid fa-star"></i> 4.8 / 5.0</span>
-                            <button onclick="launchDemo('Neon Defender')" class="font-arcade text-[10px] px-3 py-1.5 rounded bg-neon-cyan/20 border border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-black transition-colors">LAUNCH</button>
+                            <button onclick="launchDemo('Neon Defender')" class="font-arcade text-[10px] px-3 py-1.5 rounded bg-neon-cyan/20 border border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-neon-dark transition-colors">
+                                DEMO
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -279,7 +283,9 @@
                         <p class="text-gray-400 text-xs leading-relaxed">Stack falling polyomino blocks into complete lines under increasing battle speeds.</p>
                         <div class="flex items-center justify-between pt-2">
                             <span class="text-xs text-neon-yellow font-mono"><i class="fa-solid fa-star"></i> 4.9 / 5.0</span>
-                            <button onclick="launchDemo('Block Stacker')" class="font-arcade text-[10px] px-3 py-1.5 rounded bg-neon-cyan/20 border border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-black transition-colors">LAUNCH</button>
+                            <button onclick="launchDemo('Block Stacker')" class="font-arcade text-[10px] px-3 py-1.5 rounded bg-neon-cyan/20 border border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-neon-dark transition-colors">
+                                DEMO
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -583,9 +589,38 @@
             });
         }
 
+        // Launch Demo Function - Routes to correct game
         function launchDemo(title) {
             playRetroSound('click');
-            alert(`Loading demo instance for [${title}] on retrogames4.net!`);
+            
+            // Game launch configurations
+            const gameConfigs = {
+                'Neon Defender': {
+                    url: 'https://cdn.jsdelivr.net/gh/ClintonMorrison/space-defender@master/index.html',
+                    name: 'NEON DEFENDER - Space Shooter'
+                },
+                'Cyber Maze': {
+                    url: '#',
+                    name: 'CYBER MAZE - Coming Soon'
+                },
+                'Block Stacker': {
+                    url: '#',
+                    name: 'BLOCK STACKER - Coming Soon'
+                }
+            };
+
+            const game = gameConfigs[title];
+            if (!game) {
+                alert(`Game [${title}] not found!`);
+                return;
+            }
+
+            if (game.url === '#') {
+                alert(`${game.name}\n\nThis demo is coming soon to retrogames4.net!`);
+            } else {
+                // Open in new window
+                window.open(game.url, 'retrogame_' + title.replace(/\s/g, '_'), 'width=1000,height=700,resizable=yes,scrollbars=no');
+            }
         }
     </script>
 </body>
