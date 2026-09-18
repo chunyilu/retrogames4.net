@@ -1,0 +1,24 @@
+{
+  "name": "retrogames4.net",
+  "version": "1.0.0",
+  "description": "",
+  "main": "tailwind.config.js",
+  "scripts": {
+    "build:css": "tailwindcss -i ./css/input.css -o ./css/tailwind.css",
+    "watch:css": "tailwindcss -i ./css/input.css -o ./css/tailwind.css --watch",
+    "test": "echo "Error: no test specified" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chunyilu/retrogames4.net.git"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/chunyilu/retrogames4.net/issues"
+  },
+  "homepage": "https://github.com/chunyilu/retrogames4.net#readme",
+  "devDependencies": {
+    "tailwindcss": "^4.3.3"
+  }
+}
