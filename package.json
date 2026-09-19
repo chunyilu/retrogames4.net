@@ -1,12 +1,12 @@
 {
   "name": "retrogames4.net",
   "version": "1.0.0",
-  "description": "",
+  "description": "A retro-styled games website built with HTML, CSS, JavaScript, and Tailwind CSS.",
   "main": "tailwind.config.js",
   "scripts": {
     "build:css": "tailwindcss -i ./css/input.css -o ./css/tailwind.css",
     "watch:css": "tailwindcss -i ./css/input.css -o ./css/tailwind.css --watch",
-    "test": "echo "Error: no test specified" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -20,5 +20,12 @@
   "homepage": "https://github.com/chunyilu/retrogames4.net#readme",
   "devDependencies": {
     "tailwindcss": "^4.3.3"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "better-sqlite3": "^13.0.3",
+    "express": "^5.2.1"
   }
 }
