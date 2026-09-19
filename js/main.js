@@ -272,6 +272,10 @@ const loginForm = document.getElementById('loginForm');
 const registerForm = document.getElementById('registerForm');
 const loginError = document.getElementById('loginError');
 const registerError = document.getElementById('registerError');
+const loginEmail = document.getElementById('loginEmail');
+const loginPassword = document.getElementById('loginPassword');
+const registerEmail = document.getElementById('registerEmail');
+const registerPassword = document.getElementById('registerPassword');
 
 // Initialize auth state on page load
 document.addEventListener('DOMContentLoaded', () => {
@@ -279,8 +283,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const storedUser = localStorage.getItem('retrogames4User');
     if (storedUser) {
         currentUser = JSON.parse(storedUser);
-        updateAuthUI();
     }
+    // Update auth UI based on current user state (whether null or not)
+    updateAuthUI();
 });
 
 // Show/Hide modals
