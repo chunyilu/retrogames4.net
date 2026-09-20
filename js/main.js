@@ -257,28 +257,45 @@ function startCyberMazeGame() {
 let currentUser = null;
 const API_BASE_URL = 'http://localhost:3000';
 
-// DOM Elements
-const authButtons = document.getElementById('authButtons');
-const userInfo = document.getElementById('userInfo');
-const userEmail = document.getElementById('userEmail');
-const loginBtn = document.getElementById('loginBtn');
-const registerBtn = document.getElementById('registerBtn');
-const logoutBtn = document.getElementById('logoutBtn');
-const loginModal = document.getElementById('loginModal');
-const registerModal = document.getElementById('registerModal');
-const closeLoginModal = document.getElementById('closeLoginModal');
-const closeRegisterModal = document.getElementById('closeRegisterModal');
-const loginForm = document.getElementById('loginForm');
-const registerForm = document.getElementById('registerForm');
-const loginError = document.getElementById('loginError');
-const registerError = document.getElementById('registerError');
-const loginEmail = document.getElementById('loginEmail');
-const loginPassword = document.getElementById('loginPassword');
-const registerEmail = document.getElementById('registerEmail');
-const registerPassword = document.getElementById('registerPassword');
+function initAuth() {
+    // DOM Elements
+    const authButtons = document.getElementById('authButtons');
+    const userInfo = document.getElementById('userInfo');
+    const userEmail = document.getElementById('userEmail');
+    const loginBtn = document.getElementById('loginBtn');
+    const registerBtn = document.getElementById('registerBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const loginModal = document.getElementById('loginModal');
+    const registerModal = document.getElementById('registerModal');
+    const closeLoginModal = document.getElementById('closeLoginModal');
+    const closeRegisterModal = document.getElementById('closeRegisterModal');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const loginError = document.getElementById('loginError');
+    const registerError = document.getElementById('registerError');
+    const loginEmail = document.getElementById('loginEmail');
+    const loginPassword = document.getElementById('loginPassword');
+    const registerEmail = document.getElementById('registerEmail');
+    const registerPassword = document.getElementById('registerPassword');
 
-// Initialize auth state on page load
-document.addEventListener('DOMContentLoaded', () => {
+    // Update UI based on auth state
+    function updateAuthUI() {
+        if (!authButtons || !userInfo) return;
+        if (currentUser) {
+            // Show user info, hide auth buttons
+            authButtons.classList.add('hidden');
+            userInfo.classList.remove('hidden');
+            userInfo.classList.add('flex');
+            if (userEmail) userEmail.textContent = currentUser.email;
+        } else {
+            // Show auth buttons, hide user info
+            authButtons.classList.remove('hidden');
+            authButtons.classList.add('flex');
+            userInfo.classList.add('hidden');
+            userInfo.classList.remove('flex');
+        }
+    }
+
     // Check if we have a user in localStorage (for demo purposes)
     const storedUser = localStorage.getItem('retrogames4User');
     if (storedUser) {
@@ -286,168 +303,182 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // Update auth UI based on current user state (whether null or not)
     updateAuthUI();
-});
 
-// Show/Hide modals
-loginBtn.addEventListener('click', () => {
-    loginModal.classList.remove('hidden');
-    loginModal.classList.add('flex');
-    loginEmail.value = '';
-    loginPassword.value = '';
-    loginError.textContent = '';
-    loginEmail.focus();
-});
-
-registerBtn.addEventListener('click', () => {
-    registerModal.classList.remove('hidden');
-    registerModal.classList.add('flex');
-    registerEmail.value = '';
-    registerPassword.value = '';
-    registerError.textContent = '';
-    registerEmail.focus();
-});
-
-closeLoginModal.addEventListener('click', () => {
-    loginModal.classList.remove('flex');
-    loginModal.classList.add('hidden');
-});
-
-closeRegisterModal.addEventListener('click', () => {
-    registerModal.classList.remove('flex');
-    registerModal.classList.add('hidden');
-});
-
-// Close modals when clicking outside
-loginModal.addEventListener('click', (e) => {
-    if (e.target === loginModal) {
-        loginModal.classList.remove('flex');
-        loginModal.classList.add('hidden');
-    }
-});
-
-registerModal.addEventListener('click', (e) => {
-    if (e.target === registerModal) {
-        registerModal.classList.remove('flex');
-        registerModal.classList.add('hidden');
-    }
-});
-
-// Handle login form submission
-loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    loginError.textContent = '';
-
-    const email = loginEmail.value.trim();
-    const password = loginPassword.value;
-
-    if (!email || !password) {
-        loginError.textContent = 'Please fill in all fields';
-        return;
-    }
-
-    try {
-        const response = await fetch(`${API_BASE_URL}/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password })
+    // Show/Hide modals
+    if (loginBtn && loginModal) {
+        loginBtn.addEventListener('click', () => {
+            loginModal.classList.remove('hidden');
+            loginModal.classList.add('flex');
+            if (loginEmail) loginEmail.value = '';
+            if (loginPassword) loginPassword.value = '';
+            if (loginError) loginError.textContent = '';
+            if (loginEmail) loginEmail.focus();
         });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.error || 'Login failed');
-        }
-
-        // Login successful
-        currentUser = data.user;
-        localStorage.setItem('retrogames4User', JSON.stringify(currentUser));
-        updateAuthUI();
-
-        // Close modal
-        loginModal.classList.remove('flex');
-        loginModal.classList.add('hidden');
-
-        // Show success message (you could add a toast notification here)
-        alert('Login successful!');
-
-    } catch (error) {
-        loginError.textContent = error.message;
-    }
-});
-
-// Handle register form submission
-registerForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    registerError.textContent = '';
-
-    const email = registerEmail.value.trim();
-    const password = registerPassword.value;
-
-    if (!email || !password) {
-        registerError.textContent = 'Please fill in all fields';
-        return;
     }
 
-    if (password.length < 6) {
-        registerError.textContent = 'Password must be at least 6 characters';
-        return;
-    }
-
-    try {
-        const response = await fetch(`${API_BASE_URL}/register`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password })
+    if (registerBtn && registerModal) {
+        registerBtn.addEventListener('click', () => {
+            registerModal.classList.remove('hidden');
+            registerModal.classList.add('flex');
+            if (registerEmail) registerEmail.value = '';
+            if (registerPassword) registerPassword.value = '';
+            if (registerError) registerError.textContent = '';
+            if (registerEmail) registerEmail.focus();
         });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.error || 'Registration failed');
-        }
-
-        // Registration successful
-        alert('Registration successful! Please login.');
-
-        // Switch to login modal
-        registerModal.classList.remove('flex');
-        registerModal.classList.add('hidden');
-        loginModal.classList.remove('hidden');
-        loginModal.classList.add('flex');
-        loginEmail.value = email; // Pre-fill email
-        loginPassword.focus();
-
-    } catch (error) {
-        registerError.textContent = error.message;
     }
-});
 
-// Handle logout
-logoutBtn.addEventListener('click', () => {
-    currentUser = null;
-    localStorage.removeItem('retrogames4User');
-    updateAuthUI();
-});
-
-// Update UI based on auth state
-function updateAuthUI() {
-    if (currentUser) {
-        // Show user info, hide auth buttons
-        authButtons.classList.add('hidden');
-        userInfo.classList.remove('hidden');
-        userInfo.classList.add('flex');
-        userEmail.textContent = currentUser.email;
-    } else {
-        // Show auth buttons, hide user info
-        authButtons.classList.remove('hidden');
-        authButtons.classList.add('flex');
-        userInfo.classList.add('hidden');
-        userInfo.classList.remove('flex');
+    if (closeLoginModal && loginModal) {
+        closeLoginModal.addEventListener('click', () => {
+            loginModal.classList.remove('flex');
+            loginModal.classList.add('hidden');
+        });
     }
+
+    if (closeRegisterModal && registerModal) {
+        closeRegisterModal.addEventListener('click', () => {
+            registerModal.classList.remove('flex');
+            registerModal.classList.add('hidden');
+        });
+    }
+
+    // Close modals when clicking outside
+    if (loginModal) {
+        loginModal.addEventListener('click', (e) => {
+            if (e.target === loginModal) {
+                loginModal.classList.remove('flex');
+                loginModal.classList.add('hidden');
+            }
+        });
+    }
+
+    if (registerModal) {
+        registerModal.addEventListener('click', (e) => {
+            if (e.target === registerModal) {
+                registerModal.classList.remove('flex');
+                registerModal.classList.add('hidden');
+            }
+        });
+    }
+
+    // Handle login form submission
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (loginError) loginError.textContent = '';
+
+            const email = loginEmail ? loginEmail.value.trim() : '';
+            const password = loginPassword ? loginPassword.value : '';
+
+            if (!email || !password) {
+                if (loginError) loginError.textContent = 'Please fill in all fields';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Login failed');
+                }
+
+                // Login successful
+                currentUser = data.user;
+                localStorage.setItem('retrogames4User', JSON.stringify(currentUser));
+                updateAuthUI();
+
+                // Close modal
+                if (loginModal) {
+                    loginModal.classList.remove('flex');
+                    loginModal.classList.add('hidden');
+                }
+
+                // Show success message (you could add a toast notification here)
+                alert('Login successful!');
+
+            } catch (error) {
+                if (loginError) loginError.textContent = error.message;
+            }
+        });
+    }
+
+    // Handle register form submission
+    if (registerForm) {
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (registerError) registerError.textContent = '';
+
+            const email = registerEmail ? registerEmail.value.trim() : '';
+            const password = registerPassword ? registerPassword.value : '';
+
+            if (!email || !password) {
+                if (registerError) registerError.textContent = 'Please fill in all fields';
+                return;
+            }
+
+            if (password.length < 6) {
+                if (registerError) registerError.textContent = 'Password must be at least 6 characters';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Registration failed');
+                }
+
+                // Registration successful
+                alert('Registration successful! Please login.');
+
+                // Switch to login modal
+                if (registerModal) {
+                    registerModal.classList.remove('flex');
+                    registerModal.classList.add('hidden');
+                }
+                if (loginModal) {
+                    loginModal.classList.remove('hidden');
+                    loginModal.classList.add('flex');
+                }
+                if (loginEmail) loginEmail.value = email; // Pre-fill email
+                if (loginPassword) loginPassword.focus();
+
+            } catch (error) {
+                if (registerError) registerError.textContent = error.message;
+            }
+        });
+    }
+
+    // Handle logout
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            currentUser = null;
+            localStorage.removeItem('retrogames4User');
+            updateAuthUI();
+        });
+    }
+}
+
+// Initialize on DOM ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAuth);
+} else {
+    initAuth();
 }
 
 // Export functions needed by HTML onclick attributes
