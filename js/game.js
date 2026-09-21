@@ -196,6 +196,98 @@ function endGame(isWin) {
     }
 }
 
-// Export functions needed by main.js
+// Attach restart button listener if available
+const startBtn = document.getElementById('startBtn');
+if (startBtn) {
+    startBtn.addEventListener('click', startGame);
+}
+
+// Fullscreen mode with fallback support
+function toggleGameFullscreen() {
+    if (typeof playRetroSound === 'function') {
+        playRetroSound('click');
+    }
+    const container = document.querySelector('#arcade .aspect-\\[16\\/9\\]') || (canvas ? canvas.parentElement : null);
+    const icon = document.getElementById('fullscreenIcon');
+
+    // Check if currently in native fullscreen or CSS fallback mode
+    const isNativeFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+    const isCssFs = container ? container.classList.contains('fullscreen-fallback') : false;
+
+    if (!isNativeFs && !isCssFs) {
+        // Enter Fullscreen
+        if (container) {
+            if (container.requestFullscreen) {
+                container.requestFullscreen().catch(() => enableCssFullscreen(container));
+            } else if (container.webkitRequestFullscreen) {
+                container.webkitRequestFullscreen();
+            } else if (container.mozRequestFullScreen) {
+                container.mozRequestFullScreen();
+            } else if (container.msRequestFullscreen) {
+                container.msRequestFullscreen();
+            } else {
+                enableCssFullscreen(container);
+            }
+        }
+        if (icon) icon.className = 'fa-solid fa-compress';
+        if (screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock('landscape').catch(() => {
+                // Silently ignore if orientation lock is not permitted
+            });
+        }
+    } else {
+        // Exit Fullscreen
+        if (isNativeFs) {
+            if (document.exitFullscreen) {
+                document.exitFullscreen().catch(() => {});
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+        if (container) {
+            disableCssFullscreen(container);
+        }
+        if (icon) icon.className = 'fa-solid fa-expand';
+    }
+}
+
+function enableCssFullscreen(el) {
+    if (!el) return;
+    el.classList.add('fullscreen-fallback', 'fixed', 'inset-0', 'z-50', 'w-screen', 'h-screen', 'max-w-none', 'rounded-none');
+    document.body.classList.add('overflow-hidden');
+    resizeCanvas();
+}
+
+function disableCssFullscreen(el) {
+    if (!el) return;
+    el.classList.remove('fullscreen-fallback', 'fixed', 'inset-0', 'z-50', 'w-screen', 'h-screen', 'max-w-none', 'rounded-none');
+    document.body.classList.remove('overflow-hidden');
+    resizeCanvas();
+}
+
+// Sync icon and canvas size when native fullscreen changes
+function handleFullscreenChange() {
+    const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+    const icon = document.getElementById('fullscreenIcon');
+    if (icon) {
+        icon.className = isFs ? 'fa-solid fa-compress' : 'fa-solid fa-expand';
+    }
+    resizeCanvas();
+}
+
+document.addEventListener('fullscreenchange', handleFullscreenChange);
+document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+// Export functions needed by other scripts and HTML onclick attributes
 window.startGame = startGame;
 window.endGame = endGame;
+window.toggleGameFullscreen = toggleGameFullscreen;
+window.enableCssFullscreen = enableCssFullscreen;
+window.disableCssFullscreen = disableCssFullscreen;
+window.resizeCanvas = resizeCanvas;
