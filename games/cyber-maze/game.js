@@ -147,12 +147,53 @@ function gameOver(won) {
     gameActive = false;
     cancelAnimationFrame(animationFrameId);
     uiOverlay.style.display = 'flex';
+    const score = won ? 1000 : 100;
     if (won) {
         uiOverlay.querySelector('h1').textContent = 'You Win!';
-        uiOverlay.querySelector('p').textContent = 'Congratulations! You reached the goal.';
+        uiOverlay.querySelector('p').textContent = `Congratulations! You reached the goal. Final Score: ${score}`;
     } else {
         uiOverlay.querySelector('h1').textContent = 'Game Over';
-        uiOverlay.querySelector('p').textContent = 'Try again!';
+        uiOverlay.querySelector('p').textContent = `Try again! Final Score: ${score}`;
+    }
+
+    // Submit score if user is logged in
+    recordGameScore('cyber-maze', score);
+}
+
+function recordGameScore(gameId, score) {
+    try {
+        const storedUser = localStorage.getItem('retrogames4User');
+        if (!storedUser) return;
+        const user = JSON.parse(storedUser);
+        const userId = user.id || user.userId || user._id;
+        if (!userId) return;
+
+        const API_BASE_URL = window.API_BASE_URL || 'http://localhost:3000';
+        fetch(`${API_BASE_URL}/scores`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: userId,
+                userId: userId,
+                game_id: gameId,
+                gameId: gameId,
+                score: Number(score),
+                email: user.email
+            })
+        }).then(res => res.json()).then(data => {
+            const statusMsg = document.createElement('div');
+            statusMsg.style.color = '#00f3ff';
+            statusMsg.style.fontSize = '12px';
+            statusMsg.style.marginTop = '8px';
+            statusMsg.textContent = '✓ Score recorded to leaderboard!';
+            uiOverlay.appendChild(statusMsg);
+        }).catch(err => {
+            console.warn('Could not record score:', err);
+        });
+    } catch (e) {
+        console.warn('Error in recordGameScore:', e);
     }
 }
 

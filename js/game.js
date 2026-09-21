@@ -194,6 +194,24 @@ function endGame(isWin) {
         overlaySub.innerText = `Final Score: ${score}. Try again to break high scores!`;
         playRetroSound('over');
     }
+
+    // Submit score to backend
+    if (typeof window.submitGameScore === 'function' && score > 0) {
+        window.submitGameScore('breakout', score, {
+            onSuccess: () => {
+                const notice = document.createElement('div');
+                notice.className = 'text-[10px] font-arcade text-neon-cyan mt-2 animate-pulse';
+                notice.textContent = `✓ Score ${score} recorded to Hall of Fame!`;
+                overlaySub.appendChild(notice);
+            },
+            onNotLoggedIn: () => {
+                const notice = document.createElement('div');
+                notice.className = 'text-[9px] font-mono text-gray-400 mt-2';
+                notice.innerHTML = '<span class="text-neon-pink">Tip:</span> Login to submit your scores to the Leaderboard!';
+                overlaySub.appendChild(notice);
+            }
+        });
+    }
 }
 
 // Attach restart button listener if available

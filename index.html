@@ -81,7 +81,10 @@
                 </div>
                 <!-- User Info (shown when logged in) -->
                 <div id="userInfo" class="flex items-center gap-2 hidden">
-                    <span id="userEmail" class="text-[10px] sm:text-xs text-neon-cyan"></span>
+                    <button id="myScoresBtn" class="font-arcade text-[10px] sm:text-xs px-3 py-2 rounded bg-neon-cyan/20 border border-neon-cyan text-neon-cyan hover:bg-neon-cyan/30 transition-all flex items-center gap-1.5" title="View my recorded scores">
+                        <i class="fa-solid fa-trophy text-neon-yellow"></i> MY SCORES
+                    </button>
+                    <span id="userEmail" class="text-[10px] sm:text-xs text-neon-cyan max-w-[140px] truncate font-mono"></span>
                     <button id="logoutBtn" class="font-arcade text-[10px] sm:text-xs px-3 py-2 rounded bg-neon-pink/20 border border-neon-pink text-neon-pink hover:bg-neon-pink/30 transition-all">
                         LOGOUT
                     </button>
@@ -145,9 +148,14 @@
                         <i class="fa-solid fa-user text-neon-cyan text-xs" aria-hidden="true"></i>
                         <span id="mobileUserEmail" class="text-xs text-neon-cyan truncate font-mono"></span>
                     </div>
-                    <button id="mobileLogoutBtn" class="font-arcade text-[10px] px-3 py-1.5 rounded bg-neon-pink/20 border border-neon-pink text-neon-pink hover:bg-neon-pink/30 transition-all flex-shrink-0">
-                        LOGOUT
-                    </button>
+                    <div class="flex items-center gap-1.5">
+                        <button id="mobileMyScoresBtn" class="font-arcade text-[9px] px-2.5 py-1.5 rounded bg-neon-cyan/20 border border-neon-cyan text-neon-cyan hover:bg-neon-cyan/30 transition-all flex-shrink-0">
+                            SCORES
+                        </button>
+                        <button id="mobileLogoutBtn" class="font-arcade text-[9px] px-2.5 py-1.5 rounded bg-neon-pink/20 border border-neon-pink text-neon-pink hover:bg-neon-pink/30 transition-all flex-shrink-0">
+                            LOGOUT
+                        </button>
+                    </div>
                 </div>
                 <!-- Mobile Launch Arcade Button -->
                 <a href="#arcade" id="mobileLaunchArcadeBtn" class="block w-full text-center font-arcade text-xs py-3 rounded bg-neon-pink hover:bg-neon-pink/80 text-white font-bold tracking-wider glow-pink transition-all">
@@ -367,11 +375,29 @@
         <!-- Hall of Fame / Leaderboard Section -->
         <section id="leaderboard" class="py-16 bg-neon-dark/95 border-t border-neon-purple/30">
             <div class="max-w-4xl mx-auto px-4 sm:px-6">
-                <div class="text-center mb-10">
+                <div class="text-center mb-8">
                     <h2 class="text-3xl font-heading font-bold text-white tracking-wide uppercase">
                         🏆 HALL OF FAME
                     </h2>
-                    <p class="text-gray-400 text-xs font-arcade mt-1 text-neon-cyan">RETROGAMES4 HIGH SCORES</p>
+                    <p class="text-gray-400 text-xs font-arcade mt-1 text-neon-cyan">RETROGAMES4 HIGH SCORES & LEADERBOARD</p>
+                </div>
+
+                <!-- Leaderboard Game Selector Tabs -->
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+                    <div class="flex flex-wrap gap-2 font-arcade text-[10px]">
+                        <button onclick="switchLeaderboardTab('breakout')" id="leaderboardTab-breakout" class="leaderboard-tab-btn px-3.5 py-1.5 rounded bg-neon-pink text-white font-bold transition-all" aria-label="Show Breakout Leaderboard">
+                            BREAKOUT
+                        </button>
+                        <button onclick="switchLeaderboardTab('cyber-maze')" id="leaderboardTab-cyber-maze" class="leaderboard-tab-btn px-3.5 py-1.5 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-cyan transition-all" aria-label="Show Cyber Maze Leaderboard">
+                            CYBER MAZE
+                        </button>
+                        <button onclick="switchLeaderboardTab('moon-festival')" id="leaderboardTab-moon-festival" class="leaderboard-tab-btn px-3.5 py-1.5 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-cyan transition-all" aria-label="Show Moon Festival Leaderboard">
+                            MOON FESTIVAL
+                        </button>
+                    </div>
+                    <button onclick="refreshCurrentLeaderboard()" class="font-arcade text-[9px] px-3 py-1.5 rounded bg-neon-cyan/10 border border-neon-cyan/40 text-neon-cyan hover:bg-neon-cyan/20 transition-all flex items-center gap-1.5" title="Refresh leaderboard">
+                        <i class="fa-solid fa-rotate-right"></i> REFRESH
+                    </button>
                 </div>
 
                 <div class="bg-neon-card rounded-xl border border-neon-cyan/30 overflow-hidden shadow-2xl">
@@ -379,9 +405,9 @@
                         <span>RANK / PLAYER</span>
                         <span>SCORE</span>
                     </div>
-                    <div class="divide-y divide-gray-800 font-mono text-sm">
+                    <div id="leaderboardList" class="divide-y divide-gray-800 font-mono text-sm">
                         <div class="p-4 flex justify-between items-center hover:bg-neon-pink/10 transition-colors">
-                            <span class="flex items-center gap-3">
+                            <span class="flex-items-center gap-3">
                                 <span class="font-arcade text-xs text-neon-yellow w-6">1ST</span>
                                 <span class="text-white font-bold">CYBER_KING99</span>
                             </span>
@@ -395,7 +421,7 @@
                             <span class="text-neon-pink font-bold">874,200</span>
                         </div>
                         <div class="p-4 flex justify-between items-center hover:bg-neon-pink/10 transition-colors">
-                            <span class="flex items-center gap-3">
+                            <span class="flex-items-center gap-3">
                                 <span class="font-arcade text-xs text-amber-600 w-6">3RD</span>
                                 <span class="text-white font-bold">NEON_WAVE</span>
                             </span>
@@ -481,6 +507,63 @@
                 </button>
                 <p id="registerError" class="text-[10px] sm:text-xs text-red-400 text-center min-h-[18px]"></p>
             </form>
+        </div>
+    </div>
+
+    <!-- User Scores Modal -->
+    <div id="userScoresModal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/80">
+        <div class="bg-neon-card/95 border-2 border-neon-cyan rounded-xl w-full max-w-lg p-6 space-y-4 relative mx-4 max-h-[85vh] flex flex-col shadow-2xl">
+            <div class="flex justify-between items-start border-b border-neon-cyan/30 pb-3">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-trophy text-neon-yellow text-xl"></i>
+                    <div>
+                        <h2 class="font-arcade text-lg sm:text-xl text-neon-cyan">MY GAME SCORES</h2>
+                        <p id="userScoresEmail" class="text-xs text-gray-400 font-mono"></p>
+                    </div>
+                </div>
+                <button id="closeUserScoresModal" class="text-neon-pink hover:text-white hover:scale-125 transition-transform" aria-label="Close scores modal">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Stats Summary -->
+            <div class="grid grid-cols-3 gap-2 py-1 font-arcade text-center">
+                <div class="p-2.5 rounded bg-neon-dark border border-neon-purple/40">
+                    <div class="text-[9px] text-gray-400">GAMES</div>
+                    <div id="userStatsTotalGames" class="text-sm text-neon-cyan font-bold">0</div>
+                </div>
+                <div class="p-2.5 rounded bg-neon-dark border border-neon-pink/40">
+                    <div class="text-[9px] text-gray-400">BEST SCORE</div>
+                    <div id="userStatsBestScore" class="text-sm text-neon-pink font-bold">0</div>
+                </div>
+                <div class="p-2.5 rounded bg-neon-dark border border-neon-yellow/40">
+                    <div class="text-[9px] text-gray-400">RECENT</div>
+                    <div id="userStatsRecentScore" class="text-sm text-neon-yellow font-bold">0</div>
+                </div>
+            </div>
+
+            <!-- Scores List -->
+            <div class="flex-1 overflow-y-auto space-y-2 pr-1 min-h-[160px]">
+                <div id="userScoresLoading" class="text-center py-8 text-neon-cyan font-arcade text-xs">
+                    <i class="fa-solid fa-spinner fa-spin mr-2"></i> LOADING SCORES...
+                </div>
+                <div id="userScoresList" class="space-y-2 font-mono text-xs hidden">
+                    <!-- Populated dynamically -->
+                </div>
+                <div id="userScoresEmpty" class="hidden text-center py-8 text-gray-400 font-arcade text-[10px]">
+                    <i class="fa-solid fa-gamepad text-2xl text-gray-600 mb-2 block"></i>
+                    NO SCORES RECORDED YET.<br><span class="text-gray-500">PLAY A GAME TO LOG YOUR HIGH SCORES!</span>
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-neon-cyan/20 flex justify-between items-center">
+                <button id="refreshUserScoresBtn" class="font-arcade text-[9px] px-3 py-1.5 rounded bg-neon-cyan/10 border border-neon-cyan/40 text-neon-cyan hover:bg-neon-cyan/20 transition-all flex items-center gap-1.5" title="Refresh user scores">
+                    <i class="fa-solid fa-rotate-right"></i> REFRESH
+                </button>
+                <button id="closeUserScoresBottomBtn" class="font-arcade text-[9px] px-4 py-1.5 rounded bg-neon-pink text-white font-bold hover:bg-neon-pink/80 glow-pink transition-all">
+                    CLOSE
+                </button>
+            </div>
         </div>
     </div>
 

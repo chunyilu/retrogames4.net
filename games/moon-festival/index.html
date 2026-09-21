@@ -1044,7 +1044,40 @@
     finalWaveText.textContent = wave;
     monstersKilledText.textContent = monstersDefeated;
 
+    // Submit score if user is logged in
+    recordMoonFestivalScore(score);
+
     gameOverOverlay.classList.remove('hidden');
+  }
+
+  function recordMoonFestivalScore(score) {
+    try {
+      const storedUser = localStorage.getItem('retrogames4User');
+      if (!storedUser) return;
+      const user = JSON.parse(storedUser);
+      const userId = user.id || user.userId || user._id;
+      if (!userId) return;
+
+      const API_BASE_URL = window.API_BASE_URL || 'http://localhost:3000';
+      fetch(`${API_BASE_URL}/scores`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          user_id: userId,
+          userId: userId,
+          game_id: 'moon-festival',
+          gameId: 'moon-festival',
+          score: Number(score),
+          email: user.email
+        })
+      }).catch(err => {
+        console.warn('Could not record score:', err);
+      });
+    } catch (e) {
+      console.warn('Error recording moon festival score:', e);
+    }
   }
 
   // -------------------------------------------------------------
