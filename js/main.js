@@ -49,6 +49,9 @@ function launchDemo(title) {
     } else if (title === 'Cyber Maze') {
         // Start Cyber Maze game in-place in the arcade section
         startCyberMazeGame();
+    } else if (title === 'Moon Festival' || title === 'Jade Rabbit' || title === 'Moon Festival: Jade Rabbit') {
+        // Open Moon Festival game
+        window.location.href = 'games/moon-festival/index.html';
     } else {
         alert(`Loading demo instance for [${title}] on retrogames4.net!`);
     }
