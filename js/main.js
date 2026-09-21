@@ -4,8 +4,12 @@ const synth = new Tone.Synth().toDestination();
 
 function toggleSound() {
     soundEnabled = !soundEnabled;
-    const icon = document.getElementById('soundIcon');
-    icon.className = soundEnabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
+    const icons = [document.getElementById('soundIcon'), document.getElementById('mobileSoundIcon')];
+    icons.forEach(icon => {
+        if (icon) {
+            icon.className = soundEnabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
+        }
+    });
     if (soundEnabled) playRetroSound('click');
 }
 
@@ -261,13 +265,23 @@ let currentUser = null;
 const API_BASE_URL = 'http://localhost:3000';
 
 function initAuth() {
-    // DOM Elements
+    // DOM Elements - Desktop
     const authButtons = document.getElementById('authButtons');
     const userInfo = document.getElementById('userInfo');
     const userEmail = document.getElementById('userEmail');
     const loginBtn = document.getElementById('loginBtn');
     const registerBtn = document.getElementById('registerBtn');
     const logoutBtn = document.getElementById('logoutBtn');
+
+    // DOM Elements - Mobile
+    const mobileAuthButtons = document.getElementById('mobileAuthButtons');
+    const mobileUserInfo = document.getElementById('mobileUserInfo');
+    const mobileUserEmail = document.getElementById('mobileUserEmail');
+    const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+    const mobileRegisterBtn = document.getElementById('mobileRegisterBtn');
+    const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+
+    // Modals & Forms
     const loginModal = document.getElementById('loginModal');
     const registerModal = document.getElementById('registerModal');
     const closeLoginModal = document.getElementById('closeLoginModal');
@@ -283,19 +297,48 @@ function initAuth() {
 
     // Update UI based on auth state
     function updateAuthUI() {
-        if (!authButtons || !userInfo) return;
         if (currentUser) {
-            // Show user info, hide auth buttons
-            authButtons.classList.add('hidden');
-            userInfo.classList.remove('hidden');
-            userInfo.classList.add('flex');
+            // Desktop
+            if (authButtons) {
+                authButtons.classList.add('hidden');
+                authButtons.classList.remove('flex');
+            }
+            if (userInfo) {
+                userInfo.classList.remove('hidden');
+                userInfo.classList.add('flex');
+            }
             if (userEmail) userEmail.textContent = currentUser.email;
+
+            // Mobile
+            if (mobileAuthButtons) {
+                mobileAuthButtons.classList.add('hidden');
+                mobileAuthButtons.classList.remove('flex');
+            }
+            if (mobileUserInfo) {
+                mobileUserInfo.classList.remove('hidden');
+                mobileUserInfo.classList.add('flex');
+            }
+            if (mobileUserEmail) mobileUserEmail.textContent = currentUser.email;
         } else {
-            // Show auth buttons, hide user info
-            authButtons.classList.remove('hidden');
-            authButtons.classList.add('flex');
-            userInfo.classList.add('hidden');
-            userInfo.classList.remove('flex');
+            // Desktop
+            if (authButtons) {
+                authButtons.classList.remove('hidden');
+                authButtons.classList.add('flex');
+            }
+            if (userInfo) {
+                userInfo.classList.add('hidden');
+                userInfo.classList.remove('flex');
+            }
+
+            // Mobile
+            if (mobileAuthButtons) {
+                mobileAuthButtons.classList.remove('hidden');
+                mobileAuthButtons.classList.add('flex');
+            }
+            if (mobileUserInfo) {
+                mobileUserInfo.classList.add('hidden');
+                mobileUserInfo.classList.remove('flex');
+            }
         }
     }
 
@@ -307,26 +350,59 @@ function initAuth() {
     // Update auth UI based on current user state (whether null or not)
     updateAuthUI();
 
-    // Show/Hide modals
-    if (loginBtn && loginModal) {
-        loginBtn.addEventListener('click', () => {
+    function openLogin() {
+        if (loginModal) {
             loginModal.classList.remove('hidden');
             loginModal.classList.add('flex');
             if (loginEmail) loginEmail.value = '';
             if (loginPassword) loginPassword.value = '';
             if (loginError) loginError.textContent = '';
             if (loginEmail) loginEmail.focus();
-        });
+        }
     }
 
-    if (registerBtn && registerModal) {
-        registerBtn.addEventListener('click', () => {
+    function openRegister() {
+        if (registerModal) {
             registerModal.classList.remove('hidden');
             registerModal.classList.add('flex');
             if (registerEmail) registerEmail.value = '';
             if (registerPassword) registerPassword.value = '';
             if (registerError) registerError.textContent = '';
             if (registerEmail) registerEmail.focus();
+        }
+    }
+
+    function closeMobileMenuIfOpen() {
+        const mobileMenu = document.getElementById('mobileMenu');
+        if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+            mobileMenu.classList.add('hidden');
+            const mobileMenuIcon = document.getElementById('mobileMenuIcon');
+            if (mobileMenuIcon) mobileMenuIcon.className = 'fa-solid fa-bars text-lg';
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            if (mobileMenuBtn) mobileMenuBtn.setAttribute('aria-expanded', 'false');
+        }
+    }
+
+    // Show/Hide modals
+    if (loginBtn) {
+        loginBtn.addEventListener('click', openLogin);
+    }
+    if (mobileLoginBtn) {
+        mobileLoginBtn.addEventListener('click', () => {
+            playRetroSound('click');
+            closeMobileMenuIfOpen();
+            openLogin();
+        });
+    }
+
+    if (registerBtn) {
+        registerBtn.addEventListener('click', openRegister);
+    }
+    if (mobileRegisterBtn) {
+        mobileRegisterBtn.addEventListener('click', () => {
+            playRetroSound('click');
+            closeMobileMenuIfOpen();
+            openRegister();
         });
     }
 
@@ -467,21 +543,78 @@ function initAuth() {
         });
     }
 
+    function handleLogout() {
+        currentUser = null;
+        localStorage.removeItem('retrogames4User');
+        updateAuthUI();
+    }
+
     // Handle logout
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            currentUser = null;
-            localStorage.removeItem('retrogames4User');
-            updateAuthUI();
+        logoutBtn.addEventListener('click', handleLogout);
+    }
+    if (mobileLogoutBtn) {
+        mobileLogoutBtn.addEventListener('click', () => {
+            playRetroSound('click');
+            handleLogout();
         });
     }
 }
 
+function initMobileMenu() {
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mobileMenuIcon = document.getElementById('mobileMenuIcon');
+
+    if (!mobileMenuBtn || !mobileMenu) return;
+
+    function toggleMenu(forceOpen) {
+        const shouldOpen = forceOpen !== undefined ? forceOpen : mobileMenu.classList.contains('hidden');
+        if (shouldOpen) {
+            mobileMenu.classList.remove('hidden');
+            mobileMenuBtn.setAttribute('aria-expanded', 'true');
+            if (mobileMenuIcon) {
+                mobileMenuIcon.className = 'fa-solid fa-xmark text-lg';
+            }
+        } else {
+            mobileMenu.classList.add('hidden');
+            mobileMenuBtn.setAttribute('aria-expanded', 'false');
+            if (mobileMenuIcon) {
+                mobileMenuIcon.className = 'fa-solid fa-bars text-lg';
+            }
+        }
+    }
+
+    mobileMenuBtn.addEventListener('click', () => {
+        playRetroSound('click');
+        toggleMenu();
+    });
+
+    // Close menu when clicking any mobile nav link or mobile arcade launch button
+    const mobileLinks = mobileMenu.querySelectorAll('.mobile-nav-link, #mobileLaunchArcadeBtn');
+    mobileLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            toggleMenu(false);
+        });
+    });
+
+    // Automatically close mobile menu if resized to desktop
+    window.addEventListener('resize', () => {
+        if (window.innerWidth >= 768 && !mobileMenu.classList.contains('hidden')) {
+            toggleMenu(false);
+        }
+    });
+}
+
 // Initialize on DOM ready
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initAuth);
+    document.addEventListener('DOMContentLoaded', () => {
+        initAuth();
+        initMobileMenu();
+    });
 } else {
     initAuth();
+    initMobileMenu();
 }
 
 // Export functions needed by HTML onclick attributes
@@ -489,3 +622,4 @@ window.toggleSound = toggleSound;
 window.playRetroSound = playRetroSound;
 window.filterVault = filterVault;
 window.launchDemo = launchDemo;
+window.initMobileMenu = initMobileMenu;

@@ -45,10 +45,10 @@
 
     <!-- Navigation Bar -->
     <header class="sticky top-0 z-40 bg-neon-dark/90 backdrop-blur-md border-b border-neon-cyan/30">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <a href="#" class="flex items-center gap-3 group">
-                <div class="w-10 h-10 rounded-lg bg-neon-pink flex items-center justify-center glow-pink group-hover:rotate-6 transition-transform">
-                    <i class="fa-solid font-arcade text-white text-lg" aria-hidden="true"></i>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-2 sm:gap-3 group">
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-neon-pink flex items-center justify-center glow-pink group-hover:rotate-6 transition-transform">
+                    <i class="fa-solid fa-gamepad text-white text-base sm:text-lg" aria-hidden="true"></i>
                 </div>
                 <span class="font-arcade text-xs sm:text-sm text-neon-cyan tracking-wider text-glow-cyan">
                     RETROGAMES<span class="text-neon-pink">4</span>.NET
@@ -65,9 +65,9 @@
                 </ul>
             </nav>
 
-            <!-- Sound & Play Action -->
-            <div class="flex items-center gap-4">
-                <button id="soundToggleBtn" class="p-2.5 rounded-lg border border-neon-cyan/50 text-neon-cyan hover:bg-neon-cyan/10 transition-colors" title="Toggle Sound FX" aria-label="Toggle sound effects">
+            <!-- Sound & Play Action (Desktop) -->
+            <div class="hidden md:flex items-center gap-4">
+                <button id="soundToggleBtn" onclick="toggleSound()" class="p-2.5 rounded-lg border border-neon-cyan/50 text-neon-cyan hover:bg-neon-cyan/10 transition-colors" title="Toggle Sound FX" aria-label="Toggle sound effects">
                     <i id="soundIcon" class="fa-solid fa-volume-high" aria-hidden="true"></i>
                 </button>
                 <!-- Auth Buttons -->
@@ -87,6 +87,70 @@
                     </button>
                 </div>
                 <a href="#arcade" onclick="playRetroSound('click')" class="font-arcade text-[10px] sm:text-xs px-4 py-2.5 rounded bg-neon-pink hover:bg-neon-pink/80 text-white font-bold tracking-wider glow-pink transition-all transform hover:-translate-y-0.5">
+                    <i class="fa-solid fa-gamepad mr-2" aria-hidden="true"></i> LAUNCH ARCADE
+                </a>
+            </div>
+
+            <!-- Mobile Action & Hamburger Button -->
+            <div class="flex items-center gap-2 md:hidden">
+                <button id="mobileSoundToggleBtn" onclick="toggleSound()" class="p-2 rounded-lg border border-neon-cyan/50 text-neon-cyan hover:bg-neon-cyan/10 transition-colors" title="Toggle Sound FX" aria-label="Toggle sound effects">
+                    <i id="mobileSoundIcon" class="fa-solid fa-volume-high" aria-hidden="true"></i>
+                </button>
+                <button id="mobileMenuBtn" class="p-2 rounded-lg border border-neon-pink/50 text-neon-pink hover:bg-neon-pink/10 transition-colors focus:outline-none" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobileMenu">
+                    <i id="mobileMenuIcon" class="fa-solid fa-bars text-lg" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobileMenu" class="hidden md:hidden border-t border-neon-cyan/20 bg-neon-dark/95 backdrop-blur-md px-4 py-4 space-y-4">
+            <nav class="font-heading text-lg font-bold tracking-wider" aria-label="Mobile Navigation">
+                <ul class="flex flex-col space-y-2">
+                    <li>
+                        <a href="#hero" class="mobile-nav-link block py-2 px-3 rounded hover:bg-neon-cyan/10 text-gray-200 hover:text-neon-cyan transition-colors">
+                            <i class="fa-solid fa-house text-neon-cyan mr-3 text-sm" aria-hidden="true"></i> HOME
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#arcade" class="mobile-nav-link block py-2 px-3 rounded hover:bg-neon-pink/10 text-gray-200 hover:text-neon-pink transition-colors">
+                            <i class="fa-solid fa-gamepad text-neon-pink mr-3 text-sm" aria-hidden="true"></i> ARCADE ROOM
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#catalog" class="mobile-nav-link block py-2 px-3 rounded hover:bg-neon-cyan/10 text-gray-200 hover:text-neon-cyan transition-colors">
+                            <i class="fa-solid fa-box-archive text-neon-cyan mr-3 text-sm" aria-hidden="true"></i> GAMES VAULT
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#leaderboard" class="mobile-nav-link block py-2 px-3 rounded hover:bg-neon-pink/10 text-gray-200 hover:text-neon-pink transition-colors">
+                            <i class="fa-solid fa-trophy text-neon-yellow mr-3 text-sm" aria-hidden="true"></i> LEADERBOARD
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="pt-2 border-t border-neon-cyan/20 space-y-3">
+                <!-- Mobile Auth Buttons -->
+                <div id="mobileAuthButtons" class="flex items-center gap-3 hidden">
+                    <button id="mobileLoginBtn" class="flex-1 font-arcade text-xs py-2.5 rounded bg-neon-cyan hover:bg-neon-cyan/80 text-neon-dark font-bold tracking-wider glow-cyan transition-all text-center">
+                        LOGIN
+                    </button>
+                    <button id="mobileRegisterBtn" class="flex-1 font-arcade text-xs py-2.5 rounded border-2 border-neon-pink text-neon-pink hover:bg-neon-pink/10 transition-all text-center">
+                        REGISTER
+                    </button>
+                </div>
+                <!-- Mobile User Info (shown when logged in) -->
+                <div id="mobileUserInfo" class="flex items-center justify-between gap-2 p-2.5 rounded bg-neon-card border border-neon-cyan/30 hidden">
+                    <div class="flex items-center gap-2 overflow-hidden">
+                        <i class="fa-solid fa-user text-neon-cyan text-xs" aria-hidden="true"></i>
+                        <span id="mobileUserEmail" class="text-xs text-neon-cyan truncate font-mono"></span>
+                    </div>
+                    <button id="mobileLogoutBtn" class="font-arcade text-[10px] px-3 py-1.5 rounded bg-neon-pink/20 border border-neon-pink text-neon-pink hover:bg-neon-pink/30 transition-all flex-shrink-0">
+                        LOGOUT
+                    </button>
+                </div>
+                <!-- Mobile Launch Arcade Button -->
+                <a href="#arcade" id="mobileLaunchArcadeBtn" class="block w-full text-center font-arcade text-xs py-3 rounded bg-neon-pink hover:bg-neon-pink/80 text-white font-bold tracking-wider glow-pink transition-all">
                     <i class="fa-solid fa-gamepad mr-2" aria-hidden="true"></i> LAUNCH ARCADE
                 </a>
             </div>
