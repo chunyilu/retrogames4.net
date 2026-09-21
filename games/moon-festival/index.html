@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#070711">
   <title>Jade Rabbit vs Grapefruit Monsters - RetroGames4.net</title>
   <!-- Google Fonts for Retro Arcade Vibe -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,20 +16,30 @@
       box-sizing: border-box;
       user-select: none;
       -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      touch-action: manipulation;
     }
 
-    body {
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
       background-color: #070711;
       color: #fff;
       font-family: 'Press Start 2P', monospace;
+      overflow-x: hidden;
+      overflow-y: auto;
+      touch-action: pan-y;
+    }
+
+    body {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
       min-height: 100vh;
-      margin: 0;
-      padding: 10px;
-      overflow-x: hidden;
+      padding: 8px 10px 20px 10px;
       position: relative;
     }
 
@@ -47,23 +58,24 @@
       );
       background-size: 100% 3px, 6px 100%;
       pointer-events: none;
-      z-index: 99;
-      opacity: 0.45;
+      z-index: 90;
+      opacity: 0.4;
     }
 
     /* Header Nav */
     .top-nav {
       width: 100%;
-      max-width: 650px;
+      max-width: 580px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       padding: 6px 10px;
-      background: rgba(18, 18, 37, 0.85);
+      background: rgba(18, 18, 37, 0.9);
       border: 2px solid rgba(0, 243, 255, 0.4);
       border-radius: 8px;
-      box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+      box-shadow: 0 0 12px rgba(0, 243, 255, 0.2);
+      z-index: 20;
     }
 
     .back-btn {
@@ -71,23 +83,23 @@
       align-items: center;
       gap: 6px;
       font-family: 'Press Start 2P', monospace;
-      font-size: 10px;
+      font-size: 9px;
       color: #00f3ff;
       background: rgba(0, 243, 255, 0.15);
       border: 1px solid #00f3ff;
-      padding: 7px 12px;
+      padding: 8px 12px;
       border-radius: 6px;
       text-decoration: none;
       cursor: pointer;
       transition: all 0.2s ease;
-      box-shadow: 0 0 8px rgba(0, 243, 255, 0.3);
+      box-shadow: 0 0 8px rgba(0, 243, 255, 0.25);
     }
 
-    .back-btn:hover {
+    .back-btn:hover, .back-btn:active {
       background: #00f3ff;
       color: #0a0a12;
       box-shadow: 0 0 15px #00f3ff;
-      transform: scale(1.04);
+      transform: scale(1.03);
     }
 
     .nav-actions {
@@ -101,13 +113,13 @@
       background: rgba(255, 0, 127, 0.15);
       border: 1px solid #ff007f;
       color: #ff007f;
-      padding: 6px 10px;
+      padding: 8px 12px;
       border-radius: 6px;
       cursor: pointer;
       transition: all 0.2s;
     }
 
-    .icon-btn:hover {
+    .icon-btn:hover, .icon-btn:active {
       background: #ff007f;
       color: #fff;
       box-shadow: 0 0 10px #ff007f;
@@ -115,67 +127,91 @@
 
     .game-header {
       text-align: center;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     h1 {
       margin: 0;
       color: #ffe600;
       text-shadow: 0 0 10px rgba(255, 230, 0, 0.7), 2px 2px #ff007f;
-      font-size: 16px;
+      font-size: 13px;
       letter-spacing: 1px;
+      line-height: 1.4;
+    }
+
+    @media (min-width: 480px) {
+      h1 {
+        font-size: 15px;
+      }
     }
 
     .subtitle {
       font-family: 'Rajdhani', sans-serif;
-      font-size: 14px;
+      font-size: 12px;
       color: #00f3ff;
-      margin-top: 3px;
-      letter-spacing: 1.5px;
+      margin-top: 2px;
+      letter-spacing: 1.2px;
       text-transform: uppercase;
       font-weight: 700;
     }
 
+    /* Game Container & Canvas */
     #game-wrapper {
       position: relative;
-      border: 3px solid #00f3ff;
+      width: 100%;
+      max-width: 580px;
+      aspect-ratio: 600 / 720;
+      max-height: 72vh;
+      border: 2px solid #00f3ff;
       border-radius: 8px;
-      box-shadow: 0 0 25px rgba(0, 243, 255, 0.4), inset 0 0 20px rgba(157, 0, 255, 0.3);
-      background: #0d0c1d;
+      box-shadow: 0 0 20px rgba(0, 243, 255, 0.35), inset 0 0 15px rgba(157, 0, 255, 0.25);
+      background: #080816;
       overflow: hidden;
       touch-action: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     canvas {
+      width: 100%;
+      height: 100%;
       display: block;
       background: #070714;
       image-rendering: pixelated;
       cursor: crosshair;
+      touch-action: none;
     }
 
-    /* Overlay Screen (Start / Pause / Game Over) */
+    /* Overlay Screens (Start / Pause / Game Over) */
     .overlay {
       position: absolute;
       inset: 0;
-      background: rgba(7, 7, 20, 0.88);
+      background: rgba(7, 7, 20, 0.92);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 16px;
       text-align: center;
       z-index: 50;
       backdrop-filter: blur(4px);
     }
 
     .overlay.hidden {
-      display: none;
+      display: none !important;
     }
 
     .overlay-title {
-      font-size: 22px;
-      margin-bottom: 12px;
+      font-size: 18px;
+      margin-bottom: 10px;
       text-transform: uppercase;
+    }
+
+    @media (min-width: 480px) {
+      .overlay-title {
+        font-size: 22px;
+      }
     }
 
     .overlay-title.gameover {
@@ -195,23 +231,29 @@
     }
 
     .overlay-text {
-      font-size: 11px;
-      line-height: 1.8;
+      font-size: 10px;
+      line-height: 1.6;
       color: #e2e8f0;
-      max-width: 480px;
-      margin-bottom: 18px;
+      max-width: 440px;
+      margin-bottom: 14px;
+    }
+
+    @media (min-width: 480px) {
+      .overlay-text {
+        font-size: 11px;
+      }
     }
 
     .stats-card {
-      background: rgba(18, 18, 37, 0.9);
+      background: rgba(18, 18, 37, 0.95);
       border: 1px solid rgba(255, 230, 0, 0.5);
       border-radius: 8px;
-      padding: 12px 20px;
-      margin-bottom: 20px;
-      width: 85%;
-      max-width: 380px;
-      font-size: 11px;
-      line-height: 1.8;
+      padding: 10px 14px;
+      margin-bottom: 16px;
+      width: 90%;
+      max-width: 360px;
+      font-size: 10px;
+      line-height: 1.7;
     }
 
     .stats-card .highlight {
@@ -225,25 +267,27 @@
     .overlay-buttons {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      width: 80%;
-      max-width: 280px;
+      gap: 10px;
+      width: 85%;
+      max-width: 270px;
     }
 
     .action-btn {
       font-family: 'Press Start 2P', monospace;
       font-size: 11px;
-      padding: 12px 18px;
-      border-radius: 6px;
+      min-height: 48px;
+      padding: 12px 16px;
+      border-radius: 8px;
       border: 2px solid transparent;
       cursor: pointer;
       text-transform: uppercase;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
       text-decoration: none;
+      touch-action: manipulation;
     }
 
     .action-btn.primary {
@@ -251,12 +295,13 @@
       color: #070711;
       border-color: #ffe600;
       box-shadow: 0 0 15px rgba(255, 230, 0, 0.6);
+      font-weight: bold;
     }
 
-    .action-btn.primary:hover {
+    .action-btn.primary:hover, .action-btn.primary:active {
       background: #fff;
-      transform: scale(1.05);
-      box-shadow: 0 0 22px rgba(255, 230, 0, 0.9);
+      transform: scale(1.04);
+      box-shadow: 0 0 20px rgba(255, 230, 0, 0.9);
     }
 
     .action-btn.secondary {
@@ -266,62 +311,162 @@
       box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
     }
 
-    .action-btn.secondary:hover {
+    .action-btn.secondary:hover, .action-btn.secondary:active {
       background: #00f3ff;
       color: #070711;
-      transform: scale(1.05);
+      transform: scale(1.04);
+      box-shadow: 0 0 15px #00f3ff;
+    }
+
+    /* Mobile virtual touch controls */
+    .mobile-controls {
+      width: 100%;
+      max-width: 580px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+      padding: 4px 6px;
+      gap: 8px;
+      z-index: 20;
+    }
+
+    .touch-btn-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .dpad-btn {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 18px;
+      min-width: 60px;
+      min-height: 56px;
+      background: rgba(18, 18, 37, 0.95);
+      border: 2px solid #00f3ff;
+      color: #00f3ff;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 10px rgba(0, 243, 255, 0.25);
+      cursor: pointer;
+      touch-action: none;
+      transition: background 0.1s, transform 0.1s, border-color 0.1s;
+    }
+
+    .dpad-btn:active, .dpad-btn.active {
+      background: #00f3ff;
+      color: #070711;
       box-shadow: 0 0 18px #00f3ff;
+      transform: scale(0.94);
+    }
+
+    .shoot-btn {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 11px;
+      min-width: 110px;
+      min-height: 56px;
+      background: rgba(255, 230, 0, 0.15);
+      border: 2px solid #ffe600;
+      color: #ffe600;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 0 12px rgba(255, 230, 0, 0.35);
+      cursor: pointer;
+      touch-action: none;
+      transition: background 0.1s, transform 0.1s;
+    }
+
+    .shoot-btn:active, .shoot-btn.active {
+      background: #ffe600;
+      color: #070711;
+      box-shadow: 0 0 22px #ffe600;
+      transform: scale(0.94);
+    }
+
+    .bomb-btn {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 11px;
+      min-width: 56px;
+      min-height: 56px;
+      background: rgba(255, 0, 127, 0.15);
+      border: 2px solid #ff007f;
+      color: #ff007f;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 10px rgba(255, 0, 127, 0.3);
+      cursor: pointer;
+      touch-action: none;
+      transition: background 0.1s, transform 0.1s;
+    }
+
+    .bomb-btn:active, .bomb-btn.active {
+      background: #ff007f;
+      color: #fff;
+      box-shadow: 0 0 18px #ff007f;
+      transform: scale(0.94);
     }
 
     .controls-hint {
-      margin-top: 10px;
-      font-size: 9px;
+      margin-top: 6px;
+      font-size: 8px;
       color: #94a3b8;
       text-align: center;
-      max-width: 600px;
-      line-height: 1.6;
+      max-width: 580px;
+      line-height: 1.5;
       background: rgba(18, 18, 37, 0.6);
-      padding: 8px 12px;
+      padding: 6px 10px;
       border-radius: 6px;
       border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    @media (min-width: 480px) {
+      .controls-hint {
+        font-size: 9px;
+      }
     }
 
     .controls-hint span {
       color: #00f3ff;
     }
 
-    /* Mobile virtual controls */
-    .mobile-controls {
+    /* Orientation Warning Banner (Portrait Optimization) */
+    #landscapeWarning {
       display: none;
-      width: 100%;
-      max-width: 600px;
-      justify-content: space-between;
-      margin-top: 10px;
-      padding: 0 10px;
+      position: fixed;
+      inset: 0;
+      background: rgba(7, 7, 20, 0.96);
+      z-index: 100;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      text-align: center;
     }
 
-    @media (max-width: 768px) {
-      .mobile-controls {
+    @media (orientation: landscape) and (max-height: 520px) {
+      #landscapeWarning {
         display: flex;
       }
     }
 
-    .dpad-btn, .shoot-btn {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 16px;
-      background: rgba(18, 18, 37, 0.9);
-      border: 2px solid #00f3ff;
+    .rotate-phone-icon {
+      font-size: 38px;
       color: #00f3ff;
-      padding: 16px 22px;
-      border-radius: 8px;
-      touch-action: manipulation;
+      margin-bottom: 12px;
+      animation: rotatePhone 2s infinite ease-in-out;
     }
 
-    .shoot-btn {
-      border-color: #ffe600;
-      color: #ffe600;
-      font-size: 12px;
-      padding: 16px 28px;
+    @keyframes rotatePhone {
+      0%, 20% { transform: rotate(0deg); }
+      50%, 70% { transform: rotate(90deg); }
+      100% { transform: rotate(0deg); }
     }
 
     @keyframes pulse {
@@ -334,6 +479,15 @@
 
   <!-- Scanlines effect -->
   <div class="scanlines"></div>
+
+  <!-- Landscape Orientation Notice -->
+  <div id="landscapeWarning">
+    <div class="rotate-phone-icon"><i class="fa-solid fa-mobile-screen"></i></div>
+    <div style="font-size: 13px; color: #ffe600; margin-bottom: 8px;">PORTRAIT ORIENTATION RECOMMENDED</div>
+    <div style="font-size: 9px; color: #94a3b8; max-width: 320px; line-height: 1.6;">
+      Please rotate your mobile device vertically for the best full-screen arcade experience.
+    </div>
+  </div>
 
   <!-- Top Navigation with Back Button -->
   <header class="top-nav">
@@ -358,7 +512,7 @@
 
   <!-- Game Container -->
   <div id="game-wrapper">
-    <canvas id="gameCanvas" width="600" height="700"></canvas>
+    <canvas id="gameCanvas" width="600" height="720"></canvas>
 
     <!-- Start Overlay -->
     <div id="startOverlay" class="overlay">
@@ -421,18 +575,21 @@
     </div>
   </div>
 
-  <!-- Mobile On-screen Controls -->
+  <!-- Mobile On-screen Touch Controls -->
   <div class="mobile-controls">
-    <div style="display: flex; gap: 10px;">
+    <div class="touch-btn-group">
       <button id="btnLeft" class="dpad-btn" aria-label="Move Left">◀</button>
       <button id="btnRight" class="dpad-btn" aria-label="Move Right">▶</button>
     </div>
-    <button id="btnShoot" class="shoot-btn" aria-label="Shoot">FIRE 💥</button>
+    <div class="touch-btn-group">
+      <button id="btnBomb" class="bomb-btn" aria-label="Moon Bomb">💣</button>
+      <button id="btnShoot" class="shoot-btn" aria-label="Shoot Mooncakes">FIRE 💥</button>
+    </div>
   </div>
 
   <!-- Instructions Hint -->
   <div class="controls-hint">
-    🎮 <b>CONTROLS:</b> [<span>←</span> / <span>A</span>] Left | [<span>→</span> / <span>D</span>] Right | [<span>SPACE</span> / Click] Fire | [<span>P</span>] Pause | [<span>R</span>] Restart
+    🎮 <b>CONTROLS:</b> Touch Buttons / Drag Rabbit / [<span>←</span> <span>→</span> / <span>A</span> <span>D</span>] Move | Hold [<span>FIRE</span> / <span>SPACE</span>] Auto-Fire | [<span>P</span>] Pause
   </div>
 
 <script>
@@ -459,8 +616,9 @@
   const btnLeft = document.getElementById('btnLeft');
   const btnRight = document.getElementById('btnRight');
   const btnShoot = document.getElementById('btnShoot');
+  const btnBomb = document.getElementById('btnBomb');
 
-  // Audio Context (Synthesizer Sound Effects)
+  // Audio Context (Synthesizer Sound Effects - 0 bytes network payload)
   let soundEnabled = true;
   let audioCtx = null;
 
@@ -564,6 +722,22 @@
     }
   }
 
+  // Haptic Feedback for Mobile Devices
+  function triggerHaptic(ms = 15) {
+    if ('vibrate' in navigator) {
+      try { navigator.vibrate(ms); } catch (e) {}
+    }
+  }
+
+  // Lock orientation to portrait if supported
+  function lockPortraitOrientation() {
+    try {
+      if (screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock('portrait').catch(() => {});
+      }
+    } catch (e) {}
+  }
+
   // Toggle Sound
   soundToggle.addEventListener('click', () => {
     soundEnabled = !soundEnabled;
@@ -586,19 +760,41 @@
   let combo = 0;
   let comboTimer = 0;
   let screenShake = 0;
+  let bombsCount = 0;
 
-  // Key tracking
+  // Key tracking & virtual touch joystick tracking
   const keys = {};
+  let isShootingHeld = false;
+
+  // Virtual Joystick State
+  const joystick = {
+    active: false,
+    startX: 0,
+    startY: 0,
+    currentX: 0,
+    currentY: 0,
+    dx: 0,
+    dy: 0,
+    touchId: null,
+    maxRadius: 42
+  };
+
+  // Direct Touch Drag tracking
+  let touchDrag = {
+    active: false,
+    touchId: null,
+    lastX: 0
+  };
 
   // Player: Jade Rabbit
   const rabbit = {
-    x: canvas.width / 2 - 20,
-    y: canvas.height - 85,
+    x: canvas.width / 2 - 21,
+    y: canvas.height - 88,
     width: 42,
     height: 52,
-    speed: 6.5,
+    speed: 6.8,
     lastShot: 0,
-    shootCooldown: 220,
+    shootCooldown: 210,
     invulnerableTimer: 0,
     poundingAnim: 0,
     shield: false,
@@ -606,7 +802,7 @@
     tripleShotTimer: 0
   };
 
-  // Game Arrays
+  // Game Object Arrays (Performance capped for smooth 60fps on mobile)
   let bullets = [];
   let monsters = [];
   let powerups = [];
@@ -618,7 +814,7 @@
   // Initialize Starfield & Night Clouds
   function initEnvironment() {
     stars = [];
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < 50; i++) {
       stars.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
@@ -635,10 +831,12 @@
     ];
   }
 
-  // Monster Spawning
+  // Monster Spawning Logic
   let monsterSpawnTimer = 0;
 
   function spawnMonster() {
+    if (monsters.length >= 25) return; // Cap for performance on mobile
+
     const roll = Math.random();
     let type = 'normal';
     let size = 38;
@@ -660,133 +858,101 @@
       hp = 1;
       speed = 1.9 + Math.random() * 0.8;
       color = '#ff007f';
-    } else if (wave >= 2 && roll > 0.88) {
-      // Emperor Pomelo (Boss / Mini-Boss)
+    } else if (wave >= 4 && roll < 0.58) {
+      // Armored Mid-Autumn Pomelo
+      type = 'tank';
+      size = 46;
+      hp = 3;
+      speed = 1.2 + (wave * 0.1);
+      color = '#2ecc71';
+    } else if (wave >= 5 && Math.random() < 0.12 && !monsters.some(m => m.type === 'boss')) {
+      // Giant Emperor Grapefruit Boss
       type = 'boss';
-      size = 54;
-      hp = 3 + Math.min(3, Math.floor(wave / 2));
-      speed = 1.1 + (wave * 0.08);
-      color = '#ff9f1a';
+      size = 64;
+      hp = 8 + (wave * 2);
+      speed = 0.9;
+      color = '#9d00ff';
+      addFloatingText('⚠️ GIANT POMELO BOSS! ⚠️', canvas.width / 2, 80, '#ff007f');
     }
 
+    const x = Math.random() * (canvas.width - size - 20) + 10;
     monsters.push({
       type,
-      x: Math.max(10, Math.min(canvas.width - size - 10, Math.random() * (canvas.width - size))),
+      x,
       y: -size - 10,
       width: size,
       height: size,
-      speed,
       hp,
       maxHp: hp,
+      speed,
       color,
       wobble: Math.random() * Math.PI * 2,
-      wobbleSpeed: 0.05 + Math.random() * 0.04
+      wobbleSpeed: 0.04 + Math.random() * 0.04
     });
   }
 
-  // Spawn Power-up
-  function spawnPowerup(x, y, forcedType = null) {
+  // Spawn Power-up Capsule
+  function spawnPowerup(x, y, forceType = null) {
     const types = ['triple', 'rapid', 'shield', 'heart', 'bomb'];
-    const pType = forcedType || types[Math.floor(Math.random() * types.length)];
+    const type = forceType || types[Math.floor(Math.random() * types.length)];
     powerups.push({
-      type: pType,
-      x: x,
-      y: y,
-      width: 24,
-      height: 24,
-      speed: 1.8,
+      x,
+      y,
+      type,
+      width: 26,
+      height: 26,
+      vy: 1.8,
       wobble: 0
     });
   }
 
-  // Particle Effects
-  function createExplosion(x, y, color, count = 16) {
-    for (let i = 0; i < count; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const speed = Math.random() * 4.5 + 1.5;
+  // Particle Explosions (Capped for mobile memory stability)
+  function createExplosion(x, y, color, count = 12) {
+    const actualCount = Math.min(count, 16);
+    if (particles.length > 80) {
+      particles.splice(0, actualCount);
+    }
+    for (let i = 0; i < actualCount; i++) {
+      const angle = (Math.PI * 2 / actualCount) * i + Math.random() * 0.5;
+      const speed = Math.random() * 4 + 1.5;
       particles.push({
         x,
         y,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
-        size: Math.random() * 4 + 2,
-        color: color || '#ff9f1a',
+        color,
+        size: Math.random() * 3 + 2,
         alpha: 1,
-        decay: Math.random() * 0.03 + 0.02
+        decay: Math.random() * 0.04 + 0.02
       });
     }
   }
 
+  // Floating Text (Score, power-ups, combo feedback)
   function addFloatingText(text, x, y, color = '#ffe600') {
+    if (floatingTexts.length > 8) floatingTexts.shift();
     floatingTexts.push({
       text,
       x,
       y,
       color,
       alpha: 1,
-      vy: -1.2,
-      life: 50
+      vy: -1.2
     });
   }
 
-  // Reset / Start Game
-  function resetGame() {
-    score = 0;
-    lives = 3;
-    wave = 1;
-    monstersDefeated = 0;
-    combo = 0;
-    comboTimer = 0;
-    gameOver = false;
-    isPaused = false;
-    screenShake = 0;
-
-    rabbit.x = canvas.width / 2 - 20;
-    rabbit.y = canvas.height - 85;
-    rabbit.invulnerableTimer = 0;
-    rabbit.shield = false;
-    rabbit.rapidFireTimer = 0;
-    rabbit.tripleShotTimer = 0;
-
-    bullets = [];
-    monsters = [];
-    powerups = [];
-    particles = [];
-    floatingTexts = [];
-    monsterSpawnTimer = 0;
-
-    startOverlay.classList.add('hidden');
-    pauseOverlay.classList.add('hidden');
-    gameOverOverlay.classList.add('hidden');
-    pauseIcon.className = 'fa-solid fa-pause';
-
-    gameStarted = true;
-    initAudio();
-    playSound('powerup');
-  }
-
-  // Toggle Pause
-  function togglePause() {
-    if (!gameStarted || gameOver) return;
-    isPaused = !isPaused;
-    if (isPaused) {
-      pauseOverlay.classList.remove('hidden');
-      pauseIcon.className = 'fa-solid fa-play';
-    } else {
-      pauseOverlay.classList.add('hidden');
-      pauseIcon.className = 'fa-solid fa-pause';
-      initAudio();
-    }
-  }
-
   // Trigger Moon Bomb
-  function triggerBomb() {
+  function useMoonBomb() {
+    if (bombsCount <= 0 && rabbit.bombTimer <= 0) return;
+    if (bombsCount > 0) bombsCount--;
+    triggerHaptic(60);
     playSound('bomb');
-    screenShake = 18;
-    addFloatingText('💥 MOON BOMB BLAST! 💥', canvas.width / 2, canvas.height / 2, '#00f3ff');
-    for (let i = monsters.length - 1; i >= 0; i--) {
+    screenShake = 16;
+    addFloatingText('💥 MOON BOMB DETONATED! 💥', canvas.width / 2, canvas.height / 2, '#ff4757');
+
+    for (let i = 0; i < monsters.length; i++) {
       const m = monsters[i];
-      createExplosion(m.x + m.width / 2, m.y + m.height / 2, m.color, 14);
+      createExplosion(m.x + m.width / 2, m.y + m.height / 2, m.color, 12);
       score += m.type === 'boss' ? 50 : 10;
       monstersDefeated++;
     }
@@ -802,108 +968,70 @@
     rabbit.lastShot = now;
     rabbit.poundingAnim = 10;
     playSound('shoot');
+    triggerHaptic(12);
 
     const centerX = rabbit.x + rabbit.width / 2;
     const topY = rabbit.y - 5;
 
     if (rabbit.tripleShotTimer > 0) {
-      // Center
       bullets.push({ x: centerX - 4, y: topY, vx: 0, vy: -9, width: 8, height: 12 });
-      // Left angled
       bullets.push({ x: centerX - 8, y: topY, vx: -2.5, vy: -8.5, width: 8, height: 12 });
-      // Right angled
       bullets.push({ x: centerX, y: topY, vx: 2.5, vy: -8.5, width: 8, height: 12 });
     } else {
       bullets.push({ x: centerX - 4, y: topY, vx: 0, vy: -9, width: 8, height: 12 });
     }
   }
 
-  // Event Listeners for Keyboard & Controls
-  window.addEventListener('keydown', e => {
-    if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ', 'Spacebar'].includes(e.key)) {
-      e.preventDefault();
-    }
-    keys[e.key] = true;
-
-    if (e.key === 'p' || e.key === 'P') {
-      togglePause();
-    }
-
-    if ((e.key === 'r' || e.key === 'R') && (gameOver || isPaused)) {
-      resetGame();
-    }
-
-    if (e.key === ' ' && gameOver) {
-      resetGame();
-    }
-  });
-
-  window.addEventListener('keyup', e => {
-    keys[e.key] = false;
-  });
-
-  // Mouse / Touch Controls on Canvas
-  let isPointerDown = false;
-
-  canvas.addEventListener('pointerdown', e => {
+  // Reset & Start Game
+  function resetGame() {
     initAudio();
-    if (!gameStarted) {
-      resetGame();
-      return;
-    }
-    if (gameOver) {
-      resetGame();
-      return;
-    }
+    lockPortraitOrientation();
+    score = 0;
+    lives = 3;
+    wave = 1;
+    monstersDefeated = 0;
+    combo = 0;
+    comboTimer = 0;
+    bombsCount = 1;
+    bullets = [];
+    monsters = [];
+    powerups = [];
+    particles = [];
+    floatingTexts = [];
+    monsterSpawnTimer = 0;
+    rabbit.x = canvas.width / 2 - rabbit.width / 2;
+    rabbit.invulnerableTimer = 60;
+    rabbit.shield = false;
+    rabbit.rapidFireTimer = 0;
+    rabbit.tripleShotTimer = 0;
+    gameStarted = true;
+    isPaused = false;
+    gameOver = false;
+
+    startOverlay.classList.add('hidden');
+    pauseOverlay.classList.add('hidden');
+    gameOverOverlay.classList.add('hidden');
+    playSound('powerup');
+  }
+
+  // Toggle Pause
+  function togglePause() {
+    if (!gameStarted || gameOver) return;
+    initAudio();
+    isPaused = !isPaused;
     if (isPaused) {
-      togglePause();
-      return;
+      pauseOverlay.classList.remove('hidden');
+      pauseIcon.className = 'fa-solid fa-play';
+    } else {
+      pauseOverlay.classList.add('hidden');
+      pauseIcon.className = 'fa-solid fa-pause';
     }
-    isPointerDown = true;
-    fireBullet();
-  });
-
-  canvas.addEventListener('pointermove', e => {
-    if (!gameStarted || isPaused || gameOver) return;
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const mouseX = (e.clientX - rect.left) * scaleX;
-    rabbit.x = Math.max(0, Math.min(canvas.width - rabbit.width, mouseX - rabbit.width / 2));
-  });
-
-  window.addEventListener('pointerup', () => { isPointerDown = false; });
-  window.addEventListener('pointercancel', () => { isPointerDown = false; });
-
-  // Mobile Virtual Buttons
-  if (btnLeft) {
-    btnLeft.addEventListener('touchstart', e => { e.preventDefault(); keys['ArrowLeft'] = true; });
-    btnLeft.addEventListener('touchend', e => { e.preventDefault(); keys['ArrowLeft'] = false; });
   }
-  if (btnRight) {
-    btnRight.addEventListener('touchstart', e => { e.preventDefault(); keys['ArrowRight'] = true; });
-    btnRight.addEventListener('touchend', e => { e.preventDefault(); keys['ArrowRight'] = false; });
-  }
-  if (btnShoot) {
-    btnShoot.addEventListener('touchstart', e => {
-      e.preventDefault();
-      initAudio();
-      if (!gameStarted || gameOver) { resetGame(); return; }
-      fireBullet();
-      keys[' '] = true;
-    });
-    btnShoot.addEventListener('touchend', e => { e.preventDefault(); keys[' '] = false; });
-  }
-
-  // Button Click Handlers
-  startGameBtn.addEventListener('click', () => { resetGame(); });
-  resumeGameBtn.addEventListener('click', () => { togglePause(); });
-  restartBtn.addEventListener('click', () => { resetGame(); });
-  restartFromPauseBtn.addEventListener('click', () => { resetGame(); });
-  pauseToggle.addEventListener('click', () => { togglePause(); });
 
   // End Game
   function triggerGameOver() {
     gameOver = true;
+    triggerHaptic(100);
     playSound('gameover');
 
     if (score > highScore) {
@@ -919,7 +1047,219 @@
     gameOverOverlay.classList.remove('hidden');
   }
 
-  // Update Logic
+  // -------------------------------------------------------------
+  // Keyboard Event Listeners
+  // -------------------------------------------------------------
+  window.addEventListener('keydown', e => {
+    if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ', 'Spacebar'].includes(e.key)) {
+      e.preventDefault();
+    }
+    keys[e.key] = true;
+
+    if (e.key === 'p' || e.key === 'P') togglePause();
+    if (e.key === 'b' || e.key === 'B') useMoonBomb();
+    if ((e.key === 'r' || e.key === 'R') && (gameOver || isPaused)) resetGame();
+    if (e.key === ' ' && gameOver) resetGame();
+  });
+
+  window.addEventListener('keyup', e => {
+    keys[e.key] = false;
+  });
+
+  // -------------------------------------------------------------
+  // Touch Event Listeners (Dedicated for Mobile / Tablets)
+  // -------------------------------------------------------------
+  // Big On-Screen Left/Right buttons
+  function bindTouchButton(el, onDown, onUp) {
+    if (!el) return;
+
+    el.addEventListener('touchstart', e => {
+      e.preventDefault();
+      initAudio();
+      el.classList.add('active');
+      triggerHaptic(15);
+      onDown();
+    }, { passive: false });
+
+    el.addEventListener('touchend', e => {
+      e.preventDefault();
+      el.classList.remove('active');
+      onUp();
+    }, { passive: false });
+
+    el.addEventListener('touchcancel', () => {
+      el.classList.remove('active');
+      onUp();
+    });
+
+    // Fallback mouse clicks for desktop testing
+    el.addEventListener('mousedown', e => {
+      e.preventDefault();
+      initAudio();
+      el.classList.add('active');
+      onDown();
+    });
+
+    el.addEventListener('mouseup', () => {
+      el.classList.remove('active');
+      onUp();
+    });
+
+    el.addEventListener('mouseleave', () => {
+      el.classList.remove('active');
+      onUp();
+    });
+  }
+
+  bindTouchButton(btnLeft, () => { keys['ArrowLeft'] = true; }, () => { keys['ArrowLeft'] = false; });
+  bindTouchButton(btnRight, () => { keys['ArrowRight'] = true; }, () => { keys['ArrowRight'] = false; });
+  bindTouchButton(btnShoot, () => {
+    if (!gameStarted || gameOver) { resetGame(); return; }
+    isShootingHeld = true;
+    fireBullet();
+  }, () => {
+    isShootingHeld = false;
+  });
+  bindTouchButton(btnBomb, () => {
+    if (!gameStarted || gameOver) { resetGame(); return; }
+    useMoonBomb();
+  }, () => {});
+
+  // Canvas Direct Touch & Virtual Floating Joystick
+  function getCanvasTouchCoords(touch) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    return {
+      x: (touch.clientX - rect.left) * scaleX,
+      y: (touch.clientY - rect.top) * scaleY
+    };
+  }
+
+  canvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    initAudio();
+    lockPortraitOrientation();
+
+    if (!gameStarted || gameOver) {
+      resetGame();
+      return;
+    }
+    if (isPaused) {
+      togglePause();
+      return;
+    }
+
+    const touch = e.changedTouches[0];
+    const coords = getCanvasTouchCoords(touch);
+
+    // If touching left side of screen, activate virtual joystick
+    if (coords.x < canvas.width * 0.45 && !joystick.active) {
+      joystick.active = true;
+      joystick.touchId = touch.identifier;
+      joystick.startX = coords.x;
+      joystick.startY = coords.y;
+      joystick.currentX = coords.x;
+      joystick.currentY = coords.y;
+      joystick.dx = 0;
+      joystick.dy = 0;
+    } else {
+      // Direct drag & fire mode
+      touchDrag.active = true;
+      touchDrag.touchId = touch.identifier;
+      touchDrag.lastX = coords.x;
+      rabbit.x = Math.max(0, Math.min(canvas.width - rabbit.width, coords.x - rabbit.width / 2));
+      isShootingHeld = true;
+      fireBullet();
+    }
+  }, { passive: false });
+
+  canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (!gameStarted || isPaused || gameOver) return;
+
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      const touch = e.changedTouches[i];
+      const coords = getCanvasTouchCoords(touch);
+
+      if (joystick.active && touch.identifier === joystick.touchId) {
+        let deltaX = coords.x - joystick.startX;
+        let deltaY = coords.y - joystick.startY;
+        const dist = Math.hypot(deltaX, deltaY);
+
+        if (dist > joystick.maxRadius) {
+          deltaX = (deltaX / dist) * joystick.maxRadius;
+          deltaY = (deltaY / dist) * joystick.maxRadius;
+        }
+
+        joystick.currentX = joystick.startX + deltaX;
+        joystick.currentY = joystick.startY + deltaY;
+        joystick.dx = deltaX / joystick.maxRadius;
+        joystick.dy = deltaY / joystick.maxRadius;
+      } else if (touchDrag.active && touch.identifier === touchDrag.touchId) {
+        rabbit.x = Math.max(0, Math.min(canvas.width - rabbit.width, coords.x - rabbit.width / 2));
+      }
+    }
+  }, { passive: false });
+
+  function handleTouchEnd(e) {
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      const touch = e.changedTouches[i];
+      if (joystick.active && touch.identifier === joystick.touchId) {
+        joystick.active = false;
+        joystick.touchId = null;
+        joystick.dx = 0;
+        joystick.dy = 0;
+      }
+      if (touchDrag.active && touch.identifier === touchDrag.touchId) {
+        touchDrag.active = false;
+        touchDrag.touchId = null;
+        isShootingHeld = false;
+      }
+    }
+  }
+
+  canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
+  canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+
+  // Mouse fallback on Canvas
+  let isMouseDown = false;
+  canvas.addEventListener('mousedown', e => {
+    initAudio();
+    if (!gameStarted || gameOver) { resetGame(); return; }
+    if (isPaused) { togglePause(); return; }
+    isMouseDown = true;
+    isShootingHeld = true;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const mouseX = (e.clientX - rect.left) * scaleX;
+    rabbit.x = Math.max(0, Math.min(canvas.width - rabbit.width, mouseX - rabbit.width / 2));
+    fireBullet();
+  });
+
+  canvas.addEventListener('mousemove', e => {
+    if (!gameStarted || isPaused || gameOver || !isMouseDown) return;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const mouseX = (e.clientX - rect.left) * scaleX;
+    rabbit.x = Math.max(0, Math.min(canvas.width - rabbit.width, mouseX - rabbit.width / 2));
+  });
+
+  window.addEventListener('mouseup', () => {
+    isMouseDown = false;
+    isShootingHeld = false;
+  });
+
+  // Action Buttons Click Handlers
+  startGameBtn.addEventListener('click', resetGame);
+  resumeGameBtn.addEventListener('click', togglePause);
+  restartBtn.addEventListener('click', resetGame);
+  restartFromPauseBtn.addEventListener('click', resetGame);
+  pauseToggle.addEventListener('click', togglePause);
+
+  // -------------------------------------------------------------
+  // Game Logic Updates
+  // -------------------------------------------------------------
   function update() {
     if (!gameStarted || isPaused || gameOver) return;
 
@@ -938,7 +1278,7 @@
       if (comboTimer === 0) combo = 0;
     }
 
-    // Move Rabbit
+    // Move Rabbit with Keys
     if ((keys['ArrowLeft'] || keys['a'] || keys['A']) && rabbit.x > 0) {
       rabbit.x -= rabbit.speed;
     }
@@ -946,8 +1286,14 @@
       rabbit.x += rabbit.speed;
     }
 
-    // Auto/Continuous fire when space or pointer held
-    if (keys[' '] || keys['w'] || keys['W'] || keys['ArrowUp'] || isPointerDown) {
+    // Move Rabbit with Virtual Joystick
+    if (joystick.active && Math.abs(joystick.dx) > 0.1) {
+      rabbit.x += joystick.dx * rabbit.speed * 1.1;
+      rabbit.x = Math.max(0, Math.min(canvas.width - rabbit.width, rabbit.x));
+    }
+
+    // Auto / Continuous Fire
+    if (keys[' '] || keys['w'] || keys['W'] || keys['ArrowUp'] || isShootingHeld) {
       fireBullet();
     }
 
@@ -956,8 +1302,8 @@
     if (newWave > wave) {
       wave = newWave;
       playSound('wave');
+      triggerHaptic(40);
       addFloatingText(`🌟 WAVE ${wave} REACHED! 🌟`, canvas.width / 2, canvas.height / 3, '#00f3ff');
-      // Drop bonus heart or bomb on wave up
       spawnPowerup(canvas.width / 2 - 12, 50, Math.random() > 0.5 ? 'heart' : 'bomb');
     }
 
@@ -973,7 +1319,7 @@
 
     // Spawn Monsters
     monsterSpawnTimer++;
-    const currentSpawnInterval = Math.max(22, 58 - wave * 4);
+    const currentSpawnInterval = Math.max(20, 56 - wave * 4);
     if (monsterSpawnTimer >= currentSpawnInterval) {
       spawnMonster();
       monsterSpawnTimer = 0;
@@ -1004,12 +1350,14 @@
         if (rabbit.shield) {
           rabbit.shield = false;
           playSound('hit');
+          triggerHaptic(25);
           addFloatingText('SHIELD BROKEN!', rabbit.x, rabbit.y - 15, '#00f3ff');
           rabbit.invulnerableTimer = 40;
         } else if (rabbit.invulnerableTimer === 0) {
           lives--;
           rabbit.invulnerableTimer = 60;
           screenShake = 12;
+          triggerHaptic(50);
           playSound('damage');
           if (lives <= 0) {
             triggerGameOver();
@@ -1030,6 +1378,7 @@
         } else {
           lives--;
           screenShake = 8;
+          triggerHaptic(30);
           playSound('damage');
           if (lives <= 0) {
             triggerGameOver();
@@ -1056,13 +1405,14 @@
 
             if (m.hp <= 0) {
               monsters.splice(mIdx, 1);
-              createExplosion(m.x + m.width / 2, m.y + m.height / 2, m.color, 18);
+              createExplosion(m.x + m.width / 2, m.y + m.height / 2, m.color, 16);
               playSound('explosion');
+              triggerHaptic(20);
               monstersDefeated++;
 
               // Combo handling
               combo++;
-              comboTimer = 75; // ~1.25s to keep combo
+              comboTimer = 75;
               const multiplier = Math.min(5, Math.max(1, combo));
               const basePts = m.type === 'boss' ? 50 : (m.type === 'swift' ? 25 : 10);
               const earned = basePts * multiplier;
@@ -1074,7 +1424,7 @@
                 addFloatingText(`+${earned}`, m.x, m.y, '#fff');
               }
 
-              // Split ruby grapefruit into 2 smaller pomelos
+              // Split ruby grapefruit into smaller swift monsters
               if (m.type === 'ruby') {
                 monsters.push({
                   type: 'swift',
@@ -1105,10 +1455,12 @@
               }
 
               // Power-up Drop Chance
-              const dropChance = m.type === 'boss' ? 1.0 : (Math.random() < 0.14);
+              const dropChance = m.type === 'boss' ? 1.0 : (Math.random() < 0.15);
               if (dropChance) {
                 spawnPowerup(m.x + m.width / 2 - 12, m.y + m.height / 2 - 12);
               }
+
+              monsterRemoved = true;
               break;
             }
           }
@@ -1119,36 +1471,37 @@
     // Update Power-ups
     for (let pIdx = powerups.length - 1; pIdx >= 0; pIdx--) {
       const p = powerups[pIdx];
-      p.y += p.speed;
-      p.wobble += 0.06;
-      p.x += Math.sin(p.wobble) * 1.2;
+      p.y += p.vy;
+      p.wobble += 0.05;
 
-      // Check collection by Rabbit
+      // Collect power-up
       if (
-        p.x < rabbit.x + rabbit.width &&
-        p.x + p.width > rabbit.x &&
-        p.y < rabbit.y + rabbit.height &&
-        p.y + p.height > rabbit.y
+        p.x + p.width >= rabbit.x &&
+        p.x <= rabbit.x + rabbit.width &&
+        p.y + p.height >= rabbit.y &&
+        p.y <= rabbit.y + rabbit.height
       ) {
         powerups.splice(pIdx, 1);
         playSound('powerup');
-        createExplosion(p.x + p.width / 2, p.y + p.height / 2, '#00f3ff', 12);
+        triggerHaptic(30);
 
         if (p.type === 'triple') {
-          rabbit.tripleShotTimer = 550; // ~9s
-          addFloatingText('🌟 TRIPLE SHOT ACTIVE!', rabbit.x - 20, rabbit.y - 20, '#00f3ff');
+          rabbit.tripleShotTimer = 400; // ~6.6s
+          addFloatingText('TRIPLE SHOT!', rabbit.x, rabbit.y - 20, '#00f3ff');
         } else if (p.type === 'rapid') {
-          rabbit.rapidFireTimer = 450; // ~7.5s
-          addFloatingText('⚡ RAPID FIRE ACTIVE!', rabbit.x - 20, rabbit.y - 20, '#ffe600');
+          rabbit.rapidFireTimer = 400;
+          addFloatingText('RAPID FIRE!', rabbit.x, rabbit.y - 20, '#ffe600');
         } else if (p.type === 'shield') {
           rabbit.shield = true;
-          addFloatingText('🛡️ JADE SHIELD ENGAGED!', rabbit.x - 25, rabbit.y - 20, '#00f3ff');
+          addFloatingText('JADE SHIELD ACTIVE!', rabbit.x, rabbit.y - 20, '#00f3ff');
         } else if (p.type === 'heart') {
           lives = Math.min(5, lives + 1);
-          addFloatingText('💖 +1 LIFE!', rabbit.x, rabbit.y - 20, '#ff007f');
+          addFloatingText('+1 EXTRA HEART!', rabbit.x, rabbit.y - 20, '#ff007f');
         } else if (p.type === 'bomb') {
-          triggerBomb();
+          bombsCount++;
+          addFloatingText('+1 MOON BOMB!', rabbit.x, rabbit.y - 20, '#ff4757');
         }
+        score += 15;
         continue;
       }
 
@@ -1172,14 +1525,13 @@
     for (let i = floatingTexts.length - 1; i >= 0; i--) {
       const ft = floatingTexts[i];
       ft.y += ft.vy;
-      ft.life--;
-      ft.alpha = Math.max(0, ft.life / 50);
-      if (ft.life <= 0) {
+      ft.alpha -= 0.02;
+      if (ft.alpha <= 0) {
         floatingTexts.splice(i, 1);
       }
     }
 
-    // Update Background Environment
+    // Update Environment
     stars.forEach(s => {
       s.y += s.speed;
       s.twinkle += 0.05;
@@ -1195,7 +1547,9 @@
     });
   }
 
-  // Draw Functions
+  // -------------------------------------------------------------
+  // Rendering / Draw Logic
+  // -------------------------------------------------------------
   function draw() {
     ctx.save();
 
@@ -1235,7 +1589,7 @@
     ctx.arc(moonCenterX, moonCenterY, moonRadius, 0, Math.PI * 2);
     ctx.fill();
 
-    // Moon Craters (Retro Pixel / Soft Style)
+    // Moon Craters
     ctx.fillStyle = 'rgba(215, 175, 135, 0.4)';
     ctx.beginPath();
     ctx.arc(moonCenterX - 45, moonCenterY + 20, 22, 0, Math.PI * 2);
@@ -1244,7 +1598,7 @@
     ctx.arc(moonCenterX - 70, moonCenterY - 25, 14, 0, Math.PI * 2);
     ctx.fill();
 
-    // Night Clouds Passing
+    // Night Clouds
     ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
     clouds.forEach(c => {
       ctx.beginPath();
@@ -1281,7 +1635,6 @@
       else if (p.type === 'heart') { pColor = '#ff007f'; icon = '♥'; }
       else if (p.type === 'bomb') { pColor = '#ff4757'; icon = '💣'; }
 
-      // Capsule Background
       ctx.fillStyle = pColor;
       ctx.beginPath();
       ctx.arc(0, 0, 13, 0, Math.PI * 2);
@@ -1300,7 +1653,7 @@
       ctx.restore();
     });
 
-    // Draw Bullets (Glowing Mooncake Stars)
+    // Draw Bullets (Mooncake Star Projectiles)
     bullets.forEach(b => {
       ctx.fillStyle = '#ffe600';
       ctx.fillRect(b.x, b.y, b.width, b.height);
@@ -1314,7 +1667,6 @@
       const centerY = m.y + m.height / 2;
       const radius = m.width / 2;
 
-      // Body
       ctx.fillStyle = m.color;
       ctx.beginPath();
       ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
@@ -1326,14 +1678,14 @@
       ctx.fillStyle = '#27ae60';
       ctx.fillRect(centerX + 2, m.y - 7, 4, 4);
 
-      // Cheek blush for fun contrast
+      // Cheek blush
       ctx.fillStyle = 'rgba(255, 0, 127, 0.35)';
       ctx.beginPath();
       ctx.arc(centerX - radius * 0.5, centerY + radius * 0.2, radius * 0.2, 0, Math.PI * 2);
       ctx.arc(centerX + radius * 0.5, centerY + radius * 0.2, radius * 0.2, 0, Math.PI * 2);
       ctx.fill();
 
-      // Mischievous Eyes
+      // Eyes
       const eyeSize = Math.max(6, m.width * 0.22);
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(centerX - radius * 0.65, centerY - radius * 0.35, eyeSize, eyeSize);
@@ -1358,7 +1710,7 @@
       ctx.lineTo(centerX + radius * 0.15, centerY - radius * 0.25);
       ctx.stroke();
 
-      // Mischievous Tooth & Mouth
+      // Mouth
       ctx.fillStyle = '#1e293b';
       ctx.beginPath();
       ctx.arc(centerX, centerY + radius * 0.35, radius * 0.35, 0, Math.PI);
@@ -1383,7 +1735,6 @@
     const isFlashing = rabbit.invulnerableTimer > 0 && Math.floor(rabbit.invulnerableTimer / 4) % 2 === 0;
 
     if (!isFlashing) {
-      // Power-up Aura
       if (rabbit.shield) {
         ctx.strokeStyle = '#00f3ff';
         ctx.lineWidth = 3;
@@ -1399,7 +1750,7 @@
         ctx.fill();
       }
 
-      // Rabbit Ears
+      // Ears
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(rabbit.x + 10, rabbit.y - 14, 7, 20);
       ctx.fillRect(rabbit.x + 25, rabbit.y - 14, 7, 20);
@@ -1413,7 +1764,7 @@
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(rabbit.x + 6, rabbit.y + 4, 30, 20);
 
-      // Cute Eyes
+      // Eyes
       ctx.fillStyle = '#e74c3c';
       ctx.fillRect(rabbit.x + 10, rabbit.y + 10, 5, 5);
       ctx.fillRect(rabbit.x + 27, rabbit.y + 10, 5, 5);
@@ -1423,19 +1774,41 @@
       ctx.fillRect(rabbit.x + 7, rabbit.y + 16, 5, 4);
       ctx.fillRect(rabbit.x + 30, rabbit.y + 16, 5, 4);
 
-      // Body & Scarf
+      // Ribbon/Scarf
       ctx.fillStyle = '#00f3ff';
-      ctx.fillRect(rabbit.x + 8, rabbit.y + 24, 26, 6); // Festive cyan ribbon/scarf
+      ctx.fillRect(rabbit.x + 8, rabbit.y + 24, 26, 6);
 
+      // Body
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(rabbit.x + 9, rabbit.y + 30, 24, 22);
 
-      // Weapon: Mortar & Pestle (animates when firing)
+      // Mortar & Pestle
       const animOffset = rabbit.poundingAnim > 0 ? -4 : 0;
       ctx.fillStyle = '#ffe600';
       ctx.fillRect(rabbit.x + rabbit.width / 2 - 4, rabbit.y - 4 + animOffset, 8, 12);
       ctx.fillStyle = '#ff9f1a';
       ctx.fillRect(rabbit.x + rabbit.width / 2 - 6, rabbit.y + 4 + animOffset, 12, 5);
+    }
+
+    // Draw Virtual Floating Joystick on screen if active
+    if (joystick.active) {
+      // Outer Ring Base
+      ctx.strokeStyle = 'rgba(0, 243, 255, 0.45)';
+      ctx.lineWidth = 3;
+      ctx.fillStyle = 'rgba(18, 18, 37, 0.35)';
+      ctx.beginPath();
+      ctx.arc(joystick.startX, joystick.startY, joystick.maxRadius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Inner Glowing Knob
+      ctx.fillStyle = '#00f3ff';
+      ctx.shadowColor = '#00f3ff';
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.arc(joystick.currentX, joystick.currentY, 18, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
     }
 
     // Draw Floating Text Labels
@@ -1448,26 +1821,31 @@
     });
     ctx.globalAlpha = 1;
 
-    // HUD Display (Retro Arcade Style)
+    // Minimal Clean Mobile HUD Display
     ctx.fillStyle = '#ffe600';
     ctx.font = '10px "Press Start 2P"';
     ctx.textAlign = 'left';
-    ctx.fillText(`SCORE: ${score}`, 14, 25);
-    ctx.fillText(`WAVE: ${wave}`, 14, 45);
+    ctx.fillText(`SCORE: ${score}`, 14, 24);
+    ctx.fillText(`WAVE: ${wave}`, 14, 44);
 
     // High Score
     ctx.fillStyle = '#00f3ff';
     ctx.textAlign = 'center';
-    ctx.fillText(`HIGH: ${Math.max(score, highScore)}`, canvas.width / 2, 25);
+    ctx.fillText(`HIGH: ${Math.max(score, highScore)}`, canvas.width / 2, 24);
 
     // Lives
     ctx.textAlign = 'right';
     const hearts = '♥ '.repeat(Math.max(0, lives)).trim();
     ctx.fillStyle = '#ff007f';
-    ctx.fillText(`LIVES: ${hearts}`, canvas.width - 14, 25);
+    ctx.fillText(`LIVES: ${hearts}`, canvas.width - 14, 24);
 
-    // Active Power-up indicators on HUD
-    let hudY = 45;
+    // Power-up & Bomb Status on HUD
+    let hudY = 44;
+    if (bombsCount > 0) {
+      ctx.fillStyle = '#ff4757';
+      ctx.fillText(`BOMBS: ${bombsCount}`, canvas.width - 14, hudY);
+      hudY += 16;
+    }
     if (rabbit.tripleShotTimer > 0) {
       ctx.fillStyle = '#00f3ff';
       ctx.fillText(`TRIPLE: ${Math.ceil(rabbit.tripleShotTimer / 60)}s`, canvas.width - 14, hudY);
@@ -1480,20 +1858,20 @@
     }
     if (rabbit.shield) {
       ctx.fillStyle = '#00f3ff';
-      ctx.fillText(`SHIELD ACTIVE`, canvas.width - 14, hudY);
+      ctx.fillText(`SHIELD`, canvas.width - 14, hudY);
     }
 
     // Combo multiplier bar
     if (combo > 1 && comboTimer > 0) {
       ctx.fillStyle = '#ffe600';
       ctx.textAlign = 'left';
-      ctx.fillText(`COMBO x${Math.min(5, combo)}!`, 14, 65);
+      ctx.fillText(`COMBO x${Math.min(5, combo)}!`, 14, 64);
     }
 
     ctx.restore();
   }
 
-  // Main Game Loop
+  // Main Game Loop (Steady 60 FPS)
   function gameLoop() {
     update();
     draw();
