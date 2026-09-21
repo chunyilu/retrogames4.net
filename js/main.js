@@ -65,25 +65,25 @@ function launchDemo(title) {
 function startCyberMazeGame() {
     playRetroSound('click');
 
+    const arcadeSection = document.getElementById('arcade');
+    if (arcadeSection) {
+        arcadeSection.scrollIntoView({ behavior: 'smooth' });
+    }
+
     // Pause Breakout game and use its overlay
-    endGame(false); // This stops Breakout loop and shows the overlay
+    if (typeof endGame === 'function') {
+        endGame(false); // This stops Breakout loop and shows the overlay
+    }
 
     // Get elements from the existing overlay
     const canvas = document.getElementById('arcadeCanvas');
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     const overlay = document.getElementById('gameOverlay');
-    const overlayTitle = document.getElementById('overlayTitle');
-    const overlaySub = document.getElementById('overlaySub');
+    const scoreEl = document.getElementById('gameScore');
 
     // Store original overlay content for restoration
-    const originalTitle = overlayTitle.textContent;
-    const originalSub = overlaySub.textContent;
-    const originalButtonHtml = overlay.innerHTML; // Save full original state
-
-    // Update overlay for Cyber Maze
-    overlayTitle.textContent = 'READY PLAYER ONE?';
-    overlaySub.textContent = 'Use arrow keys to navigate the maze and reach the green goal!';
-    // We'll replace the button content below
+    const originalOverlayHtml = overlay ? overlay.innerHTML : '';
 
     // Cyber Maze game state
     const maze = [
@@ -106,24 +106,25 @@ function startCyberMazeGame() {
     // Set goal
     maze[13][13] = 2;
 
-    let tileSize;
+    let tileSize = 20;
+    let offsetX = 0;
+    let offsetY = 0;
     let player = { x: 1, y: 1 };
     let gameActive = false;
     let animationFrameId;
     const keys = {};
+    let lastMoveTime = 0;
+    const moveCooldown = 130; // ms between continuous steps
 
-    // Handle keyboard input
-    const handleKeyDown = (e) => { keys[e.key] = true; };
-    const handleKeyUp = (e) => { keys[e.key] = false; };
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-
-    // Set canvas size and calculate tile size
+    // Set canvas size and calculate tile size with centering
     function resizeCanvas() {
         const container = canvas.parentElement;
+        if (!container) return;
         canvas.width = container.clientWidth;
         canvas.height = container.clientHeight;
-        tileSize = Math.min(canvas.width / maze[0].length, canvas.height / maze.length);
+        tileSize = Math.floor(Math.min((canvas.width - 20) / maze[0].length, (canvas.height - 20) / maze.length));
+        offsetX = Math.floor((canvas.width - maze[0].length * tileSize) / 2);
+        offsetY = Math.floor((canvas.height - maze.length * tileSize) / 2);
     }
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
@@ -132,17 +133,22 @@ function startCyberMazeGame() {
     function drawMaze() {
         for (let row = 0; row < maze.length; row++) {
             for (let col = 0; col < maze[row].length; col++) {
-                const x = col * tileSize;
-                const y = row * tileSize;
+                const x = offsetX + col * tileSize;
+                const y = offsetY + row * tileSize;
 
                 if (maze[row][col] === 0) {
                     // Wall
                     ctx.fillStyle = '#121225';
                     ctx.fillRect(x, y, tileSize, tileSize);
+                    ctx.strokeStyle = '#2a2a4a';
+                    ctx.strokeRect(x, y, tileSize, tileSize);
                 } else if (maze[row][col] === 2) {
                     // Goal
                     ctx.fillStyle = '#00ff00';
-                    ctx.fillRect(x, y, tileSize, tileSize);
+                    ctx.shadowColor = '#00ff00';
+                    ctx.shadowBlur = 10;
+                    ctx.fillRect(x + 2, y + 2, tileSize - 4, tileSize - 4);
+                    ctx.shadowBlur = 0;
                 } else {
                     // Path
                     ctx.fillStyle = '#0a0a12';
@@ -154,41 +160,91 @@ function startCyberMazeGame() {
 
     // Draw the player
     function drawPlayer() {
-        const x = player.x * tileSize;
-        const y = player.y * tileSize;
+        const x = offsetX + player.x * tileSize;
+        const y = offsetY + player.y * tileSize;
         ctx.fillStyle = '#ff007f';
-        ctx.fillRect(x, y, tileSize, tileSize);
+        ctx.shadowColor = '#ff007f';
+        ctx.shadowBlur = 12;
+        ctx.fillRect(x + 2, y + 2, tileSize - 4, tileSize - 4);
+        ctx.shadowBlur = 0;
     }
 
-    // Update player position
-    function updatePlayer() {
-        let moved = false;
-        const newX = player.x;
-        const newY = player.y;
+    // Move player
+    function movePlayer(dx, dy) {
+        if (!gameActive) return;
+        const newX = player.x + dx;
+        const newY = player.y + dy;
 
-        if (keys['ArrowUp'] && player.y > 0) {
-            newY--;
-            moved = true;
-        } else if (keys['ArrowDown'] && player.y < maze.length - 1) {
-            newY++;
-            moved = true;
-        } else if (keys['ArrowLeft'] && player.x > 0) {
-            newX--;
-            moved = true;
-        } else if (keys['ArrowRight'] && player.x < maze[0].length - 1) {
-            newX++;
-            moved = true;
+        if (newX >= 0 && newX < maze[0].length && newY >= 0 && newY < maze.length) {
+            if (maze[newY][newX] !== 0) {
+                player.x = newX;
+                player.y = newY;
+                playRetroSound('click');
+
+                // Check if reached goal
+                if (player.x === 13 && player.y === 13) {
+                    gameOver(true);
+                }
+            }
+        }
+    }
+
+    // Handle keyboard input
+    const handleKeyDown = (e) => {
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd', 'W', 'A', 'S', 'D'].includes(e.key)) {
+            e.preventDefault();
+        }
+        keys[e.key] = true;
+
+        if (gameActive) {
+            const now = Date.now();
+            if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+                movePlayer(0, -1);
+                lastMoveTime = now;
+            } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+                movePlayer(0, 1);
+                lastMoveTime = now;
+            } else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+                movePlayer(-1, 0);
+                lastMoveTime = now;
+            } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+                movePlayer(1, 0);
+                lastMoveTime = now;
+            }
+        }
+    };
+    const handleKeyUp = (e) => {
+        keys[e.key] = false;
+    };
+
+    // Touch controls
+    const btnLeft = document.getElementById('btnLeft');
+    const btnRight = document.getElementById('btnRight');
+    const handleTouchLeft = (e) => { e.preventDefault(); movePlayer(-1, 0); };
+    const handleTouchRight = (e) => { e.preventDefault(); movePlayer(1, 0); };
+
+    // Update player position continuously when holding keys
+    function updatePlayer() {
+        if (!gameActive) return;
+        const now = Date.now();
+        if (now - lastMoveTime < moveCooldown) return;
+
+        let dx = 0;
+        let dy = 0;
+
+        if (keys['ArrowUp'] || keys['w'] || keys['W']) {
+            dy = -1;
+        } else if (keys['ArrowDown'] || keys['s'] || keys['S']) {
+            dy = 1;
+        } else if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
+            dx = -1;
+        } else if (keys['ArrowRight'] || keys['d'] || keys['D']) {
+            dx = 1;
         }
 
-        // Check if the new position is a wall
-        if (moved && maze[newY][newX] !== 0) {
-            player.x = newX;
-            player.y = newY;
-
-            // Check if reached goal
-            if (player.x === 13 && player.y === 13) {
-                gameOver(true);
-            }
+        if (dx !== 0 || dy !== 0) {
+            movePlayer(dx, dy);
+            lastMoveTime = now;
         }
     }
 
@@ -208,8 +264,14 @@ function startCyberMazeGame() {
     // Start the game
     function startGame() {
         gameActive = true;
-        overlay.style.display = 'none';
+        if (overlay) overlay.style.display = 'none';
         resetGame();
+        resizeCanvas();
+        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('keyup', handleKeyUp);
+        if (btnLeft) btnLeft.addEventListener('touchstart', handleTouchLeft);
+        if (btnRight) btnRight.addEventListener('touchstart', handleTouchRight);
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
         gameLoop();
     }
 
@@ -217,24 +279,64 @@ function startCyberMazeGame() {
     function resetGame() {
         player.x = 1;
         player.y = 1;
+        if (scoreEl) scoreEl.innerText = '0000';
+    }
+
+    function cleanupListeners() {
+        window.removeEventListener('keydown', handleKeyDown);
+        window.removeEventListener('keyup', handleKeyUp);
+        window.removeEventListener('resize', resizeCanvas);
+        if (btnLeft) btnLeft.removeEventListener('touchstart', handleTouchLeft);
+        if (btnRight) btnRight.removeEventListener('touchstart', handleTouchRight);
     }
 
     // Game over
     function gameOver(won) {
         gameActive = false;
-        cancelAnimationFrame(animationFrameId);
-        // Remove keyboard listeners
-        window.removeEventListener('keydown', handleKeyDown);
-        window.removeEventListener('keyup', handleKeyUp);
-        overlay.style.display = 'flex';
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        cleanupListeners();
+
         const mazeScore = won ? 1000 : 100;
+        if (scoreEl) {
+            scoreEl.innerText = String(mazeScore).padStart(4, '0');
+        }
+
+        if (overlay) {
+            overlay.style.display = 'flex';
+            overlay.innerHTML = `
+                <h3 id="overlayTitle" class="font-arcade text-xl sm:text-2xl ${won ? 'text-neon-cyan' : 'text-neon-pink'}">${won ? 'YOU ESCAPED!' : 'GAME OVER'}</h3>
+                <p id="overlaySub" class="text-gray-300 text-sm max-w-md">${won ? `Congratulations! You reached the goal. Score: ${mazeScore}` : `Try again! Score: ${mazeScore}`}</p>
+                <div class="flex flex-wrap justify-center gap-3 mt-4">
+                    <button id="cyberMazePlayAgainBtn" class="font-arcade text-xs px-5 py-2.5 bg-neon-cyan text-neon-dark font-bold rounded glow-cyan hover:scale-105 transition-transform" aria-label="Play Cyber Maze Again">
+                        PLAY AGAIN
+                    </button>
+                    <button id="cyberMazeBackBreakoutBtn" class="font-arcade text-xs px-5 py-2.5 bg-neon-card text-neon-pink border border-neon-pink font-bold rounded hover:bg-neon-pink/20 transition-all" aria-label="Back to Breakout">
+                        PLAY BREAKOUT
+                    </button>
+                </div>
+            `;
+
+            const playAgainBtn = document.getElementById('cyberMazePlayAgainBtn');
+            if (playAgainBtn) {
+                playAgainBtn.onclick = () => {
+                    startCyberMazeGame();
+                };
+            }
+
+            const breakoutBtn = document.getElementById('cyberMazeBackBreakoutBtn');
+            if (breakoutBtn) {
+                breakoutBtn.onclick = () => {
+                    overlay.innerHTML = originalOverlayHtml;
+                    if (typeof window.endGame === 'function') {
+                        window.endGame(false);
+                    }
+                };
+            }
+        }
+
         if (won) {
-            overlayTitle.textContent = 'You Win!';
-            overlaySub.textContent = `Congratulations! You reached the goal. Score: ${mazeScore}`;
             playRetroSound('win');
         } else {
-            overlayTitle.textContent = 'Game Over';
-            overlaySub.textContent = `Try again! Score: ${mazeScore}`;
             playRetroSound('over');
         }
 
@@ -242,34 +344,52 @@ function startCyberMazeGame() {
             submitGameScore('cyber-maze', mazeScore, {
                 onSuccess: () => {
                     const notice = document.createElement('div');
-                    notice.className = 'text-[9px] font-arcade text-neon-cyan mt-1 animate-pulse';
-                    notice.textContent = '✓ Score recorded!';
-                    overlaySub.appendChild(notice);
+                    notice.className = 'text-[9px] font-arcade text-neon-cyan mt-2 animate-pulse';
+                    notice.textContent = '✓ Score recorded to Cyber Maze Leaderboard!';
+                    const sub = document.getElementById('overlaySub');
+                    if (sub) sub.appendChild(notice);
                 }
             });
         }
-
-        // Restore original Breakout overlay content and pause state
-        setTimeout(() => {
-            overlay.innerHTML = originalButtonHtml; // Restore original content
-            // Note: Breakout game remains paused (endGame was called initially)
-            // User can click START GAME to resume Breakout
-        }, 2000);
     }
 
-    // Replace the button in the overlay with our Cyber Maze start button
-    const startButton = document.createElement('button');
-    startButton.textContent = 'START GAME';
-    startButton.className = 'font-arcade text-xs px-6 py-3 bg-neon-cyan text-neon-dark font-bold rounded glow-cyan hover:scale-105 transition-transform';
-    startButton.setAttribute('aria-label', 'Start game');
-    startButton.onclick = startGame;
+    // Setup Cyber Maze start overlay
+    if (overlay) {
+        overlay.style.display = 'flex';
+        overlay.innerHTML = `
+            <h3 id="overlayTitle" class="font-arcade text-xl sm:text-2xl text-neon-cyan">CYBER MAZE</h3>
+            <p id="overlaySub" class="text-gray-300 text-sm max-w-md">Use Arrow keys or WASD to navigate the neon labyrinth and reach the green goal!</p>
+            <div class="flex flex-wrap justify-center gap-3 mt-4">
+                <button id="cyberMazeStartBtn" class="font-arcade text-xs px-6 py-3 bg-neon-cyan text-neon-dark font-bold rounded glow-cyan hover:scale-105 transition-transform" aria-label="Start Cyber Maze">
+                    START CYBER MAZE
+                </button>
+                <button id="cyberMazeCancelBtn" class="font-arcade text-xs px-5 py-2.5 bg-neon-card text-gray-400 border border-gray-700 font-bold rounded hover:text-white transition-all" aria-label="Cancel and back to Breakout">
+                    BACK
+                </button>
+            </div>
+        `;
 
-    // Set the overlay content
-    overlaySub.innerHTML = 'Use arrow keys to navigate the maze and reach the green goal!';
-    overlaySub.appendChild(startButton);
+        const startBtnEl = document.getElementById('cyberMazeStartBtn');
+        if (startBtnEl) {
+            startBtnEl.onclick = startGame;
+        }
 
-    // Play start sound
-    playRetroSound('click');
+        const cancelBtnEl = document.getElementById('cyberMazeCancelBtn');
+        if (cancelBtnEl) {
+            cancelBtnEl.onclick = () => {
+                cleanupListeners();
+                overlay.innerHTML = originalOverlayHtml;
+                if (typeof window.endGame === 'function') {
+                    window.endGame(false);
+                }
+            };
+        }
+    }
+
+    // Render initial maze preview on canvas behind overlay
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawMaze();
+    drawPlayer();
 }
 
 // Authentication & Score state

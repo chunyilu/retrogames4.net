@@ -27,14 +27,21 @@ const goal = { x: 13, y: 13 };
 maze[goal.y][goal.x] = 2;
 
 let tileSize;
+let offsetX = 0;
+let offsetY = 0;
 let player = { x: 1, y: 1 }; // Starting position (in tiles)
-// goal already defined above
+let lastMoveTime = 0;
+const moveCooldown = 130; // ms between continuous steps
+
 // Set canvas size to match container
 function resizeCanvas() {
     const container = document.getElementById('game-container');
+    if (!container) return;
     canvas.width = container.clientWidth;
     canvas.height = container.clientHeight;
-    tileSize = Math.min(canvas.width / maze[0].length, canvas.height / maze.length);
+    tileSize = Math.floor(Math.min((canvas.width - 20) / maze[0].length, (canvas.height - 20) / maze.length));
+    offsetX = Math.floor((canvas.width - maze[0].length * tileSize) / 2);
+    offsetY = Math.floor((canvas.height - maze.length * tileSize) / 2);
 }
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
@@ -46,17 +53,22 @@ let animationFrameId;
 function drawMaze() {
     for (let row = 0; row < maze.length; row++) {
         for (let col = 0; col < maze[row].length; col++) {
-            const x = col * tileSize;
-            const y = row * tileSize;
+            const x = offsetX + col * tileSize;
+            const y = offsetY + row * tileSize;
 
             if (maze[row][col] === 0) {
                 // Wall
                 ctx.fillStyle = '#121225';
                 ctx.fillRect(x, y, tileSize, tileSize);
+                ctx.strokeStyle = '#2a2a4a';
+                ctx.strokeRect(x, y, tileSize, tileSize);
             } else if (maze[row][col] === 2) {
                 // Goal
                 ctx.fillStyle = '#00ff00';
-                ctx.fillRect(x, y, tileSize, tileSize);
+                ctx.shadowColor = '#00ff00';
+                ctx.shadowBlur = 10;
+                ctx.fillRect(x + 2, y + 2, tileSize - 4, tileSize - 4);
+                ctx.shadowBlur = 0;
             } else {
                 // Path
                 ctx.fillStyle = '#0a0a12';
@@ -68,50 +80,85 @@ function drawMaze() {
 
 // Draw the player
 function drawPlayer() {
-    const x = player.x * tileSize;
-    const y = player.y * tileSize;
+    const x = offsetX + player.x * tileSize;
+    const y = offsetY + player.y * tileSize;
     ctx.fillStyle = '#ff007f';
-    ctx.fillRect(x, y, tileSize, tileSize);
+    ctx.shadowColor = '#ff007f';
+    ctx.shadowBlur = 12;
+    ctx.fillRect(x + 2, y + 2, tileSize - 4, tileSize - 4);
+    ctx.shadowBlur = 0;
+}
+
+// Handle movement
+function movePlayer(dx, dy) {
+    if (!gameActive) return;
+    const newX = player.x + dx;
+    const newY = player.y + dy;
+
+    if (newX >= 0 && newX < maze[0].length && newY >= 0 && newY < maze.length) {
+        if (maze[newY][newX] !== 0) {
+            player.x = newX;
+            player.y = newY;
+
+            // Check if reached goal
+            if (player.x === goal.x && player.y === goal.y) {
+                gameOver(true);
+            }
+        }
+    }
 }
 
 // Handle keyboard input
 const keys = {};
 window.addEventListener('keydown', (e) => {
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd', 'W', 'A', 'S', 'D'].includes(e.key)) {
+        e.preventDefault();
+    }
     keys[e.key] = true;
+
+    if (gameActive) {
+        const now = Date.now();
+        if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+            movePlayer(0, -1);
+            lastMoveTime = now;
+        } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+            movePlayer(0, 1);
+            lastMoveTime = now;
+        } else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+            movePlayer(-1, 0);
+            lastMoveTime = now;
+        } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+            movePlayer(1, 0);
+            lastMoveTime = now;
+        }
+    }
 });
 window.addEventListener('keyup', (e) => {
     keys[e.key] = false;
 });
 
-// Update player position
+// Update player position continuously when holding keys
 function updatePlayer() {
-    let moved = false;
-    const newX = player.x;
-    const newY = player.y;
+    if (!gameActive) return;
+    const now = Date.now();
+    if (now - lastMoveTime < moveCooldown) return;
 
-    if (keys['ArrowUp'] && player.y > 0) {
-        newY--;
-        moved = true;
-    } else if (keys['ArrowDown'] && player.y < maze.length - 1) {
-        newY++;
-        moved = true;
-    } else if (keys['ArrowLeft'] && player.x > 0) {
-        newX--;
-        moved = true;
-    } else if (keys['ArrowRight'] && player.x < maze[0].length - 1) {
-        newX++;
-        moved = true;
+    let dx = 0;
+    let dy = 0;
+
+    if (keys['ArrowUp'] || keys['w'] || keys['W']) {
+        dy = -1;
+    } else if (keys['ArrowDown'] || keys['s'] || keys['S']) {
+        dy = 1;
+    } else if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
+        dx = -1;
+    } else if (keys['ArrowRight'] || keys['d'] || keys['D']) {
+        dx = 1;
     }
 
-    // Check if the new position is a wall
-    if (moved && maze[newY][newX] !== 0) {
-        player.x = newX;
-        player.y = newY;
-
-        // Check if reached goal
-        if (player.x === goal.x && player.y === goal.y) {
-            gameOver(true);
-        }
+    if (dx !== 0 || dy !== 0) {
+        movePlayer(dx, dy);
+        lastMoveTime = now;
     }
 }
 
