@@ -394,7 +394,7 @@ function startCyberMazeGame() {
 
 // Authentication & Score state
 let currentUser = null;
-const API_BASE_URL = window.API_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL = window.API_BASE_URL || 'https://retrogames-service.onrender.com';
 let currentLeaderboardGame = 'breakout';
 let userScoresData = [];
 

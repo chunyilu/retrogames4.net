@@ -215,7 +215,7 @@ function recordGameScore(gameId, score) {
         const userId = user.id || user.userId || user._id;
         if (!userId) return;
 
-        const API_BASE_URL = window.API_BASE_URL || 'http://localhost:3000';
+        const API_BASE_URL = window.API_BASE_URL || 'https://retrogames-service.onrender.com';
         fetch(`${API_BASE_URL}/scores`, {
             method: 'POST',
             headers: {
