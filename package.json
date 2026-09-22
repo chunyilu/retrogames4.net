@@ -19,13 +19,9 @@
   },
   "homepage": "https://github.com/chunyilu/retrogames4.net#readme",
   "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
     "tailwindcss": "^4.3.3"
   },
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "bcrypt": "^6.0.0",
-    "better-sqlite3": "^13.0.3",
-    "express": "^5.2.1"
-  }
+  "license": "ISC"
 }
