@@ -46,11 +46,12 @@ function filterVault(category) {
 
 // Launch demo function
 function launchDemo(title) {
+    if (title === 'Neon Defender' || title === 'Galaxian') {
+        alert(`[${title}] is coming soon!`);
+        return;
+    }
     playRetroSound('click');
-    if (title === 'Galaxian') {
-        // Open Galaxian game in new tab
-        window.open('../../browser-games/galaxian/index.html', '_blank');
-    } else if (title === 'Cyber Maze' || title === 'cyber-maze' || title === 'CyberMaze') {
+    if (title === 'Cyber Maze' || title === 'cyber-maze' || title === 'CyberMaze') {
         // Open Cyber Maze game
         window.location.href = 'games/cyber-maze/index.html';
     } else if (title === 'Moon Festival' || title === 'Jade Rabbit' || title === 'Moon Festival: Jade Rabbit') {
