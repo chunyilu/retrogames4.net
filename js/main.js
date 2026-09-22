@@ -50,12 +50,15 @@ function launchDemo(title) {
     if (title === 'Galaxian') {
         // Open Galaxian game in new tab
         window.open('../../browser-games/galaxian/index.html', '_blank');
-    } else if (title === 'Cyber Maze') {
-        // Start Cyber Maze game in-place in the arcade section
-        startCyberMazeGame();
+    } else if (title === 'Cyber Maze' || title === 'cyber-maze' || title === 'CyberMaze') {
+        // Open Cyber Maze game
+        window.location.href = 'games/cyber-maze/index.html';
     } else if (title === 'Moon Festival' || title === 'Jade Rabbit' || title === 'Moon Festival: Jade Rabbit') {
         // Open Moon Festival game
         window.location.href = 'games/moon-festival/index.html';
+    } else if (title === 'Block Stacker' || title === 'BlockStacker' || title === 'block-stacker') {
+        // Open Block Stacker game
+        window.location.href = 'games/block-stacker/index.html';
     } else {
         alert(`Loading demo instance for [${title}] on retrogames4.net!`);
     }
@@ -631,6 +634,11 @@ function renderFallbackLeaderboard(gameId) {
             { player: 'JADE_BUNNY', score: 125400 },
             { player: 'MOON_DEFENDER', score: 98300 },
             { player: 'RABBIT_ONE', score: 65100 }
+        ],
+        'block-stacker': [
+            { player: 'STACK_MASTER', score: 84500 },
+            { player: 'POLY_KING', score: 62100 },
+            { player: 'TETRO_NINJA', score: 45800 }
         ]
     };
 
