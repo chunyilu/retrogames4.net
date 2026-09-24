@@ -113,30 +113,50 @@
       background: rgba(255, 0, 127, 0.15);
       border: 1px solid #ff007f;
       color: #ff007f;
-      padding: 8px 12px;
+      padding: 8px 10px;
       border-radius: 6px;
       cursor: pointer;
-      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 8px rgba(255, 0, 127, 0.2);
     }
 
     .icon-btn:hover, .icon-btn:active {
       background: #ff007f;
       color: #fff;
       box-shadow: 0 0 10px #ff007f;
+      transform: scale(1.05);
     }
 
+    .icon-btn.cyan {
+      border-color: #00f3ff;
+      color: #00f3ff;
+      background: rgba(0, 243, 255, 0.15);
+      box-shadow: 0 0 8px rgba(0, 243, 255, 0.2);
+    }
+
+    .icon-btn.cyan:hover, .icon-btn.cyan:active {
+      background: #00f3ff;
+      color: #0a0a12;
+      box-shadow: 0 0 10px #00f3ff;
+    }
+
+    /* Title banner */
     .game-header {
       text-align: center;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+      z-index: 20;
     }
 
     h1 {
+      font-size: 13px;
+      line-height: 1.4;
       margin: 0;
       color: #ffe600;
-      text-shadow: 0 0 10px rgba(255, 230, 0, 0.7), 2px 2px #ff007f;
-      font-size: 13px;
-      letter-spacing: 1px;
-      line-height: 1.4;
+      text-shadow: 0 0 12px rgba(255, 230, 0, 0.6);
+      letter-spacing: 0.5px;
     }
 
     @media (min-width: 480px) {
@@ -183,11 +203,11 @@
       touch-action: none;
     }
 
-    /* Overlay Screens (Start / Pause / Game Over) */
+    /* Overlay Screens (Start / Pause / Game Over / Planet Select / Stage Clear) */
     .overlay {
       position: absolute;
       inset: 0;
-      background: rgba(7, 7, 20, 0.92);
+      background: rgba(7, 7, 20, 0.94);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -195,7 +215,8 @@
       padding: 16px;
       text-align: center;
       z-index: 50;
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(5px);
+      overflow-y: auto;
     }
 
     .overlay.hidden {
@@ -203,14 +224,15 @@
     }
 
     .overlay-title {
-      font-size: 18px;
+      font-size: 16px;
       margin-bottom: 10px;
       text-transform: uppercase;
+      line-height: 1.3;
     }
 
     @media (min-width: 480px) {
       .overlay-title {
-        font-size: 22px;
+        font-size: 20px;
       }
     }
 
@@ -225,22 +247,28 @@
       text-shadow: 0 0 15px rgba(0, 243, 255, 0.8);
     }
 
+    .overlay-title.victory {
+      color: #ffe600;
+      text-shadow: 0 0 18px rgba(255, 230, 0, 0.9);
+      animation: pulse 0.8s infinite alternate;
+    }
+
     .overlay-title.start {
       color: #ffe600;
       text-shadow: 0 0 15px rgba(255, 230, 0, 0.8);
     }
 
     .overlay-text {
-      font-size: 10px;
+      font-size: 9px;
       line-height: 1.6;
       color: #e2e8f0;
-      max-width: 440px;
-      margin-bottom: 14px;
+      max-width: 460px;
+      margin-bottom: 12px;
     }
 
     @media (min-width: 480px) {
       .overlay-text {
-        font-size: 11px;
+        font-size: 10px;
       }
     }
 
@@ -248,11 +276,11 @@
       background: rgba(18, 18, 37, 0.95);
       border: 1px solid rgba(255, 230, 0, 0.5);
       border-radius: 8px;
-      padding: 10px 14px;
-      margin-bottom: 16px;
-      width: 90%;
-      max-width: 360px;
-      font-size: 10px;
+      padding: 8px 12px;
+      margin-bottom: 12px;
+      width: 92%;
+      max-width: 420px;
+      font-size: 9px;
       line-height: 1.7;
     }
 
@@ -264,19 +292,44 @@
       color: #00f3ff;
     }
 
+    .stats-card .planet-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      background: rgba(0, 243, 255, 0.2);
+      border: 1px solid #00f3ff;
+      border-radius: 4px;
+      color: #00f3ff;
+      margin-bottom: 4px;
+      font-size: 9px;
+    }
+
+    .unlock-banner {
+      background: linear-gradient(90deg, rgba(255, 0, 127, 0.25), rgba(255, 230, 0, 0.25));
+      border: 2px dashed #ffe600;
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-bottom: 12px;
+      color: #fff;
+      font-size: 9px;
+      line-height: 1.5;
+      animation: pulse 1s infinite alternate;
+      width: 92%;
+      max-width: 420px;
+    }
+
     .overlay-buttons {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      width: 85%;
-      max-width: 270px;
+      gap: 8px;
+      width: 90%;
+      max-width: 320px;
     }
 
     .action-btn {
       font-family: 'Press Start 2P', monospace;
-      font-size: 11px;
-      min-height: 48px;
-      padding: 12px 16px;
+      font-size: 10px;
+      min-height: 44px;
+      padding: 10px 14px;
       border-radius: 8px;
       border: 2px solid transparent;
       cursor: pointer;
@@ -300,7 +353,7 @@
 
     .action-btn.primary:hover, .action-btn.primary:active {
       background: #fff;
-      transform: scale(1.04);
+      transform: scale(1.03);
       box-shadow: 0 0 20px rgba(255, 230, 0, 0.9);
     }
 
@@ -314,8 +367,138 @@
     .action-btn.secondary:hover, .action-btn.secondary:active {
       background: #00f3ff;
       color: #070711;
-      transform: scale(1.04);
+      transform: scale(1.03);
       box-shadow: 0 0 15px #00f3ff;
+    }
+
+    .action-btn.magenta {
+      background: rgba(255, 0, 127, 0.15);
+      color: #ff007f;
+      border-color: #ff007f;
+      box-shadow: 0 0 10px rgba(255, 0, 127, 0.3);
+    }
+
+    .action-btn.magenta:hover, .action-btn.magenta:active {
+      background: #ff007f;
+      color: #fff;
+      transform: scale(1.03);
+      box-shadow: 0 0 15px #ff007f;
+    }
+
+    /* Planet Selection Grid */
+    .planet-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      width: 100%;
+      max-width: 500px;
+      margin-bottom: 12px;
+      max-height: 52vh;
+      overflow-y: auto;
+      padding: 4px;
+    }
+
+    @media (max-width: 480px) {
+      .planet-grid {
+        grid-template-columns: 1fr;
+        max-height: 46vh;
+      }
+    }
+
+    .planet-card {
+      background: rgba(18, 18, 37, 0.95);
+      border: 2px solid #334155;
+      border-radius: 8px;
+      padding: 8px 10px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .planet-card.unlocked {
+      border-color: #00f3ff;
+      box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+    }
+
+    .planet-card.unlocked:hover {
+      border-color: #ffe600;
+      transform: scale(1.02);
+      box-shadow: 0 0 14px rgba(255, 230, 0, 0.4);
+    }
+
+    .planet-card.active {
+      border-color: #ffe600;
+      background: rgba(255, 230, 0, 0.1);
+      box-shadow: 0 0 16px rgba(255, 230, 0, 0.5);
+    }
+
+    .planet-card.locked {
+      opacity: 0.55;
+      filter: grayscale(0.8);
+      cursor: not-allowed;
+      border-color: #475569;
+    }
+
+    .planet-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    .planet-card-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #ffe600;
+    }
+
+    .planet-card.locked .planet-card-title {
+      color: #94a3b8;
+    }
+
+    .planet-card-status {
+      font-size: 8px;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+
+    .status-unlocked {
+      color: #00f3ff;
+      background: rgba(0, 243, 255, 0.15);
+    }
+
+    .status-locked {
+      color: #ff4757;
+      background: rgba(255, 71, 87, 0.15);
+    }
+
+    .status-cleared {
+      color: #ffe600;
+      background: rgba(255, 230, 0, 0.2);
+    }
+
+    .planet-card-desc {
+      font-size: 8px;
+      color: #cbd5e1;
+      line-height: 1.4;
+    }
+
+    .planet-card-variants {
+      font-size: 7px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    .planet-card-boss {
+      font-size: 7.5px;
+      color: #ff007f;
+      margin-top: 2px;
     }
 
     /* Mobile virtual touch controls */
@@ -436,42 +619,9 @@
       color: #00f3ff;
     }
 
-    /* Orientation Warning Banner (Portrait Optimization) */
-    #landscapeWarning {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(7, 7, 20, 0.96);
-      z-index: 100;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      text-align: center;
-    }
-
-    @media (orientation: landscape) and (max-height: 520px) {
-      #landscapeWarning {
-        display: flex;
-      }
-    }
-
-    .rotate-phone-icon {
-      font-size: 38px;
-      color: #00f3ff;
-      margin-bottom: 12px;
-      animation: rotatePhone 2s infinite ease-in-out;
-    }
-
-    @keyframes rotatePhone {
-      0%, 20% { transform: rotate(0deg); }
-      50%, 70% { transform: rotate(90deg); }
-      100% { transform: rotate(0deg); }
-    }
-
     @keyframes pulse {
       from { transform: scale(1); }
-      to { transform: scale(1.06); }
+      to { transform: scale(1.04); }
     }
   </style>
 </head>
@@ -480,21 +630,15 @@
   <!-- Scanlines effect -->
   <div class="scanlines"></div>
 
-  <!-- Landscape Orientation Notice -->
-  <div id="landscapeWarning">
-    <div class="rotate-phone-icon"><i class="fa-solid fa-mobile-screen"></i></div>
-    <div style="font-size: 13px; color: #ffe600; margin-bottom: 8px;">PORTRAIT ORIENTATION RECOMMENDED</div>
-    <div style="font-size: 9px; color: #94a3b8; max-width: 320px; line-height: 1.6;">
-      Please rotate your mobile device vertically for the best full-screen arcade experience.
-    </div>
-  </div>
-
   <!-- Top Navigation with Back Button -->
   <header class="top-nav">
     <a href="../../index.html" class="back-btn" id="navBackBtn" aria-label="Back to RetroGames4 Vault">
-      <i class="fa-solid fa-arrow-left"></i> BACK TO ARCADE
+      <i class="fa-solid fa-arrow-left"></i> ARCADE VAULT
     </a>
     <div class="nav-actions">
+      <button id="planetMapBtn" class="icon-btn cyan" title="Galaxy Map / Select Planet" aria-label="Galaxy Map">
+        <i class="fa-solid fa-globe"></i> PLANETS
+      </button>
       <button id="soundToggle" class="icon-btn" title="Toggle Sound FX" aria-label="Toggle Sound">
         <i id="soundIcon" class="fa-solid fa-volume-high"></i>
       </button>
@@ -506,8 +650,8 @@
 
   <!-- Title banner -->
   <div class="game-header">
-    <h1>🐇 JADE RABBIT VS GRAPEFRUIT MONSTERS 🍊</h1>
-    <div class="subtitle">Mid-Autumn Retro Space Defender</div>
+    <h1>🐇 JADE RABBIT: COSMIC SPACE DEFENDER 🌕</h1>
+    <div class="subtitle">Mid-Autumn Galaxy Expedition • Scroll & Ascend</div>
   </div>
 
   <!-- Game Container -->
@@ -517,23 +661,72 @@
     <!-- Start Overlay -->
     <div id="startOverlay" class="overlay">
       <div class="overlay-title start">READY PLAYER ONE</div>
+      <div id="currentPlanetBanner" class="stats-card">
+        <span class="planet-badge" id="startPlanetBadge">🌕 SECTOR: LUNA PRIME</span>
+        <div><b>MISSION:</b> 3 SUB-STAGES + MAJOR BOSS BATTLE</div>
+        <div style="font-size: 8px; color: #94a3b8; margin-top: 2px;">Background scrolls upward to unveil the celestial planet!</div>
+      </div>
       <p class="overlay-text">
-        Mischievous grapefruit monsters and giant pomelos are invading the Mid-Autumn Moon!
-        <br><br>
-        Control the <b>Jade Rabbit</b>, fire glowing <b>Mooncake Stars</b>, collect special power-ups, and defend the moon!
+        Guide the <b>Jade Rabbit</b>, shoot glowing <b>Mooncake Stars</b>, defeat mutated citrus invaders across the cosmos, and unlock new planetary worlds!
       </p>
       <div class="stats-card">
         <div>🌟 <b>TRIPLE SHOT</b>: 3-way mooncake blast</div>
-        <div>⚡ <b>RAPID FIRE</b>: Super-speed shooting</div>
-        <div>🛡️ <b>JADE SHIELD</b>: Invulnerability bubble</div>
-        <div>💣 <b>MOON BOMB</b>: Clears all monsters</div>
+        <div>⚡ <b>RAPID FIRE</b>: High-speed shooting</div>
+        <div>🛡️ <b>JADE SHIELD</b>: Forcefield invulnerability</div>
+        <div>💣 <b>MOON BOMB</b>: Detonate full screen [B]</div>
       </div>
       <div class="overlay-buttons">
         <button id="startGameBtn" class="action-btn primary">
-          <i class="fa-solid fa-play"></i> START MISSION
+          <i class="fa-solid fa-play"></i> LAUNCH MISSION
         </button>
-        <a href="../../index.html" class="action-btn secondary">
-          <i class="fa-solid fa-house"></i> RETRO VAULT
+        <button id="openPlanetMapBtn" class="action-btn secondary">
+          <i class="fa-solid fa-globe"></i> GALAXY MAP / PLANETS
+        </button>
+        <a href="../../index.html" class="action-btn magenta">
+          <i class="fa-solid fa-house"></i> ARCADE VAULT
+        </a>
+      </div>
+    </div>
+
+    <!-- Galaxy Map / Planet Select Overlay -->
+    <div id="planetSelectOverlay" class="overlay hidden">
+      <div class="overlay-title win">🌌 GALAXY SECTOR MAP</div>
+      <p class="overlay-text">Defeat the Moon Stage Boss to unlock new planetary systems where enemies evolve into dangerous variants!</p>
+      <div class="planet-grid" id="planetGridContainer">
+        <!-- Planet Cards populated by JavaScript -->
+      </div>
+      <div class="overlay-buttons">
+        <button id="closePlanetMapBtn" class="action-btn primary">
+          <i class="fa-solid fa-check"></i> DEPLOY TO SELECTED
+        </button>
+      </div>
+    </div>
+
+    <!-- Stage Clear / Planet Liberated Overlay -->
+    <div id="stageClearOverlay" class="overlay hidden">
+      <div class="overlay-title victory">★ PLANET LIBERATED! ★</div>
+      <div id="unlockNoticeBanner" class="unlock-banner hidden">
+        🎉 <b>NEW PLANET UNLOCKED!</b><br>
+        <span id="unlockedPlanetNameText" class="highlight">ARES CRIMSON</span> is now available in the Galaxy Map!
+      </div>
+      <div class="stats-card">
+        <div>SECTOR: <span id="clearPlanetText" class="planet-badge">🌕 LUNA PRIME</span></div>
+        <div>STAGE SCORE: <span id="clearScoreText" class="highlight">0</span></div>
+        <div>MONSTERS PURGED: <span id="clearKillsText" class="highlight">0</span></div>
+        <div>HIGH SCORE: <span id="clearHighScoreText" class="high-score">0</span></div>
+      </div>
+      <div class="overlay-buttons">
+        <button id="nextPlanetBtn" class="action-btn primary">
+          <i class="fa-solid fa-forward"></i> NEXT PLANET
+        </button>
+        <button id="stageClearMapBtn" class="action-btn secondary">
+          <i class="fa-solid fa-globe"></i> GALAXY MAP
+        </button>
+        <button id="replayPlanetBtn" class="action-btn secondary">
+          <i class="fa-solid fa-rotate-right"></i> REPLAY SECTOR
+        </button>
+        <a href="../../index.html" class="action-btn magenta">
+          <i class="fa-solid fa-arrow-left"></i> ARCADE VAULT
         </a>
       </div>
     </div>
@@ -541,16 +734,22 @@
     <!-- Pause Overlay -->
     <div id="pauseOverlay" class="overlay hidden">
       <div class="overlay-title win">MISSION PAUSED</div>
-      <p class="overlay-text">Take a breather, rabbit defender.</p>
+      <div class="stats-card">
+        <div>CURRENT SECTOR: <span id="pausePlanetText" class="highlight">🌕 LUNA PRIME</span></div>
+        <div>CURRENT STAGE: <span id="pauseStageText" class="high-score">STAGE 1-1</span></div>
+      </div>
       <div class="overlay-buttons">
         <button id="resumeGameBtn" class="action-btn primary">
           <i class="fa-solid fa-play"></i> RESUME GAME
         </button>
-        <button id="restartFromPauseBtn" class="action-btn secondary">
-          <i class="fa-solid fa-rotate-right"></i> RESTART
+        <button id="pausePlanetMapBtn" class="action-btn secondary">
+          <i class="fa-solid fa-globe"></i> GALAXY MAP
         </button>
-        <a href="../../index.html" class="action-btn secondary">
-          <i class="fa-solid fa-arrow-left"></i> BACK TO ARCADE
+        <button id="restartFromPauseBtn" class="action-btn secondary">
+          <i class="fa-solid fa-rotate-right"></i> RESTART SECTOR
+        </button>
+        <a href="../../index.html" class="action-btn magenta">
+          <i class="fa-solid fa-arrow-left"></i> ARCADE VAULT
         </a>
       </div>
     </div>
@@ -559,17 +758,21 @@
     <div id="gameOverOverlay" class="overlay hidden">
       <div class="overlay-title gameover">GAME OVER</div>
       <div class="stats-card">
+        <div>SECTOR: <span id="gameOverPlanetText" class="planet-badge">🌕 LUNA PRIME</span></div>
         <div>FINAL SCORE: <span id="finalScoreText" class="highlight">0</span></div>
         <div>HIGH SCORE: <span id="highScoreText" class="high-score">0</span></div>
-        <div>WAVE REACHED: <span id="finalWaveText" class="highlight">1</span></div>
+        <div>SUB-STAGE: <span id="finalWaveText" class="highlight">1-1</span></div>
         <div>MONSTERS POPPED: <span id="monstersKilledText" class="highlight">0</span></div>
       </div>
       <div class="overlay-buttons">
         <button id="restartBtn" class="action-btn primary">
-          <i class="fa-solid fa-rotate-right"></i> PLAY AGAIN [R]
+          <i class="fa-solid fa-rotate-right"></i> RETRY SECTOR [R]
         </button>
-        <a href="../../index.html" class="action-btn secondary">
-          <i class="fa-solid fa-arrow-left"></i> BACK TO ARCADE
+        <button id="gameOverPlanetMapBtn" class="action-btn secondary">
+          <i class="fa-solid fa-globe"></i> GALAXY MAP
+        </button>
+        <a href="../../index.html" class="action-btn magenta">
+          <i class="fa-solid fa-arrow-left"></i> ARCADE VAULT
         </a>
       </div>
     </div>
@@ -589,7 +792,7 @@
 
   <!-- Instructions Hint -->
   <div class="controls-hint">
-    🎮 <b>CONTROLS:</b> Touch Buttons / Drag Rabbit / [<span>←</span> <span>→</span> / <span>A</span> <span>D</span>] Move | Hold [<span>FIRE</span> / <span>SPACE</span>] Auto-Fire | [<span>P</span>] Pause
+    🎮 <b>CONTROLS:</b> Touch Buttons / Drag Rabbit / [<span>←</span> <span>→</span> / <span>A</span> <span>D</span>] Move | Hold [<span>FIRE</span> / <span>SPACE</span>] Auto-Fire | [<span>B</span>] Bomb | [<span>P</span>] Pause
   </div>
 
 <script>
@@ -599,20 +802,47 @@
 
   // DOM Elements
   const startOverlay = document.getElementById('startOverlay');
+  const planetSelectOverlay = document.getElementById('planetSelectOverlay');
+  const stageClearOverlay = document.getElementById('stageClearOverlay');
   const pauseOverlay = document.getElementById('pauseOverlay');
   const gameOverOverlay = document.getElementById('gameOverOverlay');
+
   const startGameBtn = document.getElementById('startGameBtn');
+  const openPlanetMapBtn = document.getElementById('openPlanetMapBtn');
+  const planetMapBtn = document.getElementById('planetMapBtn');
+  const closePlanetMapBtn = document.getElementById('closePlanetMapBtn');
   const resumeGameBtn = document.getElementById('resumeGameBtn');
   const restartBtn = document.getElementById('restartBtn');
   const restartFromPauseBtn = document.getElementById('restartFromPauseBtn');
+  const nextPlanetBtn = document.getElementById('nextPlanetBtn');
+  const stageClearMapBtn = document.getElementById('stageClearMapBtn');
+  const replayPlanetBtn = document.getElementById('replayPlanetBtn');
+  const gameOverPlanetMapBtn = document.getElementById('gameOverPlanetMapBtn');
+  const pausePlanetMapBtn = document.getElementById('pausePlanetMapBtn');
+
   const soundToggle = document.getElementById('soundToggle');
   const soundIcon = document.getElementById('soundIcon');
   const pauseToggle = document.getElementById('pauseToggle');
   const pauseIcon = document.getElementById('pauseIcon');
+
   const finalScoreText = document.getElementById('finalScoreText');
   const highScoreText = document.getElementById('highScoreText');
   const finalWaveText = document.getElementById('finalWaveText');
   const monstersKilledText = document.getElementById('monstersKilledText');
+  const gameOverPlanetText = document.getElementById('gameOverPlanetText');
+
+  const clearPlanetText = document.getElementById('clearPlanetText');
+  const clearScoreText = document.getElementById('clearScoreText');
+  const clearKillsText = document.getElementById('clearKillsText');
+  const clearHighScoreText = document.getElementById('clearHighScoreText');
+  const unlockNoticeBanner = document.getElementById('unlockNoticeBanner');
+  const unlockedPlanetNameText = document.getElementById('unlockedPlanetNameText');
+
+  const startPlanetBadge = document.getElementById('startPlanetBadge');
+  const pausePlanetText = document.getElementById('pausePlanetText');
+  const pauseStageText = document.getElementById('pauseStageText');
+  const planetGridContainer = document.getElementById('planetGridContainer');
+
   const btnLeft = document.getElementById('btnLeft');
   const btnRight = document.getElementById('btnRight');
   const btnShoot = document.getElementById('btnShoot');
@@ -716,6 +946,42 @@
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
         osc.start(now);
         osc.stop(now + 0.5);
+      } else if (type === 'siren') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(400, now);
+        osc.frequency.linearRampToValueAtTime(800, now + 0.25);
+        osc.frequency.linearRampToValueAtTime(400, now + 0.5);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
+        osc.start(now);
+        osc.stop(now + 0.55);
+      } else if (type === 'boss_shoot') {
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(260, now);
+        osc.frequency.exponentialRampToValueAtTime(90, now + 0.18);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+        osc.start(now);
+        osc.stop(now + 0.18);
+      } else if (type === 'stage_clear') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(523.25, now); // C5
+        osc.frequency.setValueAtTime(659.25, now + 0.12); // E5
+        osc.frequency.setValueAtTime(783.99, now + 0.24); // G5
+        osc.frequency.setValueAtTime(1046.5, now + 0.36); // C6
+        osc.frequency.setValueAtTime(1318.5, now + 0.52); // E6
+        gain.gain.setValueAtTime(0.22, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
+        osc.start(now);
+        osc.stop(now + 0.9);
+      } else if (type === 'select') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, now);
+        osc.frequency.setValueAtTime(900, now + 0.05);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+        osc.start(now);
+        osc.stop(now + 0.1);
       }
     } catch (e) {
       // Ignore audio synthesis errors
@@ -729,15 +995,6 @@
     }
   }
 
-  // Lock orientation to portrait if supported
-  function lockPortraitOrientation() {
-    try {
-      if (screen.orientation && screen.orientation.lock) {
-        screen.orientation.lock('portrait').catch(() => {});
-      }
-    } catch (e) {}
-  }
-
   // Toggle Sound
   soundToggle.addEventListener('click', () => {
     soundEnabled = !soundEnabled;
@@ -748,21 +1005,163 @@
     }
   });
 
+  // -------------------------------------------------------------
+  // PLANETS CONFIGURATION & PROGRESSION
+  // -------------------------------------------------------------
+  const PLANETS = {
+    moon: {
+      id: 'moon',
+      name: 'LUNA PRIME',
+      subtitle: 'Mid-Autumn Moon • Starting World',
+      icon: '🌕',
+      themeColor: '#ffe600',
+      auraColor: 'rgba(255, 230, 180, 0.3)',
+      nebulaColor: 'rgba(157, 0, 255, 0.15)',
+      skyColor: '#080816',
+      planetBodyColor1: '#fffdf0',
+      planetBodyColor2: '#fce4c8',
+      planetBodyColor3: '#ecc095',
+      craterColor: 'rgba(215, 175, 135, 0.45)',
+      unlockedByDefault: true,
+      nextPlanet: 'mars',
+      bossName: 'EMPEROR GRAPEFRUIT PRIME',
+      bossColor: '#ff9f1a',
+      bossHp: 80,
+      subStageTargets: [14, 18, 22],
+      subStageNames: ['1-1: Lunar Ascent', '1-2: Crater Belt', '1-3: Moon Orbit'],
+      enemyDesc: 'Citrus Invaders (Grapefruit Scouts, Swift Lemons, Ruby Splitters, Armored Pomelos)'
+    },
+    mars: {
+      id: 'mars',
+      name: 'ARES CRIMSON',
+      subtitle: 'Volcanic Red Planet • Evolved Mutants',
+      icon: '🔴',
+      themeColor: '#ff4757',
+      auraColor: 'rgba(255, 71, 87, 0.35)',
+      nebulaColor: 'rgba(255, 107, 53, 0.2)',
+      skyColor: '#16080a',
+      planetBodyColor1: '#ff6b6b',
+      planetBodyColor2: '#ee5253',
+      planetBodyColor3: '#b33939',
+      craterColor: 'rgba(92, 24, 24, 0.55)',
+      unlockedByDefault: false,
+      nextPlanet: 'saturn',
+      bossName: 'INFERNO DRAGON-FRUIT TITAN',
+      bossColor: '#ff2d55',
+      bossHp: 110,
+      subStageTargets: [16, 20, 26],
+      subStageNames: ['2-1: Magma Horizon', '2-2: Ash Canyon', '2-3: Core Caldera'],
+      enemyDesc: 'Volcanic Variants (Magma Scouts, Jet Speedsters, Obsidian Splitters, Titanium Mechs)'
+    },
+    saturn: {
+      id: 'saturn',
+      name: 'SATURNIA RINGS',
+      subtitle: 'Cosmic Rings • Void Entities',
+      icon: '🪐',
+      themeColor: '#9d00ff',
+      auraColor: 'rgba(157, 0, 255, 0.35)',
+      nebulaColor: 'rgba(0, 243, 255, 0.22)',
+      skyColor: '#0f081c',
+      planetBodyColor1: '#f8c291',
+      planetBodyColor2: '#e58e26',
+      planetBodyColor3: '#b71540',
+      craterColor: 'rgba(106, 137, 204, 0.45)',
+      hasRings: true,
+      unlockedByDefault: false,
+      nextPlanet: 'neptune',
+      bossName: 'VOID ECLIPSE OVERLORD',
+      bossColor: '#9b59b6',
+      bossHp: 140,
+      subStageTargets: [18, 24, 30],
+      subStageNames: ['3-1: Ring Passage', '3-2: Plasma Storm', '3-3: Void Eye'],
+      enemyDesc: 'Void Variants (Void Plasma Orbs, Neon Star-Blades, Supernova Splitters, Quantum Tanks)'
+    },
+    neptune: {
+      id: 'neptune',
+      name: 'GLACIES ABYSS',
+      subtitle: 'Frozen Ice World • Cryo Monarchs',
+      icon: '❄️',
+      themeColor: '#00d2d3',
+      auraColor: 'rgba(0, 210, 211, 0.35)',
+      nebulaColor: 'rgba(84, 160, 255, 0.25)',
+      skyColor: '#060f1c',
+      planetBodyColor1: '#48dbfb',
+      planetBodyColor2: '#0abde3',
+      planetBodyColor3: '#10ac84',
+      craterColor: 'rgba(255, 255, 255, 0.4)',
+      unlockedByDefault: false,
+      nextPlanet: null,
+      bossName: 'ABSOLUTE-ZERO FROST MONARCH',
+      bossColor: '#54a0ff',
+      bossHp: 175,
+      subStageTargets: [20, 26, 34],
+      subStageNames: ['4-1: Glacial Horizon', '4-2: Blizzard Belt', '4-3: Zero Apex'],
+      enemyDesc: 'Cryo Variants (Frost-Berries, Blizzard Darts, Glacial Splitters, Permafrost Golems)'
+    }
+  };
+
+  // Saved Data
+  function getUnlockedPlanets() {
+    try {
+      const stored = localStorage.getItem('retro_moon_unlocked_planets');
+      if (stored) {
+        const arr = JSON.parse(stored);
+        if (Array.isArray(arr) && arr.includes('moon')) return arr;
+      }
+    } catch (e) {}
+    return ['moon'];
+  }
+
+  function saveUnlockedPlanets(arr) {
+    try {
+      localStorage.setItem('retro_moon_unlocked_planets', JSON.stringify(arr));
+    } catch (e) {}
+  }
+
+  function getClearedPlanets() {
+    try {
+      const stored = localStorage.getItem('retro_moon_cleared_planets');
+      if (stored) return JSON.parse(stored);
+    } catch (e) {}
+    return [];
+  }
+
+  function saveClearedPlanet(planetId) {
+    try {
+      const cleared = getClearedPlanets();
+      if (!cleared.includes(planetId)) {
+        cleared.push(planetId);
+        localStorage.setItem('retro_moon_cleared_planets', JSON.stringify(cleared));
+      }
+    } catch (e) {}
+  }
+
+  let currentPlanetId = localStorage.getItem('retro_moon_current_planet') || 'moon';
+  if (!PLANETS[currentPlanetId]) currentPlanetId = 'moon';
+
   // Game State Variables
   let gameStarted = false;
   let isPaused = false;
   let gameOver = false;
+  let stageCleared = false;
   let score = 0;
   let highScore = parseInt(localStorage.getItem('retro_moon_festival_highscore') || '0', 10);
   let lives = 3;
-  let wave = 1;
+  let currentSubStage = 1; // 1, 2, 3, or 4 (Boss)
+  let subStageKills = 0;
   let monstersDefeated = 0;
   let combo = 0;
   let comboTimer = 0;
   let screenShake = 0;
-  let bombsCount = 0;
+  let bombsCount = 1;
+  let globalTick = 0;
 
-  // Key tracking & virtual touch joystick tracking
+  // Background Upward Scrolling & Moon Reveal
+  let bgScrollY = 0;
+  let moonRevealRatio = 0.05; // 0.05 to 1.0 (Gradual upward scroll reveal)
+  let warpSpeedBoost = 0;
+
+  // Key tracking
   const keys = {};
   let isShootingHeld = false;
 
@@ -794,7 +1193,7 @@
     height: 52,
     speed: 6.8,
     lastShot: 0,
-    shootCooldown: 210,
+    shootCooldown: 200,
     invulnerableTimer: 0,
     poundingAnim: 0,
     shield: false,
@@ -802,77 +1201,218 @@
     tripleShotTimer: 0
   };
 
-  // Game Object Arrays (Performance capped for smooth 60fps on mobile)
+  // Game Objects
   let bullets = [];
+  let enemyProjectiles = [];
   let monsters = [];
   let powerups = [];
   let particles = [];
   let floatingTexts = [];
   let clouds = [];
   let stars = [];
+  let bossEntity = null;
+  let bossWarningTimer = 0;
+  let monsterSpawnTimer = 0;
 
-  // Initialize Starfield & Night Clouds
+  // Initialize Starfield & Clouds
   function initEnvironment() {
     stars = [];
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 60; i++) {
       stars.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
         size: Math.random() > 0.8 ? 2.5 : 1.5,
-        speed: Math.random() * 0.6 + 0.2,
-        twinkle: Math.random() * Math.PI * 2
+        speed: Math.random() * 0.8 + 0.3,
+        twinkle: Math.random() * Math.PI * 2,
+        layer: Math.random() > 0.5 ? 2 : 1
       });
     }
 
     clouds = [
-      { x: 30, y: 120, width: 140, height: 40, speed: 0.25, opacity: 0.15 },
-      { x: 380, y: 80, width: 180, height: 45, speed: 0.18, opacity: 0.2 },
-      { x: 200, y: 220, width: 120, height: 35, speed: 0.3, opacity: 0.12 }
+      { x: 30, y: 140, width: 140, height: 40, speed: 0.25, opacity: 0.15 },
+      { x: 380, y: 90, width: 180, height: 45, speed: 0.18, opacity: 0.2 },
+      { x: 200, y: 240, width: 120, height: 35, speed: 0.3, opacity: 0.12 }
     ];
   }
 
-  // Monster Spawning Logic
-  let monsterSpawnTimer = 0;
+  // UI: Update Planet Select Screen
+  function renderPlanetCards() {
+    const unlocked = getUnlockedPlanets();
+    const cleared = getClearedPlanets();
+    planetGridContainer.innerHTML = '';
 
+    Object.values(PLANETS).forEach(planet => {
+      const isUnlocked = unlocked.includes(planet.id);
+      const isCleared = cleared.includes(planet.id);
+      const isActive = planet.id === currentPlanetId;
+
+      const card = document.createElement('div');
+      card.className = `planet-card ${isUnlocked ? 'unlocked' : 'locked'} ${isActive ? 'active' : ''}`;
+      
+      let statusHtml = '';
+      if (isCleared) {
+        statusHtml = '<span class="planet-card-status status-cleared">★ CLEARED</span>';
+      } else if (isUnlocked) {
+        statusHtml = '<span class="planet-card-status status-unlocked">UNLOCKED</span>';
+      } else {
+        statusHtml = '<span class="planet-card-status status-locked">🔒 LOCKED</span>';
+      }
+
+      card.innerHTML = `
+        <div class="planet-card-header">
+          <div class="planet-card-title">${planet.icon} ${planet.name}</div>
+          ${statusHtml}
+        </div>
+        <div class="planet-card-desc">${planet.subtitle}</div>
+        <div class="planet-card-variants">👾 ${planet.enemyDesc}</div>
+        <div class="planet-card-boss">👑 BOSS: ${planet.bossName}</div>
+      `;
+
+      if (isUnlocked) {
+        card.addEventListener('click', () => {
+          selectPlanet(planet.id);
+          playSound('select');
+        });
+      }
+
+      planetGridContainer.appendChild(card);
+    });
+
+    updatePlanetLabels();
+  }
+
+  function selectPlanet(planetId) {
+    if (!PLANETS[planetId]) return;
+    currentPlanetId = planetId;
+    localStorage.setItem('retro_moon_current_planet', currentPlanetId);
+    renderPlanetCards();
+    updatePlanetLabels();
+  }
+
+  function updatePlanetLabels() {
+    const planet = PLANETS[currentPlanetId];
+    if (!planet) return;
+    const badgeText = `${planet.icon} SECTOR: ${planet.name}`;
+    if (startPlanetBadge) startPlanetBadge.textContent = badgeText;
+    if (pausePlanetText) pausePlanetText.textContent = badgeText;
+    if (gameOverPlanetText) gameOverPlanetText.textContent = badgeText;
+    if (clearPlanetText) clearPlanetText.textContent = badgeText;
+  }
+
+  // Spawn Enemy Variants based on active Planet and Sub-Stage
   function spawnMonster() {
-    if (monsters.length >= 25) return; // Cap for performance on mobile
+    if (monsters.length >= 26 || bossEntity || currentSubStage > 3) return;
 
+    const planet = PLANETS[currentPlanetId];
     const roll = Math.random();
+
     let type = 'normal';
     let size = 38;
     let hp = 1;
-    let speed = 1.6 + Math.random() * 1.2 + (wave * 0.15);
+    let speed = 1.6 + Math.random() * 1.0 + (currentSubStage * 0.2);
     let color = '#ff6b35';
 
-    if (wave >= 2 && roll < 0.25) {
-      // Swift Yellow Pomelo
-      type = 'swift';
-      size = 32;
-      hp = 1;
-      speed = 2.8 + Math.random() * 1.2 + (wave * 0.15);
-      color = '#f7c500';
-    } else if (wave >= 3 && roll < 0.45) {
-      // Ruby Grapefruit (Splitter)
-      type = 'ruby';
-      size = 36;
-      hp = 1;
-      speed = 1.9 + Math.random() * 0.8;
-      color = '#ff007f';
-    } else if (wave >= 4 && roll < 0.58) {
-      // Armored Mid-Autumn Pomelo
-      type = 'tank';
-      size = 46;
-      hp = 3;
-      speed = 1.2 + (wave * 0.1);
-      color = '#2ecc71';
-    } else if (wave >= 5 && Math.random() < 0.12 && !monsters.some(m => m.type === 'boss')) {
-      // Giant Emperor Grapefruit Boss
-      type = 'boss';
-      size = 64;
-      hp = 8 + (wave * 2);
-      speed = 0.9;
-      color = '#9d00ff';
-      addFloatingText('⚠️ GIANT POMELO BOSS! ⚠️', canvas.width / 2, 80, '#ff007f');
+    if (currentPlanetId === 'moon') {
+      if (currentSubStage >= 2 && roll < 0.35) {
+        type = 'swift';
+        size = 32;
+        hp = 1;
+        speed = 2.9 + Math.random() * 1.0;
+        color = '#f7c500';
+      } else if (currentSubStage >= 2 && roll < 0.65) {
+        type = 'ruby';
+        size = 36;
+        hp = 1;
+        speed = 2.0 + Math.random() * 0.7;
+        color = '#ff007f';
+      } else if (currentSubStage >= 3 && roll < 0.85) {
+        type = 'tank';
+        size = 46;
+        hp = 3;
+        speed = 1.3;
+        color = '#2ecc71';
+      }
+    } else if (currentPlanetId === 'mars') {
+      // Mars Volcanic Cyber Variants
+      if (currentSubStage === 1 || roll < 0.3) {
+        type = 'magma';
+        size = 38;
+        hp = 1;
+        speed = 1.9 + Math.random() * 1.0;
+        color = '#ff4757';
+      } else if (roll < 0.6) {
+        type = 'jet';
+        size = 30;
+        hp = 1;
+        speed = 3.4 + Math.random() * 1.2;
+        color = '#ff793f';
+      } else if (roll < 0.85) {
+        type = 'obsidian';
+        size = 38;
+        hp = 2;
+        speed = 2.1;
+        color = '#833471';
+      } else {
+        type = 'titanium';
+        size = 48;
+        hp = 4;
+        speed = 1.4;
+        color = '#747d8c';
+      }
+    } else if (currentPlanetId === 'saturn') {
+      // Saturn Void Cosmic Variants
+      if (currentSubStage === 1 || roll < 0.3) {
+        type = 'void';
+        size = 38;
+        hp = 1;
+        speed = 2.0 + Math.random() * 1.0;
+        color = '#8e44ad';
+      } else if (roll < 0.6) {
+        type = 'star_blade';
+        size = 32;
+        hp = 1;
+        speed = 3.6 + Math.random() * 1.2;
+        color = '#00f3ff';
+      } else if (roll < 0.85) {
+        type = 'supernova';
+        size = 38;
+        hp = 2;
+        speed = 2.2;
+        color = '#fd79a8';
+      } else {
+        type = 'quantum';
+        size = 48;
+        hp = 5;
+        speed = 1.4;
+        color = '#2c3e50';
+      }
+    } else if (currentPlanetId === 'neptune') {
+      // Neptune Cryo Variants
+      if (currentSubStage === 1 || roll < 0.3) {
+        type = 'cryo';
+        size = 38;
+        hp = 1;
+        speed = 2.0 + Math.random() * 1.0;
+        color = '#0abde3';
+      } else if (roll < 0.6) {
+        type = 'blizzard';
+        size = 28;
+        hp = 1;
+        speed = 3.8 + Math.random() * 1.2;
+        color = '#c8d6e5';
+      } else if (roll < 0.85) {
+        type = 'glacial';
+        size = 38;
+        hp = 2;
+        speed = 2.2;
+        color = '#54a0ff';
+      } else {
+        type = 'permafrost';
+        size = 50;
+        hp = 6;
+        speed = 1.4;
+        color = '#576574';
+      }
     }
 
     const x = Math.random() * (canvas.width - size - 20) + 10;
@@ -887,8 +1427,35 @@
       speed,
       color,
       wobble: Math.random() * Math.PI * 2,
-      wobbleSpeed: 0.04 + Math.random() * 0.04
+      wobbleSpeed: 0.04 + Math.random() * 0.04,
+      shootTimer: Math.floor(Math.random() * 60)
     });
+  }
+
+  // Spawn Major Boss Fight
+  function spawnBoss() {
+    const planet = PLANETS[currentPlanetId];
+    bossEntity = {
+      name: planet.bossName,
+      color: planet.bossColor,
+      x: canvas.width / 2 - 45,
+      y: -90,
+      targetY: 75,
+      width: 90,
+      height: 90,
+      hp: planet.bossHp,
+      maxHp: planet.bossHp,
+      vx: 2.2,
+      shootTimer: 0,
+      specialTimer: 0,
+      phase: 1,
+      wobble: 0
+    };
+
+    playSound('siren');
+    triggerHaptic(80);
+    screenShake = 16;
+    addFloatingText(`⚠️ WARNING: ${planet.bossName}! ⚠️`, canvas.width / 2, 130, '#ff007f');
   }
 
   // Spawn Power-up Capsule
@@ -906,10 +1473,10 @@
     });
   }
 
-  // Particle Explosions (Capped for mobile memory stability)
+  // Particle Explosions
   function createExplosion(x, y, color, count = 12) {
-    const actualCount = Math.min(count, 16);
-    if (particles.length > 80) {
+    const actualCount = Math.min(count, 18);
+    if (particles.length > 90) {
       particles.splice(0, actualCount);
     }
     for (let i = 0; i < actualCount; i++) {
@@ -921,14 +1488,14 @@
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
         color,
-        size: Math.random() * 3 + 2,
+        size: Math.random() * 3.5 + 2,
         alpha: 1,
-        decay: Math.random() * 0.04 + 0.02
+        decay: Math.random() * 0.035 + 0.02
       });
     }
   }
 
-  // Floating Text (Score, power-ups, combo feedback)
+  // Floating Text
   function addFloatingText(text, x, y, color = '#ffe600') {
     if (floatingTexts.length > 8) floatingTexts.shift();
     floatingTexts.push({
@@ -943,8 +1510,8 @@
 
   // Trigger Moon Bomb
   function useMoonBomb() {
-    if (bombsCount <= 0 && rabbit.bombTimer <= 0) return;
-    if (bombsCount > 0) bombsCount--;
+    if (bombsCount <= 0) return;
+    bombsCount--;
     triggerHaptic(60);
     playSound('bomb');
     screenShake = 16;
@@ -953,10 +1520,18 @@
     for (let i = 0; i < monsters.length; i++) {
       const m = monsters[i];
       createExplosion(m.x + m.width / 2, m.y + m.height / 2, m.color, 12);
-      score += m.type === 'boss' ? 50 : 10;
+      score += 15;
       monstersDefeated++;
+      subStageKills++;
     }
     monsters = [];
+    enemyProjectiles = [];
+
+    if (bossEntity) {
+      bossEntity.hp -= 20;
+      createExplosion(bossEntity.x + bossEntity.width / 2, bossEntity.y + bossEntity.height / 2, '#ffe600', 20);
+      if (bossEntity.hp <= 0) handleBossDefeated();
+    }
   }
 
   // Shoot Mooncake Stars
@@ -968,58 +1543,154 @@
     rabbit.lastShot = now;
     rabbit.poundingAnim = 10;
     playSound('shoot');
-    triggerHaptic(12);
+    triggerHaptic(10);
 
     const centerX = rabbit.x + rabbit.width / 2;
     const topY = rabbit.y - 5;
 
     if (rabbit.tripleShotTimer > 0) {
-      bullets.push({ x: centerX - 4, y: topY, vx: 0, vy: -9, width: 8, height: 12 });
-      bullets.push({ x: centerX - 8, y: topY, vx: -2.5, vy: -8.5, width: 8, height: 12 });
-      bullets.push({ x: centerX, y: topY, vx: 2.5, vy: -8.5, width: 8, height: 12 });
+      bullets.push({ x: centerX - 4, y: topY, vx: 0, vy: -9.5, width: 8, height: 12 });
+      bullets.push({ x: centerX - 8, y: topY, vx: -2.6, vy: -9.0, width: 8, height: 12 });
+      bullets.push({ x: centerX, y: topY, vx: 2.6, vy: -9.0, width: 8, height: 12 });
     } else {
-      bullets.push({ x: centerX - 4, y: topY, vx: 0, vy: -9, width: 8, height: 12 });
+      bullets.push({ x: centerX - 4, y: topY, vx: 0, vy: -9.5, width: 8, height: 12 });
     }
   }
 
-  // Reset & Start Game
+  // Reset & Start Game on Current Planet
   function resetGame() {
     initAudio();
-    lockPortraitOrientation();
     score = 0;
     lives = 3;
-    wave = 1;
+    currentSubStage = 1;
+    subStageKills = 0;
     monstersDefeated = 0;
     combo = 0;
     comboTimer = 0;
     bombsCount = 1;
+    bgScrollY = 0;
+    moonRevealRatio = 0.08;
+    warpSpeedBoost = 0;
+
     bullets = [];
+    enemyProjectiles = [];
     monsters = [];
     powerups = [];
     particles = [];
     floatingTexts = [];
+    bossEntity = null;
+    bossWarningTimer = 0;
     monsterSpawnTimer = 0;
+
     rabbit.x = canvas.width / 2 - rabbit.width / 2;
     rabbit.invulnerableTimer = 60;
     rabbit.shield = false;
     rabbit.rapidFireTimer = 0;
     rabbit.tripleShotTimer = 0;
+
     gameStarted = true;
     isPaused = false;
     gameOver = false;
+    stageCleared = false;
 
     startOverlay.classList.add('hidden');
+    planetSelectOverlay.classList.add('hidden');
+    stageClearOverlay.classList.add('hidden');
     pauseOverlay.classList.add('hidden');
     gameOverOverlay.classList.add('hidden');
+    
+    updatePlanetLabels();
     playSound('powerup');
+    addFloatingText(`🚀 ENTERING ${PLANETS[currentPlanetId].name}!`, canvas.width / 2, canvas.height / 2, '#00f3ff');
+  }
+
+  // Sub-Stage Complete Handler
+  function advanceSubStage() {
+    if (currentSubStage < 3) {
+      currentSubStage++;
+      subStageKills = 0;
+      warpSpeedBoost = 120;
+      playSound('wave');
+      triggerHaptic(50);
+      
+      const planet = PLANETS[currentPlanetId];
+      const stageTitle = planet.subStageNames[currentSubStage - 1];
+      addFloatingText(`★ SUB-STAGE COMPLETE! ★`, canvas.width / 2, canvas.height / 2 - 30, '#ffe600');
+      addFloatingText(`➔ ENTERING ${stageTitle}!`, canvas.width / 2, canvas.height / 2, '#00f3ff');
+      
+      score += 150;
+      spawnPowerup(canvas.width / 2 - 13, 80, Math.random() > 0.5 ? 'heart' : 'bomb');
+    } else if (currentSubStage === 3) {
+      // Enter Major Boss Fight!
+      currentSubStage = 4; // Boss Sub-Stage
+      warpSpeedBoost = 90;
+      monsters = [];
+      spawnBoss();
+    }
+  }
+
+  // Boss Defeated / Planet Liberated
+  function handleBossDefeated() {
+    playSound('stage_clear');
+    triggerHaptic(120);
+    screenShake = 24;
+
+    createExplosion(bossEntity.x + bossEntity.width / 2, bossEntity.y + bossEntity.height / 2, bossEntity.color, 35);
+    createExplosion(bossEntity.x + 20, bossEntity.y + 20, '#ffe600', 25);
+    createExplosion(bossEntity.x + bossEntity.width - 20, bossEntity.y + bossEntity.height - 20, '#00f3ff', 25);
+
+    score += 1000;
+    monstersDefeated++;
+    bossEntity = null;
+    stageCleared = true;
+
+    // Save Cleared Planet & Unlock Next Planet
+    saveClearedPlanet(currentPlanetId);
+    const planet = PLANETS[currentPlanetId];
+    let newlyUnlockedPlanet = null;
+
+    if (planet.nextPlanet) {
+      const unlocked = getUnlockedPlanets();
+      if (!unlocked.includes(planet.nextPlanet)) {
+        unlocked.push(planet.nextPlanet);
+        saveUnlockedPlanets(unlocked);
+        newlyUnlockedPlanet = PLANETS[planet.nextPlanet];
+      }
+    }
+
+    if (score > highScore) {
+      highScore = score;
+      localStorage.setItem('retro_moon_festival_highscore', highScore.toString());
+    }
+
+    // Populate Stage Clear Modal
+    clearPlanetText.textContent = `${planet.icon} ${planet.name}`;
+    clearScoreText.textContent = score;
+    clearKillsText.textContent = monstersDefeated;
+    clearHighScoreText.textContent = highScore;
+
+    if (newlyUnlockedPlanet) {
+      unlockNoticeBanner.classList.remove('hidden');
+      unlockedPlanetNameText.textContent = `${newlyUnlockedPlanet.icon} ${newlyUnlockedPlanet.name}`;
+    } else {
+      unlockNoticeBanner.classList.add('hidden');
+    }
+
+    setTimeout(() => {
+      stageClearOverlay.classList.remove('hidden');
+      recordMoonFestivalScore(score);
+    }, 1000);
   }
 
   // Toggle Pause
   function togglePause() {
-    if (!gameStarted || gameOver) return;
+    if (!gameStarted || gameOver || stageCleared) return;
     initAudio();
     isPaused = !isPaused;
     if (isPaused) {
+      const planet = PLANETS[currentPlanetId];
+      pausePlanetText.textContent = `${planet.icon} ${planet.name}`;
+      pauseStageText.textContent = currentSubStage <= 3 ? `STAGE ${currentSubStage}/3` : 'BOSS FIGHT';
       pauseOverlay.classList.remove('hidden');
       pauseIcon.className = 'fa-solid fa-play';
     } else {
@@ -1039,14 +1710,14 @@
       localStorage.setItem('retro_moon_festival_highscore', highScore.toString());
     }
 
+    const planet = PLANETS[currentPlanetId];
+    gameOverPlanetText.textContent = `${planet.icon} ${planet.name}`;
     finalScoreText.textContent = score;
     highScoreText.textContent = highScore;
-    finalWaveText.textContent = wave;
+    finalWaveText.textContent = currentSubStage <= 3 ? `${planet.name} (Sub-Stage ${currentSubStage})` : `${planet.name} (BOSS)`;
     monstersKilledText.textContent = monstersDefeated;
 
-    // Submit score if user is logged in
     recordMoonFestivalScore(score);
-
     gameOverOverlay.classList.remove('hidden');
   }
 
@@ -1061,27 +1732,22 @@
       const API_BASE_URL = window.API_BASE_URL || 'https://retrogames-service.onrender.com';
       fetch(`${API_BASE_URL}/scores`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           user_id: userId,
           userId: userId,
           game_id: 'moon-festival',
           gameId: 'moon-festival',
           score: Number(score),
+          planet: currentPlanetId,
           email: user.email
         })
-      }).catch(err => {
-        console.warn('Could not record score:', err);
-      });
-    } catch (e) {
-      console.warn('Error recording moon festival score:', e);
-    }
+      }).catch(() => {});
+    } catch (e) {}
   }
 
   // -------------------------------------------------------------
-  // Keyboard Event Listeners
+  // Keyboard Listeners
   // -------------------------------------------------------------
   window.addEventListener('keydown', e => {
     if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ', 'Spacebar'].includes(e.key)) {
@@ -1100,12 +1766,10 @@
   });
 
   // -------------------------------------------------------------
-  // Touch Event Listeners (Dedicated for Mobile / Tablets)
+  // Touch & UI Controls
   // -------------------------------------------------------------
-  // Big On-Screen Left/Right buttons
   function bindTouchButton(el, onDown, onUp) {
     if (!el) return;
-
     el.addEventListener('touchstart', e => {
       e.preventDefault();
       initAudio();
@@ -1125,7 +1789,6 @@
       onUp();
     });
 
-    // Fallback mouse clicks for desktop testing
     el.addEventListener('mousedown', e => {
       e.preventDefault();
       initAudio();
@@ -1158,7 +1821,6 @@
     useMoonBomb();
   }, () => {});
 
-  // Canvas Direct Touch & Virtual Floating Joystick
   function getCanvasTouchCoords(touch) {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
@@ -1172,7 +1834,6 @@
   canvas.addEventListener('touchstart', e => {
     e.preventDefault();
     initAudio();
-    lockPortraitOrientation();
 
     if (!gameStarted || gameOver) {
       resetGame();
@@ -1186,7 +1847,6 @@
     const touch = e.changedTouches[0];
     const coords = getCanvasTouchCoords(touch);
 
-    // If touching left side of screen, activate virtual joystick
     if (coords.x < canvas.width * 0.45 && !joystick.active) {
       joystick.active = true;
       joystick.touchId = touch.identifier;
@@ -1197,7 +1857,6 @@
       joystick.dx = 0;
       joystick.dy = 0;
     } else {
-      // Direct drag & fire mode
       touchDrag.active = true;
       touchDrag.touchId = touch.identifier;
       touchDrag.lastX = coords.x;
@@ -1255,7 +1914,7 @@
   canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
   canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
 
-  // Mouse fallback on Canvas
+  // Mouse fallback
   let isMouseDown = false;
   canvas.addEventListener('mousedown', e => {
     initAudio();
@@ -1283,18 +1942,77 @@
     isShootingHeld = false;
   });
 
-  // Action Buttons Click Handlers
+  // Action Button Handlers
   startGameBtn.addEventListener('click', resetGame);
   resumeGameBtn.addEventListener('click', togglePause);
   restartBtn.addEventListener('click', resetGame);
   restartFromPauseBtn.addEventListener('click', resetGame);
   pauseToggle.addEventListener('click', togglePause);
 
+  function openPlanetMap() {
+    renderPlanetCards();
+    planetSelectOverlay.classList.remove('hidden');
+    startOverlay.classList.add('hidden');
+    stageClearOverlay.classList.add('hidden');
+    gameOverOverlay.classList.add('hidden');
+    pauseOverlay.classList.add('hidden');
+  }
+
+  openPlanetMapBtn.addEventListener('click', openPlanetMap);
+  planetMapBtn.addEventListener('click', openPlanetMap);
+  gameOverPlanetMapBtn.addEventListener('click', openPlanetMap);
+  pausePlanetMapBtn.addEventListener('click', openPlanetMap);
+  stageClearMapBtn.addEventListener('click', openPlanetMap);
+
+  closePlanetMapBtn.addEventListener('click', () => {
+    planetSelectOverlay.classList.add('hidden');
+    resetGame();
+  });
+
+  nextPlanetBtn.addEventListener('click', () => {
+    const planet = PLANETS[currentPlanetId];
+    if (planet.nextPlanet && PLANETS[planet.nextPlanet]) {
+      selectPlanet(planet.nextPlanet);
+    }
+    stageClearOverlay.classList.add('hidden');
+    resetGame();
+  });
+
+  replayPlanetBtn.addEventListener('click', () => {
+    stageClearOverlay.classList.add('hidden');
+    resetGame();
+  });
+
   // -------------------------------------------------------------
-  // Game Logic Updates
+  // GAME UPDATE LOOP
   // -------------------------------------------------------------
   function update() {
-    if (!gameStarted || isPaused || gameOver) return;
+    if (!gameStarted || isPaused || gameOver || stageCleared) return;
+
+    // Upward Background Scrolling & Warp
+    const baseSpeed = warpSpeedBoost > 0 ? 3.8 : 0.8;
+    bgScrollY += baseSpeed;
+    if (warpSpeedBoost > 0) warpSpeedBoost--;
+
+    // Target moon reveal ratio based on sub-stage progression
+    const planet = PLANETS[currentPlanetId];
+    let targetReveal = 0.08;
+    if (currentSubStage === 1) {
+      const progress = subStageKills / planet.subStageTargets[0];
+      targetReveal = 0.08 + Math.min(0.28, progress * 0.28);
+    } else if (currentSubStage === 2) {
+      const progress = subStageKills / planet.subStageTargets[1];
+      targetReveal = 0.36 + Math.min(0.32, progress * 0.32);
+    } else if (currentSubStage === 3) {
+      const progress = subStageKills / planet.subStageTargets[2];
+      targetReveal = 0.68 + Math.min(0.32, progress * 0.32);
+    } else {
+      // Boss battle: Full glorious celestial reveal
+      targetReveal = 1.0;
+    }
+
+    // Smooth reveal lerp
+    moonRevealRatio += (targetReveal - moonRevealRatio) * 0.025;
 
     // Screen Shake decay
     if (screenShake > 0) screenShake--;
@@ -1319,7 +2037,7 @@
       rabbit.x += rabbit.speed;
     }
 
-    // Move Rabbit with Virtual Joystick
+    // Move Rabbit with Joystick
     if (joystick.active && Math.abs(joystick.dx) > 0.1) {
       rabbit.x += joystick.dx * rabbit.speed * 1.1;
       rabbit.x = Math.max(0, Math.min(canvas.width - rabbit.width, rabbit.x));
@@ -1330,17 +2048,15 @@
       fireBullet();
     }
 
-    // Wave Progression
-    const newWave = Math.floor(score / 180) + 1;
-    if (newWave > wave) {
-      wave = newWave;
-      playSound('wave');
-      triggerHaptic(40);
-      addFloatingText(`🌟 WAVE ${wave} REACHED! 🌟`, canvas.width / 2, canvas.height / 3, '#00f3ff');
-      spawnPowerup(canvas.width / 2 - 12, 50, Math.random() > 0.5 ? 'heart' : 'bomb');
+    // Check Sub-stage Advancement
+    if (currentSubStage <= 3) {
+      const requiredKills = planet.subStageTargets[currentSubStage - 1];
+      if (subStageKills >= requiredKills) {
+        advanceSubStage();
+      }
     }
 
-    // Update Bullets
+    // Update Player Bullets
     for (let i = bullets.length - 1; i >= 0; i--) {
       const b = bullets[i];
       b.x += b.vx;
@@ -1350,21 +2066,135 @@
       }
     }
 
-    // Spawn Monsters
-    monsterSpawnTimer++;
-    const currentSpawnInterval = Math.max(20, 56 - wave * 4);
-    if (monsterSpawnTimer >= currentSpawnInterval) {
-      spawnMonster();
-      monsterSpawnTimer = 0;
+    // Update Enemy Projectiles
+    for (let i = enemyProjectiles.length - 1; i >= 0; i--) {
+      const ep = enemyProjectiles[i];
+      ep.x += ep.vx;
+      ep.y += ep.vy;
+
+      // Check collision with rabbit
+      if (
+        ep.x + ep.width >= rabbit.x &&
+        ep.x <= rabbit.x + rabbit.width &&
+        ep.y + ep.height >= rabbit.y &&
+        ep.y <= rabbit.y + rabbit.height
+      ) {
+        enemyProjectiles.splice(i, 1);
+        if (rabbit.shield) {
+          rabbit.shield = false;
+          playSound('hit');
+          addFloatingText('SHIELD BLOCKED!', rabbit.x, rabbit.y - 15, '#00f3ff');
+          rabbit.invulnerableTimer = 35;
+        } else if (rabbit.invulnerableTimer === 0) {
+          lives--;
+          rabbit.invulnerableTimer = 60;
+          screenShake = 12;
+          triggerHaptic(50);
+          playSound('damage');
+          if (lives <= 0) {
+            triggerGameOver();
+            return;
+          }
+        }
+        continue;
+      }
+
+      if (ep.y > canvas.height + 20 || ep.y < -30 || ep.x < -30 || ep.x > canvas.width + 30) {
+        enemyProjectiles.splice(i, 1);
+      }
     }
 
-    // Update Monsters & Collision
+    // Spawn Regular Monsters
+    if (currentSubStage <= 3) {
+      monsterSpawnTimer++;
+      const currentSpawnInterval = Math.max(18, 52 - currentSubStage * 8);
+      if (monsterSpawnTimer >= currentSpawnInterval) {
+        spawnMonster();
+        monsterSpawnTimer = 0;
+      }
+    }
+
+    // Update Boss Entity
+    if (bossEntity) {
+      if (bossEntity.y < bossEntity.targetY) {
+        bossEntity.y += 1.6;
+      } else {
+        bossEntity.x += bossEntity.vx;
+        if (bossEntity.x <= 15 || bossEntity.x + bossEntity.width >= canvas.width - 15) {
+          bossEntity.vx = -bossEntity.vx;
+        }
+        bossEntity.wobble += 0.04;
+      }
+
+      // Boss Shooting AI
+      bossEntity.shootTimer++;
+      const shootInterval = bossEntity.hp < bossEntity.maxHp * 0.5 ? 40 : 65;
+      if (bossEntity.shootTimer >= shootInterval && bossEntity.y >= bossEntity.targetY) {
+        bossEntity.shootTimer = 0;
+        playSound('boss_shoot');
+        const bCenterX = bossEntity.x + bossEntity.width / 2;
+        const bCenterY = bossEntity.y + bossEntity.height - 10;
+
+        // 3-way or 5-way projectile spreads
+        if (bossEntity.hp < bossEntity.maxHp * 0.5) {
+          // Enraged phase
+          enemyProjectiles.push({ x: bCenterX - 5, y: bCenterY, vx: 0, vy: 4.8, width: 10, height: 10, color: bossEntity.color });
+          enemyProjectiles.push({ x: bCenterX - 5, y: bCenterY, vx: -2.2, vy: 4.2, width: 10, height: 10, color: bossEntity.color });
+          enemyProjectiles.push({ x: bCenterX - 5, y: bCenterY, vx: 2.2, vy: 4.2, width: 10, height: 10, color: bossEntity.color });
+        } else {
+          enemyProjectiles.push({ x: bCenterX - 5, y: bCenterY, vx: 0, vy: 4.2, width: 10, height: 10, color: bossEntity.color });
+          enemyProjectiles.push({ x: bCenterX - 5, y: bCenterY, vx: -1.6, vy: 3.8, width: 10, height: 10, color: bossEntity.color });
+          enemyProjectiles.push({ x: bCenterX - 5, y: bCenterY, vx: 1.6, vy: 3.8, width: 10, height: 10, color: bossEntity.color });
+        }
+      }
+
+      // Boss Collision with Bullets
+      for (let bIdx = bullets.length - 1; bIdx >= 0; bIdx--) {
+        const b = bullets[bIdx];
+        if (
+          b.x < bossEntity.x + bossEntity.width &&
+          b.x + b.width > bossEntity.x &&
+          b.y < bossEntity.y + bossEntity.height &&
+          b.y + b.height > bossEntity.y
+        ) {
+          bullets.splice(bIdx, 1);
+          bossEntity.hp--;
+          createExplosion(b.x, b.y, '#ffe600', 4);
+          playSound('hit');
+
+          if (bossEntity.hp <= 0) {
+            handleBossDefeated();
+            return;
+          }
+        }
+      }
+    }
+
+    // Update Regular Monsters & Collision
     for (let mIdx = monsters.length - 1; mIdx >= 0; mIdx--) {
       const m = monsters[mIdx];
       m.y += m.speed;
       m.wobble += m.wobbleSpeed;
-      if (m.type === 'swift') {
-        m.x += Math.sin(m.wobble) * 2.2;
+
+      if (['swift', 'jet', 'star_blade', 'blizzard'].includes(m.type)) {
+        m.x += Math.sin(m.wobble) * 2.5;
+      }
+
+      // Special shooting for magma / void / cryo variants
+      if (['magma', 'void', 'cryo'].includes(m.type)) {
+        m.shootTimer++;
+        if (m.shootTimer >= 90 && m.y > 40 && m.y < canvas.height - 180) {
+          m.shootTimer = 0;
+          enemyProjectiles.push({
+            x: m.x + m.width / 2 - 4,
+            y: m.y + m.height,
+            vx: 0,
+            vy: 3.2,
+            width: 8,
+            height: 8,
+            color: m.color
+          });
+        }
       }
 
       let monsterRemoved = false;
@@ -1407,7 +2237,7 @@
         if (rabbit.shield) {
           rabbit.shield = false;
           playSound('hit');
-          addFloatingText('SHIELD ABSORBED LEAK!', rabbit.x, rabbit.y - 15, '#00f3ff');
+          addFloatingText('SHIELD BLOCKED LEAK!', rabbit.x, rabbit.y - 15, '#00f3ff');
         } else {
           lives--;
           screenShake = 8;
@@ -1442,12 +2272,13 @@
               playSound('explosion');
               triggerHaptic(20);
               monstersDefeated++;
+              subStageKills++;
 
               // Combo handling
               combo++;
               comboTimer = 75;
               const multiplier = Math.min(5, Math.max(1, combo));
-              const basePts = m.type === 'boss' ? 50 : (m.type === 'swift' ? 25 : 10);
+              const basePts = m.maxHp > 1 ? 25 : 10;
               const earned = basePts * multiplier;
               score += earned;
 
@@ -1457,39 +2288,40 @@
                 addFloatingText(`+${earned}`, m.x, m.y, '#fff');
               }
 
-              // Split ruby grapefruit into smaller swift monsters
-              if (m.type === 'ruby') {
+              // Split logic for splitter enemy variants
+              if (['ruby', 'obsidian', 'supernova', 'glacial'].includes(m.type)) {
                 monsters.push({
                   type: 'swift',
-                  x: Math.max(5, m.x - 15),
+                  x: Math.max(5, m.x - 14),
                   y: m.y,
-                  width: 26,
-                  height: 26,
-                  speed: 2.8,
+                  width: 24,
+                  height: 24,
+                  speed: 3.0,
                   hp: 1,
                   maxHp: 1,
-                  color: '#f7c500',
+                  color: m.color,
                   wobble: 0,
-                  wobbleSpeed: 0.08
+                  wobbleSpeed: 0.08,
+                  shootTimer: 0
                 });
                 monsters.push({
                   type: 'swift',
-                  x: Math.min(canvas.width - 30, m.x + 15),
+                  x: Math.min(canvas.width - 28, m.x + 14),
                   y: m.y,
-                  width: 26,
-                  height: 26,
-                  speed: 2.8,
+                  width: 24,
+                  height: 24,
+                  speed: 3.0,
                   hp: 1,
                   maxHp: 1,
-                  color: '#f7c500',
+                  color: m.color,
                   wobble: Math.PI,
-                  wobbleSpeed: 0.08
+                  wobbleSpeed: 0.08,
+                  shootTimer: 0
                 });
               }
 
               // Power-up Drop Chance
-              const dropChance = m.type === 'boss' ? 1.0 : (Math.random() < 0.15);
-              if (dropChance) {
+              if (Math.random() < 0.14) {
                 spawnPowerup(m.x + m.width / 2 - 12, m.y + m.height / 2 - 12);
               }
 
@@ -1519,10 +2351,10 @@
         triggerHaptic(30);
 
         if (p.type === 'triple') {
-          rabbit.tripleShotTimer = 400; // ~6.6s
+          rabbit.tripleShotTimer = 420;
           addFloatingText('TRIPLE SHOT!', rabbit.x, rabbit.y - 20, '#00f3ff');
         } else if (p.type === 'rapid') {
-          rabbit.rapidFireTimer = 400;
+          rabbit.rapidFireTimer = 420;
           addFloatingText('RAPID FIRE!', rabbit.x, rabbit.y - 20, '#ffe600');
         } else if (p.type === 'shield') {
           rabbit.shield = true;
@@ -1534,7 +2366,7 @@
           bombsCount++;
           addFloatingText('+1 MOON BOMB!', rabbit.x, rabbit.y - 20, '#ff4757');
         }
-        score += 15;
+        score += 20;
         continue;
       }
 
@@ -1564,74 +2396,117 @@
       }
     }
 
-    // Update Environment
+    // Update Environment (Upward scrolling parallax starfield)
     stars.forEach(s => {
-      s.y += s.speed;
+      s.y += s.speed + (warpSpeedBoost > 0 ? 3.0 : 0);
       s.twinkle += 0.05;
       if (s.y > canvas.height) {
-        s.y = 0;
+        s.y = -5;
         s.x = Math.random() * canvas.width;
       }
     });
 
     clouds.forEach(c => {
       c.x += c.speed;
-      if (c.x > canvas.width + 50) c.x = -c.width - 50;
+      if (c.x > canvas.width + 60) c.x = -c.width - 60;
     });
   }
 
   // -------------------------------------------------------------
-  // Rendering / Draw Logic
+  // RENDERING ENGINE
   // -------------------------------------------------------------
   function draw() {
     ctx.save();
 
-    // Screen Shake transform
+    // Screen Shake
     if (screenShake > 0) {
       const dx = (Math.random() - 0.5) * screenShake * 1.2;
       const dy = (Math.random() - 0.5) * screenShake * 1.2;
       ctx.translate(dx, dy);
     }
 
-    // Clear Screen
-    ctx.fillStyle = '#080816';
+    const planet = PLANETS[currentPlanetId] || PLANETS.moon;
+
+    // Space Background Color
+    ctx.fillStyle = planet.skyColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Glowing Full Moon Background
-    const moonCenterX = canvas.width / 2;
-    const moonCenterY = 40;
-    const moonRadius = 150;
+    // Upward Scrolling Nebula Layers
+    const nebulaOffset = (bgScrollY * 0.4) % canvas.height;
+    const nebGrad = ctx.createRadialGradient(canvas.width * 0.5, canvas.height * 0.4 - nebulaOffset, 30, canvas.width * 0.5, canvas.height * 0.4 - nebulaOffset, 320);
+    nebGrad.addColorStop(0, planet.nebulaColor);
+    nebGrad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = nebGrad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Outer Aura
-    const auraGradient = ctx.createRadialGradient(moonCenterX, moonCenterY, 60, moonCenterX, moonCenterY, 260);
-    auraGradient.addColorStop(0, 'rgba(255, 230, 180, 0.25)');
-    auraGradient.addColorStop(0.5, 'rgba(157, 0, 255, 0.12)');
-    auraGradient.addColorStop(1, 'rgba(8, 8, 22, 0)');
-    ctx.fillStyle = auraGradient;
+    // -------------------------------------------------------------
+    // GRADUALLY REVEALED CELESTIAL FULL MOON / PLANET BODY
+    // -------------------------------------------------------------
+    // Moon Y moves gradually into full view as moonRevealRatio increases
+    const planetCenterX = canvas.width / 2;
+    // Reveal maps from y = -140 (hidden/crescent top) down to y = 85 (full radiant view)
+    const planetCenterY = -140 + moonRevealRatio * 225;
+    const planetRadius = 135;
+
+    // Outer Aura Flare
+    if (moonRevealRatio > 0.1) {
+      const auraRad = 160 + moonRevealRatio * 110;
+      const auraGradient = ctx.createRadialGradient(planetCenterX, planetCenterY, 50, planetCenterX, planetCenterY, auraRad);
+      auraGradient.addColorStop(0, planet.auraColor);
+      auraGradient.addColorStop(0.6, planet.nebulaColor);
+      auraGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = auraGradient;
+      ctx.beginPath();
+      ctx.arc(planetCenterX, planetCenterY, auraRad, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Saturn Ring rendering behind disc
+    if (planet.hasRings && moonRevealRatio > 0.2) {
+      ctx.save();
+      ctx.translate(planetCenterX, planetCenterY);
+      ctx.rotate(-0.35);
+      ctx.strokeStyle = 'rgba(255, 230, 180, 0.4)';
+      ctx.lineWidth = 14;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, planetRadius * 1.8, planetRadius * 0.4, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Planet / Full Moon Disc
+    const discGrad = ctx.createRadialGradient(planetCenterX - 35, planetCenterY - 25, 20, planetCenterX, planetCenterY, planetRadius);
+    discGrad.addColorStop(0, planet.planetBodyColor1);
+    discGrad.addColorStop(0.7, planet.planetBodyColor2);
+    discGrad.addColorStop(1, planet.planetBodyColor3);
+    ctx.fillStyle = discGrad;
     ctx.beginPath();
-    ctx.arc(moonCenterX, moonCenterY, 260, 0, Math.PI * 2);
+    ctx.arc(planetCenterX, planetCenterY, planetRadius, 0, Math.PI * 2);
     ctx.fill();
 
-    // Moon Disc
-    const moonGrad = ctx.createRadialGradient(moonCenterX - 30, moonCenterY - 20, 20, moonCenterX, moonCenterY, moonRadius);
-    moonGrad.addColorStop(0, '#fffdf0');
-    moonGrad.addColorStop(0.7, '#fce4c8');
-    moonGrad.addColorStop(1, '#ecc095');
-    ctx.fillStyle = moonGrad;
+    // Planet Craters / Surface Detail
+    ctx.fillStyle = planet.craterColor;
     ctx.beginPath();
-    ctx.arc(moonCenterX, moonCenterY, moonRadius, 0, Math.PI * 2);
+    ctx.arc(planetCenterX - 45, planetCenterY + 20, 20, 0, Math.PI * 2);
+    ctx.arc(planetCenterX + 50, planetCenterY - 30, 26, 0, Math.PI * 2);
+    ctx.arc(planetCenterX + 25, planetCenterY + 45, 16, 0, Math.PI * 2);
+    ctx.arc(planetCenterX - 65, planetCenterY - 25, 13, 0, Math.PI * 2);
     ctx.fill();
 
-    // Moon Craters
-    ctx.fillStyle = 'rgba(215, 175, 135, 0.4)';
-    ctx.beginPath();
-    ctx.arc(moonCenterX - 45, moonCenterY + 20, 22, 0, Math.PI * 2);
-    ctx.arc(moonCenterX + 50, moonCenterY - 30, 28, 0, Math.PI * 2);
-    ctx.arc(moonCenterX + 25, moonCenterY + 45, 18, 0, Math.PI * 2);
-    ctx.arc(moonCenterX - 70, moonCenterY - 25, 14, 0, Math.PI * 2);
-    ctx.fill();
+    // Saturn Front Ring
+    if (planet.hasRings && moonRevealRatio > 0.2) {
+      ctx.save();
+      ctx.translate(planetCenterX, planetCenterY);
+      ctx.rotate(-0.35);
+      ctx.strokeStyle = 'rgba(255, 240, 200, 0.55)';
+      ctx.lineWidth = 8;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, planetRadius * 1.8, planetRadius * 0.4, 0, 0, Math.PI);
+      ctx.stroke();
+      ctx.restore();
+    }
 
-    // Night Clouds
+    // Drifting Atmosphere Clouds
     ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
     clouds.forEach(c => {
       ctx.beginPath();
@@ -1639,10 +2514,10 @@
       ctx.fill();
     });
 
-    // Starfield
+    // Parallax Starfield
     stars.forEach(s => {
       const alpha = 0.5 + Math.sin(s.twinkle) * 0.45;
-      ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+      ctx.fillStyle = s.layer === 2 ? `rgba(255, 255, 255, ${alpha})` : `rgba(0, 243, 255, ${alpha * 0.8})`;
       ctx.fillRect(s.x, s.y, s.size, s.size);
     });
 
@@ -1686,7 +2561,7 @@
       ctx.restore();
     });
 
-    // Draw Bullets (Mooncake Star Projectiles)
+    // Draw Player Bullets
     bullets.forEach(b => {
       ctx.fillStyle = '#ffe600';
       ctx.fillRect(b.x, b.y, b.width, b.height);
@@ -1694,7 +2569,19 @@
       ctx.fillRect(b.x + 2, b.y + 2, b.width - 4, b.height - 4);
     });
 
-    // Draw Monsters
+    // Draw Enemy Projectiles
+    enemyProjectiles.forEach(ep => {
+      ctx.fillStyle = ep.color || '#ff4757';
+      ctx.beginPath();
+      ctx.arc(ep.x + ep.width / 2, ep.y + ep.height / 2, ep.width / 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(ep.x + ep.width / 2, ep.y + ep.height / 2, ep.width / 4, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // Draw Regular Monsters
     monsters.forEach(m => {
       const centerX = m.x + m.width / 2;
       const centerY = m.y + m.height / 2;
@@ -1705,64 +2592,117 @@
       ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
       ctx.fill();
 
-      // Leaf / Stem
-      ctx.fillStyle = '#2ecc71';
-      ctx.fillRect(centerX - 3, m.y - 5, 6, 6);
-      ctx.fillStyle = '#27ae60';
-      ctx.fillRect(centerX + 2, m.y - 7, 4, 4);
+      // Stem / Antenna / Spikes based on monster theme
+      if (['titanium', 'obsidian', 'jet'].includes(m.type)) {
+        ctx.fillStyle = '#ff4757';
+        ctx.fillRect(centerX - 4, m.y - 6, 8, 5);
+      } else if (['star_blade', 'void', 'supernova'].includes(m.type)) {
+        ctx.fillStyle = '#00f3ff';
+        ctx.fillRect(centerX - 3, m.y - 7, 6, 6);
+      } else if (['cryo', 'blizzard', 'glacial', 'permafrost'].includes(m.type)) {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(centerX - 3, m.y - 7, 6, 6);
+      } else {
+        // Classic Citrus Leaf
+        ctx.fillStyle = '#2ecc71';
+        ctx.fillRect(centerX - 3, m.y - 5, 6, 6);
+      }
 
-      // Cheek blush
-      ctx.fillStyle = 'rgba(255, 0, 127, 0.35)';
-      ctx.beginPath();
-      ctx.arc(centerX - radius * 0.5, centerY + radius * 0.2, radius * 0.2, 0, Math.PI * 2);
-      ctx.arc(centerX + radius * 0.5, centerY + radius * 0.2, radius * 0.2, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Eyes
-      const eyeSize = Math.max(6, m.width * 0.22);
+      // Monster Eyes
+      const eyeSize = Math.max(5, m.width * 0.22);
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(centerX - radius * 0.65, centerY - radius * 0.35, eyeSize, eyeSize);
       ctx.fillRect(centerX + radius * 0.15, centerY - radius * 0.35, eyeSize, eyeSize);
 
-      // Red Angry Pupils
-      const pupilSize = eyeSize * 0.5;
-      ctx.fillStyle = '#e74c3c';
-      ctx.fillRect(centerX - radius * 0.5, centerY - radius * 0.25, pupilSize, pupilSize);
-      ctx.fillRect(centerX + radius * 0.3, centerY - radius * 0.25, pupilSize, pupilSize);
-
-      // Eyebrows
-      ctx.fillStyle = '#1e293b';
-      ctx.beginPath();
-      ctx.moveTo(centerX - radius * 0.75, centerY - radius * 0.45);
-      ctx.lineTo(centerX - radius * 0.15, centerY - radius * 0.25);
-      ctx.lineWidth = 2.5;
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.moveTo(centerX + radius * 0.75, centerY - radius * 0.45);
-      ctx.lineTo(centerX + radius * 0.15, centerY - radius * 0.25);
-      ctx.stroke();
+      // Pupils
+      const pupilColor = currentPlanetId === 'mars' ? '#ff0000' : (currentPlanetId === 'saturn' ? '#00f3ff' : '#e74c3c');
+      ctx.fillStyle = pupilColor;
+      ctx.fillRect(centerX - radius * 0.5, centerY - radius * 0.25, eyeSize * 0.5, eyeSize * 0.5);
+      ctx.fillRect(centerX + radius * 0.3, centerY - radius * 0.25, eyeSize * 0.5, eyeSize * 0.5);
 
       // Mouth
       ctx.fillStyle = '#1e293b';
       ctx.beginPath();
       ctx.arc(centerX, centerY + radius * 0.35, radius * 0.35, 0, Math.PI);
       ctx.fill();
-
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(centerX - 2, centerY + radius * 0.35, 4, 4);
-
-      // Boss Health Bar
-      if (m.type === 'boss') {
-        const hpBarW = m.width * 1.2;
-        const hpBarX = centerX - hpBarW / 2;
-        const hpBarY = m.y - 12;
-        ctx.fillStyle = '#0a0a12';
-        ctx.fillRect(hpBarX, hpBarY, hpBarW, 5);
-        ctx.fillStyle = '#ff007f';
-        ctx.fillRect(hpBarX, hpBarY, (m.hp / m.maxHp) * hpBarW, 5);
-      }
     });
+
+    // Draw Boss Entity
+    if (bossEntity) {
+      const bCenterX = bossEntity.x + bossEntity.width / 2;
+      const bCenterY = bossEntity.y + bossEntity.height / 2;
+      const bRadius = bossEntity.width / 2;
+
+      // Boss Body
+      ctx.fillStyle = bossEntity.color;
+      ctx.beginPath();
+      ctx.arc(bCenterX, bCenterY, bRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Boss Golden Crown
+      ctx.fillStyle = '#ffe600';
+      ctx.beginPath();
+      ctx.moveTo(bCenterX - 30, bossEntity.y - 12);
+      ctx.lineTo(bCenterX - 30, bossEntity.y + 4);
+      ctx.lineTo(bCenterX + 30, bossEntity.y + 4);
+      ctx.lineTo(bCenterX + 30, bossEntity.y - 12);
+      ctx.lineTo(bCenterX + 15, bossEntity.y - 4);
+      ctx.lineTo(bCenterX, bossEntity.y - 14);
+      ctx.lineTo(bCenterX - 15, bossEntity.y - 4);
+      ctx.closePath();
+      ctx.fill();
+
+      // Jewels on Crown
+      ctx.fillStyle = '#ff007f';
+      ctx.fillRect(bCenterX - 18, bossEntity.y - 2, 6, 6);
+      ctx.fillRect(bCenterX - 3, bossEntity.y - 6, 6, 6);
+      ctx.fillRect(bCenterX + 12, bossEntity.y - 2, 6, 6);
+
+      // Boss Eyes
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(bCenterX - 24, bCenterY - 14, 16, 16);
+      ctx.fillRect(bCenterX + 8, bCenterY - 14, 16, 16);
+
+      // Boss Angry Glowing Pupils
+      ctx.fillStyle = '#ff0000';
+      ctx.fillRect(bCenterX - 18, bCenterY - 8, 9, 9);
+      ctx.fillRect(bCenterX + 14, bCenterY - 8, 9, 9);
+
+      // Boss Mouth
+      ctx.fillStyle = '#1e293b';
+      ctx.beginPath();
+      ctx.arc(bCenterX, bCenterY + 16, 22, 0, Math.PI);
+      ctx.fill();
+
+      // Boss Fangs
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(bCenterX - 12, bCenterY + 16, 6, 7);
+      ctx.fillRect(bCenterX + 6, bCenterY + 16, 6, 7);
+
+      // Boss Top HUD Health Bar
+      const hpBarW = 320;
+      const hpBarH = 10;
+      const hpBarX = canvas.width / 2 - hpBarW / 2;
+      const hpBarY = 62;
+
+      ctx.fillStyle = 'rgba(10, 10, 20, 0.85)';
+      ctx.fillRect(hpBarX - 4, hpBarY - 16, hpBarW + 8, hpBarH + 22);
+      ctx.strokeStyle = '#ffe600';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(hpBarX - 4, hpBarY - 16, hpBarW + 8, hpBarH + 22);
+
+      ctx.font = '8px "Press Start 2P"';
+      ctx.fillStyle = '#ffe600';
+      ctx.textAlign = 'center';
+      ctx.fillText(`👑 ${bossEntity.name}`, canvas.width / 2, hpBarY - 4);
+
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(hpBarX, hpBarY, hpBarW, hpBarH);
+
+      const healthPct = Math.max(0, bossEntity.hp / bossEntity.maxHp);
+      ctx.fillStyle = healthPct > 0.4 ? '#ff007f' : '#ff4757';
+      ctx.fillRect(hpBarX, hpBarY, hpBarW * healthPct, hpBarH);
+    }
 
     // Draw Player: Jade Rabbit
     const isFlashing = rabbit.invulnerableTimer > 0 && Math.floor(rabbit.invulnerableTimer / 4) % 2 === 0;
@@ -1783,7 +2723,7 @@
         ctx.fill();
       }
 
-      // Ears
+      // Rabbit Ears
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(rabbit.x + 10, rabbit.y - 14, 7, 20);
       ctx.fillRect(rabbit.x + 25, rabbit.y - 14, 7, 20);
@@ -1807,7 +2747,7 @@
       ctx.fillRect(rabbit.x + 7, rabbit.y + 16, 5, 4);
       ctx.fillRect(rabbit.x + 30, rabbit.y + 16, 5, 4);
 
-      // Ribbon/Scarf
+      // Ribbon / Scarf
       ctx.fillStyle = '#00f3ff';
       ctx.fillRect(rabbit.x + 8, rabbit.y + 24, 26, 6);
 
@@ -1823,9 +2763,8 @@
       ctx.fillRect(rabbit.x + rabbit.width / 2 - 6, rabbit.y + 4 + animOffset, 12, 5);
     }
 
-    // Draw Virtual Floating Joystick on screen if active
+    // Draw Virtual Floating Joystick
     if (joystick.active) {
-      // Outer Ring Base
       ctx.strokeStyle = 'rgba(0, 243, 255, 0.45)';
       ctx.lineWidth = 3;
       ctx.fillStyle = 'rgba(18, 18, 37, 0.35)';
@@ -1834,7 +2773,6 @@
       ctx.fill();
       ctx.stroke();
 
-      // Inner Glowing Knob
       ctx.fillStyle = '#00f3ff';
       ctx.shadowColor = '#00f3ff';
       ctx.shadowBlur = 10;
@@ -1854,57 +2792,76 @@
     });
     ctx.globalAlpha = 1;
 
-    // Minimal Clean Mobile HUD Display
+    // -------------------------------------------------------------
+    // HUD DISPLAY
+    // -------------------------------------------------------------
     ctx.fillStyle = '#ffe600';
-    ctx.font = '10px "Press Start 2P"';
+    ctx.font = '9px "Press Start 2P"';
     ctx.textAlign = 'left';
-    ctx.fillText(`SCORE: ${score}`, 14, 24);
-    ctx.fillText(`WAVE: ${wave}`, 14, 44);
+    ctx.fillText(`SCORE: ${score}`, 14, 22);
 
-    // High Score
-    ctx.fillStyle = '#00f3ff';
+    // Sub-stage progress label & progress bar
+    if (currentSubStage <= 3) {
+      const targetKills = planet.subStageTargets[currentSubStage - 1];
+      ctx.fillStyle = '#00f3ff';
+      ctx.fillText(`STAGE ${currentSubStage}/3 [${subStageKills}/${targetKills}]`, 14, 40);
+
+      // Mini Progress Bar
+      const subProgW = 100;
+      const subProgH = 4;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+      ctx.fillRect(14, 46, subProgW, subProgH);
+      ctx.fillStyle = '#00f3ff';
+      ctx.fillRect(14, 46, (subStageKills / targetKills) * subProgW, subProgH);
+    } else {
+      ctx.fillStyle = '#ff007f';
+      ctx.fillText(`👑 BOSS BATTLE`, 14, 40);
+    }
+
+    // Active Sector Name in center
+    ctx.fillStyle = planet.themeColor;
     ctx.textAlign = 'center';
-    ctx.fillText(`HIGH: ${Math.max(score, highScore)}`, canvas.width / 2, 24);
+    ctx.fillText(`${planet.icon} ${planet.name}`, canvas.width / 2, 22);
 
     // Lives
     ctx.textAlign = 'right';
     const hearts = '♥ '.repeat(Math.max(0, lives)).trim();
     ctx.fillStyle = '#ff007f';
-    ctx.fillText(`LIVES: ${hearts}`, canvas.width - 14, 24);
+    ctx.fillText(`LIVES: ${hearts}`, canvas.width - 14, 22);
 
-    // Power-up & Bomb Status on HUD
-    let hudY = 44;
+    // Power-up & Bomb HUD
+    let hudY = 40;
     if (bombsCount > 0) {
       ctx.fillStyle = '#ff4757';
       ctx.fillText(`BOMBS: ${bombsCount}`, canvas.width - 14, hudY);
-      hudY += 16;
+      hudY += 15;
     }
     if (rabbit.tripleShotTimer > 0) {
       ctx.fillStyle = '#00f3ff';
       ctx.fillText(`TRIPLE: ${Math.ceil(rabbit.tripleShotTimer / 60)}s`, canvas.width - 14, hudY);
-      hudY += 16;
+      hudY += 15;
     }
     if (rabbit.rapidFireTimer > 0) {
       ctx.fillStyle = '#ffe600';
       ctx.fillText(`RAPID: ${Math.ceil(rabbit.rapidFireTimer / 60)}s`, canvas.width - 14, hudY);
-      hudY += 16;
+      hudY += 15;
     }
     if (rabbit.shield) {
       ctx.fillStyle = '#00f3ff';
       ctx.fillText(`SHIELD`, canvas.width - 14, hudY);
     }
 
-    // Combo multiplier bar
+    // Combo bar
     if (combo > 1 && comboTimer > 0) {
       ctx.fillStyle = '#ffe600';
       ctx.textAlign = 'left';
-      ctx.fillText(`COMBO x${Math.min(5, combo)}!`, 14, 64);
+      ctx.fillText(`COMBO x${Math.min(5, combo)}!`, 14, 66);
     }
 
     ctx.restore();
   }
 
-  // Main Game Loop (Steady 60 FPS)
+  // Game Loop (Steady 60 FPS)
   function gameLoop() {
     update();
     draw();
@@ -1913,6 +2870,7 @@
 
   // Initialize
   initEnvironment();
+  renderPlanetCards();
   gameLoop();
 })();
 </script>

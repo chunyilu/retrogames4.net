@@ -50,6 +50,9 @@
 .left-1\/4 {
   left: calc(1 / 4 * 100%);
 }
+.z-0 {
+  z-index: 0;
+}
 .z-10 {
   z-index: 10;
 }
@@ -233,8 +236,14 @@
 .text-center {
   text-align: center;
 }
+.text-left {
+  text-align: left;
+}
 .text-right {
   text-align: right;
+}
+.text-\[7px\] {
+  font-size: 7px;
 }
 .text-\[8px\] {
   font-size: 8px;
@@ -267,6 +276,9 @@
 .opacity-75 {
   opacity: 75%;
 }
+.opacity-80 {
+  opacity: 80%;
+}
 .opacity-85 {
   opacity: 85%;
 }
@@ -278,6 +290,10 @@
   --tw-shadow: 0 0 10px var(--tw-shadow-color, rgba(255,230,0,0.7));
   box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
 }
+.shadow-\[0_0_12px_rgba\(255\,230\,0\,0\.6\)\] {
+  --tw-shadow: 0 0 12px var(--tw-shadow-color, rgba(255,230,0,0.6));
+  box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+}
 .shadow-\[0_0_12px_rgba\(255\,230\,0\,0\.8\)\] {
   --tw-shadow: 0 0 12px var(--tw-shadow-color, rgba(255,230,0,0.8));
   box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
@@ -286,9 +302,25 @@
   --tw-shadow: 0 0 20px var(--tw-shadow-color, rgba(255,230,0,0.25));
   box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
 }
+.shadow-\[0_0_20px_rgba\(255\,230\,0\,0\.35\)\] {
+  --tw-shadow: 0 0 20px var(--tw-shadow-color, rgba(255,230,0,0.35));
+  box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+}
+.shadow-\[0_0_25px_rgba\(255\,230\,0\,0\.15\)\] {
+  --tw-shadow: 0 0 25px var(--tw-shadow-color, rgba(255,230,0,0.15));
+  box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+}
+.drop-shadow-\[0_0_8px_rgba\(255\,230\,0\,0\.8\)\] {
+  --tw-drop-shadow-size: drop-shadow(0 0 8px var(--tw-drop-shadow-color, rgba(255,230,0,0.8)));
+  --tw-drop-shadow: var(--tw-drop-shadow-size);
+  filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+}
 .drop-shadow-\[0_0_15px_rgba\(255\,230\,0\,0\.8\)\] {
   --tw-drop-shadow-size: drop-shadow(0 0 15px var(--tw-drop-shadow-color, rgba(255,230,0,0.8)));
   --tw-drop-shadow: var(--tw-drop-shadow-size);
+  filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+}
+.filter {
   filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
 }
 .backdrop-filter {
@@ -348,6 +380,10 @@
     --tw-scale-z: 125%;
     scale: var(--tw-scale-x) var(--tw-scale-y);
   }
+  .hover\:shadow-\[0_0_30px_rgba\(255\,230\,0\,0\.7\)\]:hover {
+    --tw-shadow: 0 0 30px var(--tw-shadow-color, rgba(255,230,0,0.7));
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
 }
 .focus\:not-sr-only:focus {
   position: static;
@@ -398,11 +434,52 @@
   text-shadow: 0 0 10px rgba(255, 230, 0, 0.8);
 }
 .moon-glow-bg {
-  background: radial-gradient(circle, rgba(255, 230, 0, 0.18) 0%, rgba(255, 183, 0, 0.08) 40%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 230, 0, 0.22) 0%, rgba(255, 183, 0, 0.12) 40%, transparent 70%);
 }
 .festive-border {
   border-color: #ffe600;
   box-shadow: 0 0 20px rgba(255, 230, 0, 0.35), inset 0 0 15px rgba(255, 183, 0, 0.15);
+}
+@keyframes moonFloat {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(1.5deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+.animate-moon-float {
+  animation: moonFloat 5s ease-in-out infinite;
+}
+@keyframes rabbitGlowPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 18px rgba(255, 230, 0, 0.7)) drop-shadow(0 0 35px rgba(255, 0, 127, 0.35));
+  }
+  50% {
+    filter: drop-shadow(0 0 28px rgba(255, 230, 0, 0.95)) drop-shadow(0 0 50px rgba(0, 243, 255, 0.5));
+  }
+}
+.animate-rabbit-glow {
+  animation: rabbitGlowPulse 4s ease-in-out infinite;
+}
+@keyframes starTwinkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+.animate-star-twinkle {
+  animation: starTwinkle 2.5s ease-in-out infinite;
+}
+.animate-star-twinkle-delayed {
+  animation: starTwinkle 3.2s ease-in-out 1.2s infinite;
 }
 @keyframes floatLantern {
   0% {
@@ -425,7 +502,7 @@
   animation: floatLantern 5s ease-in-out 2s infinite;
 }
 @media (prefers-reduced-motion: reduce) {
-  .animate-float-lantern, .animate-float-lantern-delayed {
+  .animate-float-lantern, .animate-float-lantern-delayed, .animate-moon-float, .animate-rabbit-glow, .animate-star-twinkle, .animate-star-twinkle-delayed {
     animation: none;
   }
 }

@@ -191,9 +191,132 @@
 
         <!-- Hero Banner -->
         <section id="hero" class="relative pt-12 pb-20 md:py-28 synth-grid overflow-hidden border-b border-neon-purple/20">
-            <!-- Celestial Full Moon Motif Background -->
-            <div class="absolute -top-10 right-1/2 translate-x-1/2 md:translate-x-0 md:right-12 w-72 h-72 sm:w-96 sm:h-96 rounded-full moon-glow-bg pointer-events-none opacity-85 flex items-center justify-center">
-                <div class="w-44 h-44 sm:w-56 sm:h-56 rounded-full bg-gradient-to-br from-yellow-200/10 via-amber-400/15 to-transparent blur-2xl"></div>
+            <!-- Celestial Full Moon & Jade Rabbit Background Graphic (MoonRabbit reference) -->
+            <div class="absolute -top-6 right-1/2 translate-x-1/2 md:translate-x-0 md:right-8 lg:right-16 w-80 h-80 sm:w-96 sm:h-96 md:w-[440px] md:h-[440px] pointer-events-none select-none z-0 opacity-80 md:opacity-90 animate-moon-float" aria-hidden="true">
+                <svg class="w-full h-full animate-rabbit-glow" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Luminous Full Moon and Jade Rabbit">
+                    <defs>
+                        <!-- Lunar Radial Gradient -->
+                        <radialGradient id="heroLunarGlow" cx="40%" cy="38%" r="60%">
+                            <stop offset="0%" stop-color="#fffef2" />
+                            <stop offset="30%" stop-color="#ffea75" />
+                            <stop offset="65%" stop-color="#f59e0b" />
+                            <stop offset="88%" stop-color="#d97706" />
+                            <stop offset="100%" stop-color="#78350f" />
+                        </radialGradient>
+
+                        <!-- Outer Celestial Aura -->
+                        <radialGradient id="heroAtmosphereAura" cx="50%" cy="50%" r="50%">
+                            <stop offset="45%" stop-color="#ffe600" stop-opacity="0.35" />
+                            <stop offset="70%" stop-color="#ff007f" stop-opacity="0.18" />
+                            <stop offset="90%" stop-color="#00f3ff" stop-opacity="0.08" />
+                            <stop offset="100%" stop-color="#0a0a12" stop-opacity="0" />
+                        </radialGradient>
+
+                        <!-- Jade Rabbit Pearlescent Gradient -->
+                        <linearGradient id="heroRabbitGrad" x1="20%" y1="10%" x2="90%" y2="90%">
+                            <stop offset="0%" stop-color="#ffffff" />
+                            <stop offset="60%" stop-color="#f0f9ff" />
+                            <stop offset="100%" stop-color="#bae6fd" />
+                        </linearGradient>
+
+                        <!-- Inner Ear Rose Accent -->
+                        <linearGradient id="heroEarGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#fbcfe8" />
+                            <stop offset="100%" stop-color="#f472b6" />
+                        </linearGradient>
+
+                        <!-- Glow Filter -->
+                        <filter id="heroMoonGlow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="6" result="blur" />
+                            <feMerge>
+                                <feMergeNode in="blur" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+
+                        <!-- Soft Drop Shadow -->
+                        <filter id="heroRabbitShadow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000000" flood-opacity="0.45" />
+                        </filter>
+                    </defs>
+
+                    <!-- Outer Atmospheric Glow -->
+                    <circle cx="200" cy="200" r="190" fill="url(#heroAtmosphereAura)" />
+
+                    <!-- Golden Full Moon Disk -->
+                    <circle cx="200" cy="200" r="135" fill="url(#heroLunarGlow)" filter="url(#heroMoonGlow)" />
+
+                    <!-- Lunar Maria / Crater Shading (Authentic Moon Textures) -->
+                    <ellipse cx="160" cy="140" rx="22" ry="16" fill="#92400e" opacity="0.22" />
+                    <ellipse cx="240" cy="165" rx="26" ry="18" fill="#92400e" opacity="0.18" />
+                    <ellipse cx="195" cy="275" rx="36" ry="18" fill="#92400e" opacity="0.2" />
+                    <circle cx="140" cy="235" r="14" fill="#92400e" opacity="0.18" />
+                    <circle cx="255" cy="245" r="16" fill="#92400e" opacity="0.22" />
+                    <ellipse cx="210" cy="125" rx="14" ry="10" fill="#92400e" opacity="0.15" />
+
+                    <!-- Cosmic Synthwave Ribbon Rings -->
+                    <path d="M 50 240 Q 130 200 210 245 T 350 220" stroke="rgba(0, 243, 255, 0.4)" stroke-width="3" stroke-linecap="round" fill="none" />
+                    <path d="M 70 270 Q 170 240 250 275 T 370 255" stroke="rgba(255, 0, 127, 0.35)" stroke-width="2.5" stroke-linecap="round" fill="none" />
+
+                    <!-- Twinkling Stardust & Sparkles -->
+                    <g fill="#ffffff">
+                        <!-- Sparkle 1 -->
+                        <polygon points="85,115 89,126 100,130 89,134 85,145 81,134 70,130 81,126" fill="#ffe600" opacity="0.9" />
+                        <!-- Sparkle 2 -->
+                        <polygon points="315,95 318,103 326,106 318,109 315,117 312,109 304,106 312,103" fill="#00f3ff" opacity="0.85" />
+                        <!-- Sparkle 3 -->
+                        <polygon points="330,290 332,296 338,298 332,300 330,306 328,300 322,298 328,296" fill="#ff007f" opacity="0.8" />
+                        <circle cx="110" cy="80" r="2.5" fill="#ffffff" opacity="0.8" />
+                        <circle cx="290" cy="315" r="3" fill="#ffe600" opacity="0.75" />
+                        <circle cx="65" cy="190" r="2" fill="#00f3ff" opacity="0.7" />
+                        <circle cx="340" cy="170" r="2" fill="#ffffff" opacity="0.6" />
+                    </g>
+
+                    <!-- Iconic Jade Rabbit Figure (Moon Rabbit Artwork) -->
+                    <g id="heroJadeRabbit" filter="url(#heroRabbitShadow)">
+                        <!-- Rabbit Fluffy Tail -->
+                        <circle cx="132" cy="225" r="14" fill="#ffffff" />
+                        <circle cx="130" cy="223" r="9" fill="#e0f2fe" />
+
+                        <!-- Hind Leg & Paw -->
+                        <path d="M 152 230 C 135 220 130 242 142 258 C 152 270 172 268 182 252 C 178 240 166 234 152 230 Z" fill="url(#heroRabbitGrad)" />
+                        <ellipse cx="160" cy="264" rx="18" ry="8" transform="rotate(-10 160 264)" fill="url(#heroRabbitGrad)" />
+
+                        <!-- Main Rabbit Torso -->
+                        <path d="M 148 220 C 142 195 170 175 204 182 C 232 188 245 215 232 238 C 218 256 168 256 148 220 Z" fill="url(#heroRabbitGrad)" />
+
+                        <!-- Forelegs & Paws -->
+                        <path d="M 218 215 C 232 215 250 225 255 238 C 252 244 238 246 225 235 Z" fill="url(#heroRabbitGrad)" />
+                        <path d="M 208 222 C 222 225 235 236 238 250 C 232 254 220 252 210 238 Z" fill="url(#heroRabbitGrad)" opacity="0.9" />
+
+                        <!-- Rabbit Head -->
+                        <ellipse cx="235" cy="172" rx="22" ry="19" transform="rotate(-18 235 172)" fill="url(#heroRabbitGrad)" />
+
+                        <!-- Snout & Mouth -->
+                        <path d="M 248 164 C 259 166 262 177 251 185 Z" fill="url(#heroRabbitGrad)" />
+
+                        <!-- Long Ears (Graceful Moon Rabbit Silhouette) -->
+                        <!-- Back Ear -->
+                        <path d="M 230 160 C 226 128 210 92 196 84 C 190 88 198 120 215 155 Z" fill="url(#heroRabbitGrad)" />
+                        <path d="M 220 155 C 212 130 200 102 194 94 C 192 96 198 120 208 148 Z" fill="url(#heroEarGrad)" opacity="0.75" />
+
+                        <!-- Front Ear -->
+                        <path d="M 242 158 C 246 125 240 94 228 84 C 222 88 226 120 234 152 Z" fill="url(#heroRabbitGrad)" />
+                        <path d="M 238 152 C 240 128 236 104 230 94 C 228 96 230 120 234 146 Z" fill="url(#heroEarGrad)" opacity="0.7" />
+
+                        <!-- Ruby Glowing Eye -->
+                        <ellipse cx="240" cy="168" rx="3.5" ry="4" fill="#ff007f" />
+                        <circle cx="241" cy="166.5" r="1.2" fill="#ffffff" />
+
+                        <!-- Mid-Autumn Folklore Elixir Mortar & Pestle Accent -->
+                        <g transform="translate(252, 220) scale(0.85)">
+                            <path d="M 0 16 C 0 38 34 38 34 16 C 34 10 0 10 0 16 Z" fill="#fbbf24" stroke="#d97706" stroke-width="2.5" />
+                            <line x1="14" y1="2" x2="28" y2="24" stroke="#f59e0b" stroke-width="4.5" stroke-linecap="round" />
+                            <!-- Luminous Elixir Sparkle -->
+                            <circle cx="17" cy="6" r="4" fill="#00f3ff" filter="url(#heroMoonGlow)" />
+                        </g>
+                    </g>
+                </svg>
             </div>
 
             <!-- Floating Cyber Lanterns -->
@@ -214,7 +337,26 @@
                         Welcome to <strong class="text-neon-cyan">retrogames4.net</strong>! Play classic retro-inspired mini games, break high scores, and explore curated arcade nostalgia right inside your browser.
                     </p>
 
-                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                    <!-- Moon Rabbit Event Feature Badge & Fast Action -->
+                    <div class="max-w-xl mx-auto bg-neon-card/85 backdrop-blur-md border border-amber-400/50 rounded-2xl p-4 shadow-[0_0_25px_rgba(255,230,0,0.15)] flex flex-col sm:flex-row items-center justify-between gap-4 text-left">
+                        <div class="flex items-center gap-3.5">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400/30 to-neon-pink/30 border border-amber-400/60 flex items-center justify-center flex-shrink-0 text-2xl drop-shadow-[0_0_8px_rgba(255,230,0,0.8)]">
+                                🐇
+                            </div>
+                            <div>
+                                <div class="font-arcade text-[10px] sm:text-xs text-neon-yellow flex items-center gap-1.5">
+                                    <span>MOON RABBIT DEFENDER</span>
+                                    <span class="px-1.5 py-0.5 rounded text-[8px] bg-neon-pink text-white font-bold">HOT</span>
+                                </div>
+                                <div class="text-xs text-gray-300 mt-0.5">Defend the luminous celestial moon & unlock new planetary systems!</div>
+                            </div>
+                        </div>
+                        <a href="games/moon-festival/index.html" onclick="playRetroSound('click')" class="w-full sm:w-auto flex-shrink-0 px-4 py-2.5 rounded-lg bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-neon-dark font-arcade text-[10px] font-bold tracking-wider transition-all transform hover:scale-105 shadow-[0_0_12px_rgba(255,230,0,0.6)] flex items-center justify-center gap-1.5" aria-label="Play Moon Rabbit game">
+                            <span>🌕 PLAY NOW</span>
+                        </a>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
                         <a href="#arcade" onclick="playRetroSound('click')" class="w-full sm:w-auto font-arcade text-xs px-8 py-4 rounded bg-neon-cyan text-neon-dark font-bold hover:bg-cyan-300 glow-cyan transition-all transform hover:scale-105">
                             <i class="fa-solid fa-gamepad mr-2" aria-hidden="true"></i> LAUNCH ARCADE
                         </a>
@@ -614,6 +756,19 @@
             </div>
         </div>
     </div>
+
+    <!-- Floating Moon Rabbit Quick Access Widget -->
+    <aside id="floatingMoonRabbitWidget" class="fixed bottom-6 right-6 z-40 group select-none hidden sm:block" aria-label="Moon Rabbit Quick Launch">
+        <a href="games/moon-festival/index.html" onclick="playRetroSound('click')" class="flex items-center gap-2.5 bg-neon-dark/95 backdrop-blur-md border-2 border-amber-400/80 rounded-full py-2 px-3.5 shadow-[0_0_20px_rgba(255,230,0,0.35)] hover:shadow-[0_0_30px_rgba(255,230,0,0.7)] hover:border-neon-yellow transition-all transform hover:scale-105 group" title="Play Moon Rabbit: Cosmic Space Defender">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-300 to-amber-500 flex items-center justify-center text-lg animate-bounce shadow-inner">
+                🐇
+            </div>
+            <div class="font-arcade text-[9px] text-neon-yellow group-hover:text-white transition-colors">
+                <span>MOON RABBIT</span>
+                <span class="block text-[7px] text-amber-300 font-sans tracking-tight">DEFEND THE MOON 🌕</span>
+            </div>
+        </a>
+    </aside>
 
     <!-- External JavaScript -->
     <script src="./js/main.js"></script>

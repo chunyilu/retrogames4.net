@@ -44,12 +44,54 @@
 
 /* Mid-Autumn Celestial Motifs */
 .moon-glow-bg {
-    background: radial-gradient(circle, rgba(255, 230, 0, 0.18) 0%, rgba(255, 183, 0, 0.08) 40%, transparent 70%);
+    background: radial-gradient(circle, rgba(255, 230, 0, 0.22) 0%, rgba(255, 183, 0, 0.12) 40%, transparent 70%);
 }
 
 .festive-border {
     border-color: #ffe600;
     box-shadow: 0 0 20px rgba(255, 230, 0, 0.35), inset 0 0 15px rgba(255, 183, 0, 0.15);
+}
+
+@keyframes moonFloat {
+    0% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-8px) rotate(1.5deg);
+    }
+    100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+}
+
+.animate-moon-float {
+    animation: moonFloat 5s ease-in-out infinite;
+}
+
+@keyframes rabbitGlowPulse {
+    0%, 100% {
+        filter: drop-shadow(0 0 18px rgba(255, 230, 0, 0.7)) drop-shadow(0 0 35px rgba(255, 0, 127, 0.35));
+    }
+    50% {
+        filter: drop-shadow(0 0 28px rgba(255, 230, 0, 0.95)) drop-shadow(0 0 50px rgba(0, 243, 255, 0.5));
+    }
+}
+
+.animate-rabbit-glow {
+    animation: rabbitGlowPulse 4s ease-in-out infinite;
+}
+
+@keyframes starTwinkle {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+.animate-star-twinkle {
+    animation: starTwinkle 2.5s ease-in-out infinite;
+}
+
+.animate-star-twinkle-delayed {
+    animation: starTwinkle 3.2s ease-in-out 1.2s infinite;
 }
 
 @keyframes floatLantern {
@@ -77,7 +119,11 @@
 
 @media (prefers-reduced-motion: reduce) {
     .animate-float-lantern,
-    .animate-float-lantern-delayed {
+    .animate-float-lantern-delayed,
+    .animate-moon-float,
+    .animate-rabbit-glow,
+    .animate-star-twinkle,
+    .animate-star-twinkle-delayed {
         animation: none;
     }
 }
