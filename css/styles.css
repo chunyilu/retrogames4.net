@@ -29,11 +29,57 @@
 .glow-cyan {
     box-shadow: 0 0 15px rgba(0, 243, 255, 0.6), inset 0 0 15px rgba(0, 243, 255, 0.3);
 }
+.glow-yellow {
+    box-shadow: 0 0 15px rgba(255, 230, 0, 0.6), inset 0 0 15px rgba(255, 230, 0, 0.3);
+}
 .text-glow-cyan {
     text-shadow: 0 0 8px rgba(0, 243, 255, 0.8);
 }
 .text-glow-pink {
     text-shadow: 0 0 10px rgba(255, 0, 127, 0.8);
+}
+.text-glow-yellow {
+    text-shadow: 0 0 10px rgba(255, 230, 0, 0.8);
+}
+
+/* Mid-Autumn Celestial Motifs */
+.moon-glow-bg {
+    background: radial-gradient(circle, rgba(255, 230, 0, 0.18) 0%, rgba(255, 183, 0, 0.08) 40%, transparent 70%);
+}
+
+.festive-border {
+    border-color: #ffe600;
+    box-shadow: 0 0 20px rgba(255, 230, 0, 0.35), inset 0 0 15px rgba(255, 183, 0, 0.15);
+}
+
+@keyframes floatLantern {
+    0% {
+        transform: translateY(0px) rotate(0deg);
+        opacity: 0.75;
+    }
+    50% {
+        transform: translateY(-12px) rotate(3deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(0px) rotate(0deg);
+        opacity: 0.75;
+    }
+}
+
+.animate-float-lantern {
+    animation: floatLantern 4s ease-in-out infinite;
+}
+
+.animate-float-lantern-delayed {
+    animation: floatLantern 5s ease-in-out 2s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .animate-float-lantern,
+    .animate-float-lantern-delayed {
+        animation: none;
+    }
 }
 
 /* Synthwave Grid Background */

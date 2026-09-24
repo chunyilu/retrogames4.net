@@ -31,9 +31,46 @@ function playRetroSound(type) {
     }
 }
 
-// Vault Filtering function
-function filterVault(category) {
+// --- Festival Banner Handling ---
+function dismissFestivalBanner() {
     playRetroSound('click');
+    const banner = document.getElementById('moonFestivalBanner');
+    if (banner) {
+        banner.style.display = 'none';
+        try {
+            sessionStorage.setItem('moon_festival_banner_dismissed', 'true');
+        } catch (e) {}
+    }
+}
+
+function checkFestivalBanner() {
+    try {
+        if (sessionStorage.getItem('moon_festival_banner_dismissed') === 'true') {
+            const banner = document.getElementById('moonFestivalBanner');
+            if (banner) banner.style.display = 'none';
+        }
+    } catch (e) {}
+}
+
+// Vault Filtering function
+function filterVault(category, btnElement) {
+    playRetroSound('click');
+    const buttons = document.querySelectorAll('.vault-filter-btn');
+    buttons.forEach(btn => {
+        btn.classList.remove('bg-neon-pink', 'text-white', 'bg-neon-yellow', 'text-black', 'border-neon-yellow', 'bg-gradient-to-r', 'from-yellow-400', 'to-amber-500');
+        btn.classList.add('bg-neon-card', 'text-gray-300', 'border-gray-700');
+    });
+
+    const activeBtn = btnElement || (typeof window !== 'undefined' && window.event?.currentTarget ? window.event.currentTarget : null);
+    if (activeBtn && activeBtn.classList) {
+        activeBtn.classList.remove('bg-neon-card', 'text-gray-300', 'border-gray-700');
+        if (category === 'moon-festival') {
+            activeBtn.classList.add('bg-gradient-to-r', 'from-yellow-400', 'to-amber-500', 'text-black', 'font-bold');
+        } else {
+            activeBtn.classList.add('bg-neon-pink', 'text-white', 'font-bold');
+        }
+    }
+
     const cards = document.querySelectorAll('.game-card');
     cards.forEach(card => {
         if (category === 'all' || card.classList.contains(category)) {
@@ -1181,11 +1218,13 @@ function initMobileMenu() {
 // Initialize on DOM ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
+        checkFestivalBanner();
         initAuth();
         initMobileMenu();
         loadLeaderboard('breakout');
     });
 } else {
+    checkFestivalBanner();
     initAuth();
     initMobileMenu();
     loadLeaderboard('breakout');
@@ -1196,6 +1235,7 @@ window.toggleSound = toggleSound;
 window.playRetroSound = playRetroSound;
 window.filterVault = filterVault;
 window.launchDemo = launchDemo;
+window.dismissFestivalBanner = dismissFestivalBanner;
 window.initMobileMenu = initMobileMenu;
 window.submitGameScore = submitGameScore;
 window.recordScore = submitGameScore;

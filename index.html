@@ -43,6 +43,27 @@
     <!-- CRT Overlay Layer -->
     <div class="fixed inset-0 scanlines z-50 opacity-40"></div>
 
+    <!-- Moon Festival Seasonal Announcement Bar -->
+    <aside id="moonFestivalBanner" class="w-full bg-gradient-to-r from-neon-purple/95 via-amber-950/85 to-neon-purple/95 border-b border-amber-400/50 py-2.5 px-4 z-50 backdrop-blur-md transition-all duration-300" aria-label="Moon Festival Event Announcement">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 font-arcade">
+            <div class="flex items-center gap-2 text-neon-yellow flex-1 justify-center sm:justify-start">
+                <span class="animate-float-lantern text-sm sm:text-base select-none" aria-hidden="true">🏮</span>
+                <span class="text-[10px] sm:text-xs tracking-wide">
+                    <span class="text-white">MID-AUTUMN EVENT:</span> DEFEND THE MOON WITH JADE RABBIT! 🥮
+                </span>
+                <span class="animate-float-lantern-delayed text-sm sm:text-base select-none hidden sm:inline" aria-hidden="true">🏮</span>
+            </div>
+            <div class="flex items-center gap-2 mx-auto sm:mx-0">
+                <a href="games/moon-festival/index.html" onclick="playRetroSound('click')" class="px-3.5 py-1.5 rounded bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-neon-dark font-bold text-[9px] sm:text-[10px] transition-all transform hover:scale-105 shadow-[0_0_10px_rgba(255,230,0,0.7)] flex items-center gap-1.5" aria-label="Play Moon Festival event game">
+                    <span>🌕</span> PLAY NOW
+                </a>
+                <button onclick="dismissFestivalBanner()" class="p-1 text-gray-400 hover:text-white rounded hover:bg-white/10 transition-colors ml-1" title="Dismiss banner" aria-label="Dismiss banner">
+                    <i class="fa-solid fa-xmark text-xs" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
     <!-- Navigation Bar -->
     <header class="sticky top-0 z-40 bg-neon-dark/90 backdrop-blur-md border-b border-neon-cyan/30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
@@ -170,10 +191,19 @@
 
         <!-- Hero Banner -->
         <section id="hero" class="relative pt-12 pb-20 md:py-28 synth-grid overflow-hidden border-b border-neon-purple/20">
+            <!-- Celestial Full Moon Motif Background -->
+            <div class="absolute -top-10 right-1/2 translate-x-1/2 md:translate-x-0 md:right-12 w-72 h-72 sm:w-96 sm:h-96 rounded-full moon-glow-bg pointer-events-none opacity-85 flex items-center justify-center">
+                <div class="w-44 h-44 sm:w-56 sm:h-56 rounded-full bg-gradient-to-br from-yellow-200/10 via-amber-400/15 to-transparent blur-2xl"></div>
+            </div>
+
+            <!-- Floating Cyber Lanterns -->
+            <div class="absolute top-8 left-4 sm:left-12 text-2xl sm:text-3xl opacity-75 animate-float-lantern pointer-events-none select-none" aria-hidden="true">🏮</div>
+            <div class="absolute top-20 right-4 sm:right-16 text-xl sm:text-2xl opacity-75 animate-float-lantern-delayed pointer-events-none select-none" aria-hidden="true">🏮</div>
+
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div class="text-center max-w-3xl mx-auto space-y-6">
-                    <div class="inline-block px-3 py-1 rounded-full bg-neon-purple/20 border border-neon-purple text-neon-cyan font-arcade text-[10px] sm:text-xs mb-2 animate-pulse">
-                        ⚡ PRESS START TO ENTER THE RETROVERSE ⚡
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/15 border border-amber-400/60 text-neon-yellow font-arcade text-[10px] sm:text-xs mb-2 animate-pulse">
+                        <span>🥮</span> <span>MID-AUTUMN SPECIAL EVENT IS LIVE!</span> <span>🌕</span>
                     </div>
 
                     <h1 class="text-4xl sm:text-6xl font-heading font-extrabold uppercase tracking-tight text-white leading-none">
@@ -259,16 +289,19 @@
 
                 <!-- Filter Buttons -->
                 <div class="flex flex-wrap justify-center gap-2 mb-10 font-arcade text-[10px]">
-                    <button onclick="filterVault('all')" class="vault-filter-btn px-4 py-2 rounded bg-neon-pink text-white font-bold" aria-label="Show all games">
+                    <button onclick="filterVault('all', this)" class="vault-filter-btn px-4 py-2 rounded bg-neon-pink text-white font-bold" aria-label="Show all games">
                         ALL
                     </button>
-                    <button onclick="filterVault('arcade')" class="vault-filter-btn px-4 py-2 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-cyan" aria-label="Show arcade games">
+                    <button onclick="filterVault('moon-festival', this)" class="vault-filter-btn px-4 py-2 rounded bg-neon-card text-neon-yellow border border-amber-400/60 hover:border-neon-yellow flex items-center gap-1.5" aria-label="Show Moon Festival game">
+                        <span>🌕</span> FESTIVAL
+                    </button>
+                    <button onclick="filterVault('arcade', this)" class="vault-filter-btn px-4 py-2 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-cyan" aria-label="Show arcade games">
                         ARCADE
                     </button>
-                    <button onclick="filterVault('action')" class="vault-filter-btn px-4 py-2 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-cyan" aria-label="Show action games">
+                    <button onclick="filterVault('action', this)" class="vault-filter-btn px-4 py-2 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-cyan" aria-label="Show action games">
                         ACTION
                     </button>
-                    <button onclick="filterVault('puzzle')" class="vault-filter-btn px-4 py-2 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-cyan" aria-label="Show puzzle games">
+                    <button onclick="filterVault('puzzle', this)" class="vault-filter-btn px-4 py-2 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-cyan" aria-label="Show puzzle games">
                         PUZZLE
                     </button>
                 </div>
@@ -353,19 +386,26 @@
                     </article>
 
                     <!-- Game Card 5 (Moon Festival) -->
-                    <article class="game-card arcade action bg-neon-card rounded-xl border border-neon-purple/40 overflow-hidden hover:border-neon-pink transition-all duration-300 hover:-translate-y-2 group">
+                    <article class="game-card arcade action moon-festival relative bg-neon-card rounded-xl border-2 border-amber-400/70 shadow-[0_0_20px_rgba(255,230,0,0.25)] overflow-hidden hover:border-neon-yellow transition-all duration-300 hover:-translate-y-2 group">
+                        <!-- Event Highlight Ribbon -->
+                        <div class="absolute -top-1 -right-1 z-30 font-arcade text-[8px] sm:text-[9px] px-3 py-1 rounded-bl-lg rounded-tr-xl bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-300 text-black font-extrabold shadow-[0_0_12px_rgba(255,230,0,0.8)] animate-pulse flex items-center gap-1">
+                            <span>🥮</span> MID-AUTUMN EVENT
+                        </div>
                         <div class="h-48 bg-gray-800 relative overflow-hidden flex items-center justify-center">
+                            <div class="absolute w-28 h-28 rounded-full bg-amber-400/20 blur-xl pointer-events-none"></div>
                             <div class="absolute inset-0 bg-gradient-to-t from-neon-card to-transparent z-10"></div>
-                            <i class="fa-solid fa-moon text-6xl text-neon-yellow group-hover:scale-125 transition-transform duration-300" aria-hidden="true"></i>
-                            <span class="absolute top-3 right-3 z-20 font-arcade text-[9px] px-2 py-1 rounded bg-neon-purple text-white">ARCADE</span>
+                            <i class="fa-solid fa-moon text-6xl text-neon-yellow group-hover:scale-125 group-hover:rotate-12 transition-all duration-300 drop-shadow-[0_0_15px_rgba(255,230,0,0.8)]" aria-hidden="true"></i>
+                            <span class="absolute top-3 left-3 z-20 font-arcade text-[9px] px-2 py-1 rounded bg-amber-500/30 text-neon-yellow border border-amber-400/50">SEASONAL</span>
                         </div>
                         <div class="p-6 relative z-20 space-y-3">
-                            <h3 class="font-heading text-2xl font-bold text-white group-hover:text-neon-cyan">MOON FESTIVAL</h3>
+                            <h3 class="font-heading text-2xl font-bold text-white group-hover:text-neon-yellow flex items-center gap-2">
+                                MOON FESTIVAL <span class="text-base">🌕</span>
+                            </h3>
                             <p class="text-gray-400 text-xs leading-relaxed">Defend the Mid-Autumn Moon! Play as Jade Rabbit and blast incoming grapefruit monsters with mooncakes.</p>
                             <div class="flex items-center justify-between pt-2">
-                                <span class="text-xs text-neon-yellow font-mono"><i class="fa-solid fa-star" aria-hidden="true"></i> 4.9 / 5.0</span>
-                                <button onclick="launchDemo('Moon Festival')" class="font-arcade text-[10px] px-3 py-1.5 rounded bg-neon-cyan/20 border border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-black transition-colors" aria-label="Launch Moon Festival game">
-                                    LAUNCH
+                                <span class="text-xs text-neon-yellow font-mono"><i class="fa-solid fa-star" aria-hidden="true"></i> 5.0 / 5.0 (Event)</span>
+                                <button onclick="launchDemo('Moon Festival')" class="font-arcade text-[10px] px-3.5 py-1.5 rounded bg-gradient-to-r from-yellow-400 to-amber-500 text-neon-dark font-bold hover:from-yellow-300 hover:to-amber-400 transition-all shadow-[0_0_8px_rgba(255,230,0,0.5)] transform hover:scale-105 flex items-center gap-1" aria-label="Launch Moon Festival game">
+                                    <span>PLAY</span> <span>🥮</span>
                                 </button>
                             </div>
                         </div>
