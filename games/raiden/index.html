@@ -1871,6 +1871,36 @@
       triggerHaptic(80);
     }
 
+    function recordRaidenScore(scoreVal) {
+      try {
+        const storedUser = localStorage.getItem('retrogames4User');
+        if (!storedUser) return;
+        const user = JSON.parse(storedUser);
+        const userId = user.id || user.userId || user._id;
+        if (!userId) return;
+
+        const API_BASE_URL = window.API_BASE_URL || 'https://retrogames-service.onrender.com';
+        fetch(`${API_BASE_URL}/scores`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            user_id: userId,
+            userId: userId,
+            game_id: 'raiden',
+            gameId: 'raiden',
+            score: Number(scoreVal),
+            email: user.email
+          })
+        }).catch(err => {
+          console.warn('Could not record Raiden score:', err);
+        });
+      } catch (e) {
+        console.warn('Error recording Raiden score:', e);
+      }
+    }
+
     function gameOver() {
       currentState = GAME_STATE.GAME_OVER;
 
@@ -1883,6 +1913,8 @@
       highScoreText.textContent = highScore.toLocaleString();
       finalStageText.textContent = stage;
       finalEnemiesText.textContent = enemiesDefeated;
+
+      recordRaidenScore(score);
 
       playSound('gameover');
       triggerHaptic(120);

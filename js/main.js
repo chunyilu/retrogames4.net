@@ -31,13 +31,14 @@ function playRetroSound(type) {
     }
 }
 
-// --- Festival Banner Handling ---
+// --- Seasonal Event Banner Handling ---
 function dismissFestivalBanner() {
     playRetroSound('click');
     const banner = document.getElementById('moonFestivalBanner');
     if (banner) {
         banner.style.display = 'none';
         try {
+            sessionStorage.setItem('november_event_banner_dismissed', 'true');
             sessionStorage.setItem('moon_festival_banner_dismissed', 'true');
         } catch (e) {}
     }
@@ -45,7 +46,7 @@ function dismissFestivalBanner() {
 
 function checkFestivalBanner() {
     try {
-        if (sessionStorage.getItem('moon_festival_banner_dismissed') === 'true') {
+        if (sessionStorage.getItem('november_event_banner_dismissed') === 'true') {
             const banner = document.getElementById('moonFestivalBanner');
             if (banner) banner.style.display = 'none';
         }
@@ -64,7 +65,7 @@ function filterVault(category, btnElement) {
     const activeBtn = btnElement || (typeof window !== 'undefined' && window.event?.currentTarget ? window.event.currentTarget : null);
     if (activeBtn && activeBtn.classList) {
         activeBtn.classList.remove('bg-neon-card', 'text-gray-300', 'border-gray-700');
-        if (category === 'moon-festival') {
+        if (category === 'moon-festival' || category === 'featured') {
             activeBtn.classList.add('bg-gradient-to-r', 'from-yellow-400', 'to-amber-500', 'text-black', 'font-bold');
         } else {
             activeBtn.classList.add('bg-neon-pink', 'text-white', 'font-bold');
@@ -88,7 +89,10 @@ function launchDemo(title) {
         return;
     }
     playRetroSound('click');
-    if (title === 'Cyber Maze' || title === 'cyber-maze' || title === 'CyberMaze') {
+    if (title === 'Raiden' || title === 'raiden' || title === 'Raiden: Cosmic Air-Raid') {
+        // Open Raiden vertical shooter game
+        window.location.href = 'games/raiden/index.html';
+    } else if (title === 'Cyber Maze' || title === 'cyber-maze' || title === 'CyberMaze') {
         // Open Cyber Maze game
         window.location.href = 'games/cyber-maze/index.html';
     } else if (title === 'Moon Festival' || title === 'Jade Rabbit' || title === 'Moon Festival: Jade Rabbit') {
@@ -102,9 +106,44 @@ function launchDemo(title) {
     }
 }
 
+// --- In-Cabinet Game Switcher UI Helper ---
+function updateCabinetSwitcherUI(mode) {
+    const breakoutBtn = document.getElementById('cabinetBreakoutBtn');
+    const cyberMazeBtn = document.getElementById('cabinetCyberMazeBtn');
+    if (breakoutBtn && cyberMazeBtn) {
+        if (mode === 'cyber-maze') {
+            cyberMazeBtn.className = 'font-arcade text-[9px] sm:text-[10px] px-3 py-1.5 rounded bg-neon-pink text-white font-bold transition-all';
+            breakoutBtn.className = 'font-arcade text-[9px] sm:text-[10px] px-3 py-1.5 rounded text-gray-300 hover:text-neon-cyan transition-all';
+        } else {
+            breakoutBtn.className = 'font-arcade text-[9px] sm:text-[10px] px-3 py-1.5 rounded bg-neon-cyan text-neon-dark font-bold transition-all';
+            cyberMazeBtn.className = 'font-arcade text-[9px] sm:text-[10px] px-3 py-1.5 rounded text-gray-300 hover:text-neon-cyan transition-all';
+        }
+    }
+}
+
+function switchArcadeCabinet(mode) {
+    if (mode === 'cyber-maze') {
+        startCyberMazeGame();
+    } else {
+        playRetroSound('click');
+        updateCabinetSwitcherUI('breakout');
+        if (typeof window._cleanupCyberMaze === 'function') {
+            window._cleanupCyberMaze();
+        }
+        if (typeof window.startGame === 'function') {
+            window.startGame();
+        }
+    }
+}
+
 // --- Cyber Maze In-Arcade Game ---
 function startCyberMazeGame() {
     playRetroSound('click');
+    updateCabinetSwitcherUI('cyber-maze');
+
+    if (typeof window._cleanupCyberMaze === 'function') {
+        window._cleanupCyberMaze();
+    }
 
     const arcadeSection = document.getElementById('arcade');
     if (arcadeSection) {
@@ -1230,11 +1269,30 @@ if (document.readyState === 'loading') {
     loadLeaderboard('breakout');
 }
 
+// Register November Showcase game display name & fallback leaderboard
+GAME_NAMES['raiden'] = 'Raiden';
+
+const _origRenderFallbackLeaderboard = renderFallbackLeaderboard;
+renderFallbackLeaderboard = function(gameId) {
+    if (gameId === 'raiden') {
+        renderLeaderboard([
+            { player: 'ACE_INTERCEPTOR', score: 248500 },
+            { player: 'LEONID_PILOT', score: 192400 },
+            { player: 'RAIDEN_ONE', score: 154000 }
+        ], 'raiden');
+        return;
+    }
+    _origRenderFallbackLeaderboard(gameId);
+};
+
 // Export functions needed by HTML onclick attributes and games
 window.toggleSound = toggleSound;
 window.playRetroSound = playRetroSound;
 window.filterVault = filterVault;
 window.launchDemo = launchDemo;
+window.startCyberMazeGame = startCyberMazeGame;
+window.switchArcadeCabinet = switchArcadeCabinet;
+window.updateCabinetSwitcherUI = updateCabinetSwitcherUI;
 window.dismissFestivalBanner = dismissFestivalBanner;
 window.initMobileMenu = initMobileMenu;
 window.submitGameScore = submitGameScore;
