@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>LCM Hero Adventure // 2D Educational Math JRPG - RetroGames4.net</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100vh;
+      background-color: #070711;
+      color: #fff;
+      font-family: 'Press Start 2P', monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 8px 10px 24px;
+      overflow-x: hidden;
+    }
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%,
+        rgba(0, 0, 0, 0.25) 50%
+      ), linear-gradient(
+        90deg,
+        rgba(255, 0, 0, 0.03),
+        rgba(0, 255, 0, 0.01),
+        rgba(0, 0, 255, 0.03)
+      );
+      background-size: 100% 3px, 6px 100%;
+      pointer-events: none;
+      z-index: 90;
+      opacity: 0.35;
+    }
+    .top-nav {
+      width: 100%;
+      max-width: 1024px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+      padding: 8px 12px;
+      background: rgba(18, 18, 37, 0.92);
+      border: 2px solid rgba(0, 243, 255, 0.45);
+      border-radius: 8px;
+      box-shadow: 0 0 12px rgba(0, 243, 255, 0.25);
+      z-index: 20;
+    }
+    .back-btn, .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      color: #00f3ff;
+      background: rgba(0, 243, 255, 0.14);
+      border: 1px solid #00f3ff;
+      padding: 8px 11px;
+      border-radius: 6px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .back-btn:hover, .nav-btn:hover {
+      background: #00f3ff;
+      color: #0a0a12;
+      box-shadow: 0 0 12px #00f3ff;
+    }
+    .nav-btn.pink {
+      color: #ff007f;
+      border-color: #ff007f;
+      background: rgba(255, 0, 127, 0.15);
+    }
+    .nav-btn.pink:hover {
+      background: #ff007f;
+      color: #fff;
+      box-shadow: 0 0 12px #ff007f;
+    }
+    .nav-btn.gold {
+      color: #ffe600;
+      border-color: #ffe600;
+      background: rgba(255, 230, 0, 0.15);
+    }
+    .nav-btn.gold:hover {
+      background: #ffe600;
+      color: #0a0a12;
+      box-shadow: 0 0 12px #ffe600;
+    }
+    .canvas-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 1024px;
+      aspect-ratio: 1024 / 720;
+      border: 2px solid #00f3ff;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #121622;
+      box-shadow: 0 0 24px rgba(0, 243, 255, 0.3), inset 0 0 16px rgba(157, 0, 255, 0.25);
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: pointer;
+    }
+    .mobile-bar {
+      width: 100%;
+      max-width: 1024px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .dpad-group, .spell-group {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .ctrl-btn {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      min-width: 44px;
+      min-height: 44px;
+      padding: 8px 11px;
+      border-radius: 8px;
+      background: #121225;
+      border: 2px solid #00f3ff;
+      color: #00f3ff;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ctrl-btn.spell {
+      border-color: #ffe600;
+      color: #ffe600;
+    }
+    .ctrl-btn.fairy {
+      border-color: #ff007f;
+      color: #ff007f;
+    }
+    .ctrl-btn:active {
+      background: #00f3ff;
+      color: #070711;
+    }
+  </style>
+</head>
+<body>
+  <div class="scanlines"></div>
+
+  <header class="top-nav">
+    <a href="../../index.html#catalog" class="back-btn">
+      <i class="fa-solid fa-arrow-left"></i> BACK TO VAULT
+    </a>
+    <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+      <button class="nav-btn gold" id="topShopBtn" title="Village Equipment Shop (Key B)">🏪 SHOP [B]</button>
+      <button class="nav-btn" id="topAiBtn" title="Adaptive Edge AI Telemetry (Key I)">🤖 EDGE AI [I]</button>
+      <button class="nav-btn pink" id="topFairyBtn" title="Short Division Tutorial Fairy (Key H)">🧚 FAIRY [H]</button>
+      <button class="nav-btn" id="topSoundBtn" title="Toggle Chiptune Audio">🔊 SOUND: ON</button>
+    </div>
+  </header>
+
+  <div class="canvas-wrap">
+    <canvas id="lcmCanvas" width="1024" height="720" aria-label="LCM Hero Adventure Game Canvas"></canvas>
+  </div>
+
+  <div class="mobile-bar" aria-label="Game Controls">
+    <div class="dpad-group">
+      <button class="ctrl-btn" id="btnLeft" aria-label="Move Left"><i class="fa-solid fa-arrow-left"></i></button>
+      <button class="ctrl-btn" id="btnUp" aria-label="Move Up"><i class="fa-solid fa-arrow-up"></i></button>
+      <button class="ctrl-btn" id="btnDown" aria-label="Move Down"><i class="fa-solid fa-arrow-down"></i></button>
+      <button class="ctrl-btn" id="btnRight" aria-label="Move Right"><i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+    <div class="spell-group">
+      <button class="ctrl-btn spell" id="btnCard1">CARD 1</button>
+      <button class="ctrl-btn spell" id="btnCard2">CARD 2</button>
+      <button class="ctrl-btn spell" id="btnCard3">CARD 3</button>
+      <button class="ctrl-btn spell" id="btnCard4">CARD 4</button>
+      <button class="ctrl-btn fairy" id="btnAction">ENTER / NEXT</button>
+    </div>
+  </div>
+
+<script>
+(() => {
+  'use strict';
+
+  const canvas = document.getElementById('lcmCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = 1024;
+  const H = 720;
+
+  // =========================================================================
+  // RETRO CHIPTUNE AUDIO SYNTHESIZER (Web Audio API)
+  // =========================================================================
+  class SoundEngine {
+    constructor() {
+      this.ctx = null;
+      this.enabled = true;
+    }
+    init() {
+      if (!this.ctx) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) this.ctx = new AudioCtx();
+      }
+      if (this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
+    }
+    playNotes(notes, type = 'square', gainVal = 0.14) {
+      if (!this.enabled) return;
+      this.init();
+      if (!this.ctx) return;
+      let t = this.ctx.currentTime;
+      for (const [freq, dur] of notes) {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, t);
+        gain.gain.setValueAtTime(gainVal, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(t);
+        osc.stop(t + dur);
+        t += dur * 0.9;
+      }
+    }
+    play(name) {
+      if (name === 'step') this.playNotes([[240, 0.04]], 'sine', 0.08);
+      else if (name === 'encounter') this.playNotes([[330, 0.06], [440, 0.06], [554, 0.08], [660, 0.12]], 'square', 0.15);
+      else if (name === 'win') this.playNotes([[523.25, 0.08], [659.25, 0.08], [783.99, 0.08], [1046.5, 0.22]], 'square', 0.16);
+      else if (name === 'deflect') this.playNotes([[300, 0.08], [180, 0.12], [120, 0.18]], 'sawtooth', 0.18);
+      else if (name === 'fairy') this.playNotes([[587.33, 0.07], [783.99, 0.07], [987.77, 0.09], [1174.66, 0.18]], 'sine', 0.16);
+      else if (name === 'buy') this.playNotes([[660, 0.06], [880, 0.12]], 'triangle', 0.16);
+      else if (name === 'cutscene') this.playNotes([[440, 0.10], [554.37, 0.10], [659.25, 0.10], [880, 0.28]], 'triangle', 0.16);
+    }
+  }
+  const sound = new SoundEngine();
+
+  // =========================================================================
+  // SCORE SUBMISSION TO RETROGAMES4.NET BACKEND
+  // =========================================================================
+  function recordLcmHeroScore(starPoints) {
+    if (!starPoints || starPoints <= 0) return;
+    try {
+      const storedUser = localStorage.getItem('retrogames4User');
+      if (!storedUser) return;
+      const user = JSON.parse(storedUser);
+      const userId = user.id || user.userId || user._id;
+      if (!userId) return;
+
+      const API_BASE_URL = window.API_BASE_URL || 'https://retrogames-service.onrender.com';
+      fetch(`${API_BASE_URL}/scores`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: userId,
+          userId: userId,
+          game_id: 'lcm-hero',
+          gameId: 'lcm-hero',
+          score: Number(starPoints),
+          email: user.email || ''
+        })
+      }).then(res => res.json()).then(data => {
+        const cachedKey = `retrogames4_scores_${userId}`;
+        let cached = [];
+        try { cached = JSON.parse(localStorage.getItem(cachedKey) || '[]'); } catch (e) { cached = []; }
+        cached.unshift({
+          id: (data && data.id) || Date.now(),
+          user_id: userId,
+          userId: userId,
+          game_id: 'lcm-hero',
+          gameId: 'lcm-hero',
+          score: Number(starPoints),
+          created_at: new Date().toISOString()
+        });
+        localStorage.setItem(cachedKey, JSON.stringify(cached));
+      }).catch(err => console.warn('Could not record LCM Hero score:', err));
+    } catch (e) {
+      console.warn('Error in recordLcmHeroScore:', e);
+    }
+  }
+
+  // =========================================================================
+  // ARITHMETIC ENGINE & SHORT DIVISION (短除法) SOLVER
+  // =========================================================================
+  const ProblemType = {
+    PRIME_PAIR: 'prime_pair',
+    OVERLAPPING: 'overlapping',
+    CONTAINED: 'contained',
+    THREE_RUSH: 'three_number_rush'
+  };
+
+  function gcd(a, b) {
+    while (b !== 0) {
+      const t = b;
+      b = a % b;
+      a = t;
+    }
+    return a;
+  }
+
+  function computeLcm(nums) {
+    return nums.reduce((acc, n) => (acc * n) / gcd(acc, n), nums[0]);
+  }
+
+  function buildShortDivision(numbers) {
+    let current = [...numbers];
+    const steps = [];
+    const divisorsUsed = [];
+    const primes = [2, 3, 5, 7, 11, 13, 17, 19];
+
+    while (true) {
+      let found = null;
+      for (const p of primes) {
+        if (current.every(x => x % p === 0)) {
+          found = p;
+          break;
+        }
+      }
+      if (found === null && current.length >= 3) {
+        for (const p of primes) {
+          if (current.filter(x => x % p === 0).length >= 2) {
+            found = p;
+            break;
+          }
+        }
+      }
+      if (found === null) break;
+
+      const before = [...current];
+      const nextRow = [];
+      const divNums = [];
+      for (const x of current) {
+        if (x % found === 0) {
+          nextRow.push(x / found);
+          divNums.push(x);
+        } else {
+          nextRow.push(x);
+        }
+      }
+      steps.push({
+        divisor: found,
+        input: before,
+        output: nextRow,
+        explanation: `Divide ${divNums.join(', ')} by shared prime factor ${found} → [${nextRow.join(', ')}]`
+      });
+      divisorsUsed.push(found);
+      current = nextRow;
+    }
+
+    const remainders = [...current];
+    let allFactors = [...divisorsUsed, ...remainders.filter(r => r !== 1 || divisorsUsed.length === 0)];
+    if (allFactors.length === 0) allFactors = [1];
+    return { steps, remainders, allFactors };
+  }
+
+  const POOLS = {
+    [ProblemType.PRIME_PAIR]: [[2, 3], [2, 5], [3, 5], [2, 7], [3, 7], [4, 5], [3, 8], [4, 9], [5, 6], [5, 7]],
+    [ProblemType.OVERLAPPING]: [[4, 6], [6, 8], [6, 9], [6, 10], [8, 10], [8, 12], [9, 12], [10, 15], [12, 15]],
+    [ProblemType.CONTAINED]: [[2, 4], [2, 6], [3, 6], [3, 9], [4, 8], [4, 12], [5, 10], [5, 15], [6, 12], [7, 14]],
+    [ProblemType.THREE_RUSH]: [[2, 3, 4], [3, 4, 6], [2, 3, 6], [2, 4, 6], [2, 5, 10], [3, 5, 15], [2, 3, 5], [4, 6, 8]]
+  };
+
+  const CONCEPT_HINTS = {
+    [ProblemType.PRIME_PAIR]: 'Prime / Coprime Pair: These numbers share NO factor > 1! Multiply directly: a × b = LCM.',
+    [ProblemType.OVERLAPPING]: 'Overlapping Factors: They share a common prime factor! Use Short Division (短除法) so you do not multiply the shared factor twice.',
+    [ProblemType.CONTAINED]: 'Contained Multiples: Notice the larger number is already a multiple of the smaller number — so the larger number IS the LCM!',
+    [ProblemType.THREE_RUSH]: 'Three-Number Rush: Find the smallest number divisible by ALL THREE shield numbers using Short Division step-by-step!'
+  };
+
+  // =========================================================================
+  // ADAPTIVE EDGE AI MODEL (Offline Latency & Mastery Tracker)
+  // =========================================================================
+  class AdaptiveEdgeAI {
+    constructor() {
+      this.records = {};
+      Object.values(ProblemType).forEach(pt => {
+        this.records[pt] = { attempts: 0, correct: 0, incorrect: 0, slow: 0, latencies: [], weight: 1.0 };
+      });
+      this.eventLog = ['Edge AI initialized: monitoring combat response latency & shield mastery.'];
+    }
+    recordAttempt(pt, nums, isCorrect, latencySec) {
+      const rec = this.records[pt];
+      rec.attempts++;
+      rec.latencies.push(Math.max(0.1, latencySec));
+      if (rec.latencies.length > 8) rec.latencies.shift();
+
+      const isSlow = latencySec > 15.0;
+      let note = '';
+      if (isCorrect) {
+        rec.correct++;
+        if (isSlow) {
+          rec.slow++;
+          rec.weight = Math.min(4.0, rec.weight + 0.75);
+          note = `AI Notice: Solved [${nums.join(', ')}] in ${latencySec.toFixed(1)}s (>15s). Boosting '${pt}' practice weight to ${rec.weight.toFixed(2)}x.`;
+        } else {
+          rec.weight = Math.max(1.0, rec.weight - 0.35);
+          note = `AI Notice: Fast mastery on [${nums.join(', ')}] (${latencySec.toFixed(1)}s)! Weight: ${rec.weight.toFixed(2)}x.`;
+        }
+      } else {
+        rec.incorrect++;
+        if (isSlow) rec.slow++;
+        rec.weight = Math.min(4.5, rec.weight + 1.1);
+        note = `AI Notice: Struggle detected on [${nums.join(', ')}] (${pt}). Boosting targeted spawn weight to ${rec.weight.toFixed(2)}x.`;
+      }
+      this.eventLog.unshift(note);
+      if (this.eventLog.length > 8) this.eventLog.pop();
+    }
+  }
+
+  function createProblem(pt) {
+    const pool = POOLS[pt] || POOLS[ProblemType.PRIME_PAIR];
+    const numbers = pool[Math.floor(Math.random() * pool.length)];
+    const lcmVal = computeLcm(numbers);
+    const rawProduct = numbers.reduce((a, b) => a * b, 1);
+
+    const commonTrap = rawProduct > lcmVal ? rawProduct : lcmVal * 2;
+    const candidates = [
+      commonTrap,
+      lcmVal * 2,
+      lcmVal * 3,
+      numbers.reduce((a, b) => a + b, 0),
+      Math.max(...numbers) * 2,
+      Math.min(...numbers) * 3,
+      lcmVal + 2,
+      Math.max(2, lcmVal - 2)
+    ];
+    const distractors = [commonTrap];
+    for (const c of candidates) {
+      if (c > 0 && c !== lcmVal && !distractors.includes(c) && distractors.length < 3) {
+        distractors.push(c);
+      }
+    }
+    let fb = lcmVal + 1;
+    while (distractors.length < 3) {
+      if (fb !== lcmVal && !distractors.includes(fb)) distractors.push(fb);
+      fb++;
+    }
+    const spellCards = [lcmVal, ...distractors.slice(0, 3)].sort((a, b) => a - b);
+    const sd = buildShortDivision(numbers);
+    const multiples = {};
+    for (const n of numbers) {
+      const cnt = Math.max(5, Math.min(9, Math.floor(lcmVal / n) + 2));
+      multiples[n] = Array.from({ length: cnt }, (_, i) => n * (i + 1));
+    }
+
+    return {
+      numbers,
+      problemType: pt,
+      lcm: lcmVal,
+      spellCards,
+      steps: sd.steps,
+      remainders: sd.remainders,
+      allFactors: sd.allFactors,
+      multiples,
+      conceptHint: CONCEPT_HINTS[pt],
+      evaluate(val) {
+        const ns = numbers.join(', ');
+        if (val === lcmVal) {
+          return { ok: true, msg: `Direct Hit! ${lcmVal} is the Least Common Multiple of [${ns}]!` };
+        }
+        const isCommon = numbers.every(n => val > 0 && val % n === 0);
+        if (isCommon && val > lcmVal) {
+          return { ok: false, msg: `Shield Deflected! ${val} IS a common multiple of [${ns}], but NOT the LEAST (smallest) one!` };
+        }
+        const nonDiv = numbers.filter(n => val % n !== 0);
+        return { ok: false, msg: `Shield Deflected! ${val} is not divisible by ${nonDiv.join(' and ')}!` };
+      }
+    };
+  }
+
+  // =========================================================================
+  // ZONES, SHOP & GAME STATE
+  // =========================================================================
+  const ZONES = {
+    1: {
+      name: '1. Whispering Woods',
+      subtitle: 'Prime Pair Sanctuary',
+      shieldLabel: 'Prime Pair (e.g., [3, 5])',
+      pt: ProblemType.PRIME_PAIR,
+      monsters: [['Emerald Slime', 'slime'], ['Forest Slime', 'slime'], ['King Slime', 'slime']],
+      gift: 'Starlight Crest of Primes',
+      tierName: 'Prime Knight',
+      colors: { floorA: '#2e623a', floorB: '#285834', wall: '#1c3824', accent: '#78eb8c' }
+    },
+    2: {
+      name: '2. Shadow Caves',
+      subtitle: 'Caverns of Overlapping Factors',
+      shieldLabel: 'Overlapping Factors (e.g., [4, 6])',
+      pt: ProblemType.OVERLAPPING,
+      monsters: [['Echo Bat', 'bat'], ['Crystal Golem', 'golem'], ['Obsidian Warden', 'golem']],
+      gift: 'Lantern of Common Divisors',
+      tierName: 'Factor Paladin',
+      colors: { floorA: '#303452', floorB: '#2a2e4a', wall: '#1a1c30', accent: '#aa8cff' }
+    },
+    3: {
+      name: '3. Misty Barrens',
+      subtitle: 'Plains of Contained Multiples',
+      shieldLabel: 'Contained Multiples (e.g., [3, 6])',
+      pt: ProblemType.CONTAINED,
+      monsters: [['Mist Phantom', 'knight'], ['Mirage Lancer', 'knight'], ['Gatekeeper General', 'knight']],
+      gift: 'The Legendary Holy Sword',
+      tierName: 'Holy Arithmancer',
+      colors: { floorA: '#5c4a3a', floorB: '#524234', wall: '#342822', accent: '#ffd76e' }
+    },
+    4: {
+      name: '4. Demon Castle',
+      subtitle: 'Citadel of the Three-Number Rush',
+      shieldLabel: 'Three-Number Rush (e.g., [3, 4, 6])',
+      pt: ProblemType.THREE_RUSH,
+      monsters: [['Chaos Gargoyle', 'golem'], ['Abyssal Executioner', 'knight'], ['Demon King Malphas', 'demon_king']],
+      gift: 'Crown of Eternal Harmony',
+      tierName: 'Grand Champion of LCM',
+      colors: { floorA: '#44222e', floorB: '#3a1c28', wall: '#241018', accent: '#ff5f69' }
+    }
+  };
+
+  const SHOP_ITEMS = [
+    { id: 'sword1', name: 'The Multiplier Sword', cost: 50, desc: 'Golden blade! +25% Star Points & +10 Gold per win.', purchased: false },
+    { id: 'shield1', name: 'The Prime Number Shield', cost: 60, desc: 'Sacred emerald shield! +3 Max HP and heals +3 HP.', purchased: false },
+    { id: 'sword2', name: 'Arcane Multiplier Greatsword', cost: 120, desc: 'Twin energy runes! +50% Star Points & +20 Gold per win.', purchased: false },
+    { id: 'shield2', name: 'Aegis of Eratosthenes', cost: 130, desc: 'Platinum prime barrier! +4 Max HP & full heal.', purchased: false },
+    { id: 'charm', name: 'Fairy Tutor Lantern', cost: 75, desc: 'Auto-summons the Short Division Fairy after just 1 mistake!', purchased: false },
+    { id: 'potion', name: 'Numerist Healing Potion', cost: 25, desc: 'Restores +3 HP immediately (repeatable).', purchased: false }
+  ];
+
+  const ai = new AdaptiveEdgeAI();
+  const hero = {
+    hp: 5,
+    maxHp: 5,
+    starPoints: 0,
+    gold: 40,
+    tier: 1,
+    tierTitle: 'Apprentice Numerist',
+    swordLevel: 0,
+    shieldLevel: 0,
+    hasFairyCharm: false,
+    x: 2,
+    y: 5,
+    streak: 0
+  };
+
+  let scene = 'TITLE'; // TITLE, EXPLORE, COMBAT, FAIRY, SHOP, AI, CUTSCENE, VICTORY, GAMEOVER
+  let currentZone = 1;
+  let zonesCleared = 0;
+  let monsters = [];
+  let activeMonster = null;
+  let consecutiveWrong = 0;
+  let combatFeedback = '';
+  let selectedCard = 0;
+  let questionStartMs = 0;
+  let fairyTab = 'short_division'; // 'short_division' or 'multiples'
+  let statusBanner = 'Use Arrow Keys / WASD or click tiles to explore! Walk into monsters to battle.';
+  let particles = [];
+  let clickableRects = [];
+
+  function spawnBurst(x, y, color, count = 24) {
+    for (let i = 0; i < count; i++) {
+      const a = (Math.PI * 2 * i) / count + Math.random() * 0.3;
+      const spd = 2 + Math.random() * 4;
+      particles.push({ x, y, vx: Math.cos(a) * spd, vy: Math.sin(a) * spd - 1.5, color, life: 35 });
+    }
+  }
+
+  function loadZone(z) {
+    currentZone = z;
+    hero.x = 2;
+    hero.y = 5;
+    const zCfg = ZONES[z];
+    const positions = [[6, 3], [9, 6], [12, 4]];
+    monsters = zCfg.monsters.map(([mName, species], idx) => ({
+      id: idx,
+      name: mName,
+      species,
+      x: positions[idx][0],
+      y: positions[idx][1],
+      isBoss: idx === 2,
+      defeated: false,
+      problem: createProblem(zCfg.pt)
+    }));
+    statusBanner = `Entered ${zCfg.name}: ${zCfg.shieldLabel}`;
+  }
+
+  loadZone(1);
+
+  function getProgress() {
+    const defeatedInZone = monsters.filter(m => m.defeated).length;
+    return Math.min(1, (zonesCleared + defeatedInZone / 3) / 4);
+  }
+
+  // =========================================================================
+  // GAME LOGIC & ACTIONS
+  // =========================================================================
+  function moveHero(dx, dy) {
+    if (scene !== 'EXPLORE') return;
+    const nx = hero.x + dx;
+    const ny = hero.y + dy;
+    if (nx < 1 || nx >= 15 || ny < 1 || ny >= 9) return;
+
+    // Check Shop tile (2, 2)
+    if (nx === 2 && ny === 2) {
+      hero.x = nx;
+      hero.y = ny;
+      scene = 'SHOP';
+      sound.play('buy');
+      return;
+    }
+
+    // Check Signpost tile (4, 2)
+    if (nx === 4 && ny === 2) {
+      hero.x = nx;
+      hero.y = ny;
+      statusBanner = `Signpost: ${CONCEPT_HINTS[ZONES[currentZone].pt]}`;
+      sound.play('step');
+      return;
+    }
+
+    // Check Monster encounter
+    const m = monsters.find(mon => !mon.defeated && mon.x === nx && mon.y === ny);
+    if (m) {
+      activeMonster = m;
+      consecutiveWrong = 0;
+      selectedCard = 0;
+      combatFeedback = `Wild ${m.name} appeared with Mathematical Shield [${m.problem.numbers.join(', ')}]!`;
+      questionStartMs = performance.now();
+      scene = 'COMBAT';
+      sound.play('encounter');
+      return;
+    }
+
+    // Check Portal tile (14, 5)
+    if (nx === 14 && ny === 5) {
+      const allDefeated = monsters.every(mon => mon.defeated);
+      if (!allDefeated) {
+        statusBanner = 'Castle Gate Locked! Defeat all 3 zone monsters to open the portal.';
+        sound.play('deflect');
+        return;
+      }
+      hero.x = nx;
+      hero.y = ny;
+      zonesCleared = Math.max(zonesCleared, currentZone);
+      const starBonus = 150 * currentZone;
+      const goldBonus = 45 * currentZone;
+      hero.starPoints += starBonus;
+      hero.gold += goldBonus;
+      hero.tierTitle = ZONES[currentZone].tierName;
+      recordLcmHeroScore(hero.starPoints);
+      spawnBurst(W / 2, H / 2, '#ffe600', 36);
+      sound.play('cutscene');
+      scene = 'CUTSCENE';
+      return;
+    }
+
+    hero.x = nx;
+    hero.y = ny;
+    sound.play('step');
+  }
+
+  function castSpellCard(idx) {
+    if (scene !== 'COMBAT' || !activeMonster) return;
+    if (activeMonster.defeated) {
+      scene = 'EXPLORE';
+      activeMonster = null;
+      return;
+    }
+    const prob = activeMonster.problem;
+    const chosen = prob.spellCards[idx];
+    const latency = (performance.now() - questionStartMs) / 1000;
+    const res = prob.evaluate(chosen);
+    ai.recordAttempt(prob.problemType, prob.numbers, res.ok, latency);
+
+    if (res.ok) {
+      activeMonster.defeated = true;
+      hero.streak++;
+      const mult = 1 + hero.swordLevel * 0.25;
+      const stars = Math.round((activeMonster.isBoss ? 150 : 100) * mult);
+      const gold = (activeMonster.isBoss ? 40 : 25) + hero.swordLevel * 10;
+      hero.starPoints += stars;
+      hero.gold += gold;
+      combatFeedback = `${res.msg} (+${stars} ⭐, +${gold} 🪙) — Press ENTER or Click to continue!`;
+      recordLcmHeroScore(hero.starPoints);
+      spawnBurst(730, 290, '#00f3ff', 32);
+      sound.play('win');
+    } else {
+      consecutiveWrong++;
+      hero.streak = 0;
+      hero.hp = Math.max(0, hero.hp - 1);
+      combatFeedback = `${res.msg} Monster counters for -1 HP!`;
+      spawnBurst(260, 340, '#ff007f', 20);
+
+      if (hero.hp <= 0) {
+        recordLcmHeroScore(hero.starPoints);
+        sound.play('deflect');
+        scene = 'GAMEOVER';
+        return;
+      }
+
+      const threshold = hero.hasFairyCharm ? 1 : 2;
+      if (consecutiveWrong >= threshold) {
+        fairyTab = 'short_division';
+        scene = 'FAIRY';
+        sound.play('fairy');
+      } else {
+        sound.play('deflect');
+      }
+    }
+  }
+
+  function buyItem(idx) {
+    const item = SHOP_ITEMS[idx];
+    if (!item) return;
+    if (item.purchased && item.id !== 'potion') {
+      statusBanner = `${item.name} is already equipped!`;
+      return;
+    }
+    if (hero.gold < item.cost) {
+      statusBanner = `Not enough Gold! Need ${item.cost} 🪙.`;
+      sound.play('deflect');
+      return;
+    }
+    hero.gold -= item.cost;
+    if (item.id !== 'potion') item.purchased = true;
+    if (item.id === 'sword1') hero.swordLevel = Math.max(hero.swordLevel, 1);
+    if (item.id === 'sword2') hero.swordLevel = Math.max(hero.swordLevel, 2);
+    if (item.id === 'shield1') { hero.maxHp += 3; hero.hp = Math.min(hero.maxHp, hero.hp + 3); hero.shieldLevel = 1; }
+    if (item.id === 'shield2') { hero.maxHp += 4; hero.hp = hero.maxHp; hero.shieldLevel = 2; }
+    if (item.id === 'charm') hero.hasFairyCharm = true;
+    if (item.id === 'potion') hero.hp = Math.min(hero.maxHp, hero.hp + 3);
+    statusBanner = `Purchased ${item.name}!`;
+    sound.play('buy');
+  }
+
+  // =========================================================================
+  // RENDERING
+  // =========================================================================
+  function addClickRect(id, x, y, w, h, action) {
+    clickableRects.push({ id, x, y, w, h, action });
+  }
+
+  function drawTopHud() {
+    ctx.fillStyle = '#141826';
+    ctx.fillRect(0, 0, W, 92);
+    ctx.strokeStyle = '#00f3ff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, 92);
+    ctx.lineTo(W, 92);
+    ctx.stroke();
+
+    // Princess Rescue Progress Bar
+    ctx.fillStyle = '#ffe600';
+    ctx.font = '11px "Press Start 2P"';
+    ctx.textAlign = 'left';
+    ctx.fillText('⚔️ PRINCESS RESCUE:', 18, 28);
+
+    const bx = 245, by = 14, bw = 430, bh = 20;
+    ctx.fillStyle = '#262c44';
+    ctx.fillRect(bx, by, bw, bh);
+    const prog = getProgress();
+    ctx.fillStyle = '#00f3ff';
+    ctx.fillRect(bx, by, Math.max(12, bw * prog), bh);
+    ctx.strokeStyle = '#ffffff';
+    ctx.strokeRect(bx, by, bw, bh);
+
+    ctx.fillStyle = '#ff007f';
+    ctx.fillText('👑 CASTLE', bx + bw + 12, 29);
+
+    // Stats Row
+    ctx.font = '11px "Press Start 2P"';
+    ctx.fillStyle = '#ff4757';
+    ctx.fillText(`❤️ HP: ${hero.hp}/${hero.maxHp}`, 18, 66);
+    ctx.fillStyle = '#ffe600';
+    ctx.fillText(`⭐ STARS: ${hero.starPoints}`, 210, 66);
+    ctx.fillStyle = '#ffa502';
+    ctx.fillText(`🪙 GOLD: ${hero.gold}`, 430, 66);
+    ctx.fillStyle = '#00f3ff';
+    ctx.fillText(`🎖️ ${hero.tierTitle}`, 620, 66);
+  }
+
+  function drawTitle() {
+    ctx.fillStyle = '#0b0e1a';
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#ffe600';
+    ctx.font = '28px "Press Start 2P"';
+    ctx.fillText('⚔️ LCM HERO ADVENTURE 👑', W / 2, 130);
+
+    ctx.fillStyle = '#00f3ff';
+    ctx.font = '13px "Press Start 2P"';
+    ctx.fillText('2D EDUCATIONAL MATH JRPG // LEAST COMMON MULTIPLES', W / 2, 175);
+
+    ctx.fillStyle = '#161b2e';
+    ctx.fillRect(140, 220, 744, 290);
+    ctx.strokeStyle = '#00f3ff';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(140, 220, 744, 290);
+
+    ctx.font = '11px "Press Start 2P"';
+    ctx.fillStyle = '#ffffff';
+    const lines = [
+      '🛡️ MATHEMATICAL SHIELD COMBAT: Cast the Least Common Multiple!',
+      '🗺️ 4 PEDAGOGICAL ZONES: Prime Pairs, Overlapping, Contained & 3-Rush',
+      '🧚 SHORT DIVISION (短除法) FAIRY: Step-by-step interactive math tutor',
+      '🤖 ADAPTIVE EDGE AI: Tracks latency & adapts monster shield spawns',
+      '🏪 VILLAGE EQUIPMENT SHOP: Unlock Multiplier Swords & Prime Shields!'
+    ];
+    lines.forEach((l, i) => {
+      ctx.fillText(l, W / 2, 268 + i * 46);
+    });
+
+    const btnX = W / 2 - 170, btnY = 555, btnW = 340, btnH = 56;
+    ctx.fillStyle = '#ffe600';
+    ctx.fillRect(btnX, btnY, btnW, btnH);
+    ctx.fillStyle = '#070711';
+    ctx.font = '14px "Press Start 2P"';
+    ctx.fillText('START QUEST [ENTER]', W / 2, btnY + 35);
+    addClickRect('start', btnX, btnY, btnW, btnH, () => {
+      sound.play('cutscene');
+      scene = 'EXPLORE';
+    });
+  }
+
+  function drawExplore() {
+    const zCfg = ZONES[currentZone];
+    const tileW = 56;
+    const tileH = 52;
+    const offX = (W - 16 * tileW) / 2;
+    const offY = 108;
+
+    for (let r = 0; r < 10; r++) {
+      for (let c = 0; c < 16; c++) {
+        const tx = offX + c * tileW;
+        const ty = offY + r * tileH;
+        const isWall = r === 0 || r === 9 || c === 0 || c === 15;
+        ctx.fillStyle = isWall ? zCfg.colors.wall : ((r + c) % 2 === 0 ? zCfg.colors.floorA : zCfg.colors.floorB);
+        ctx.fillRect(tx, ty, tileW, tileH);
+        ctx.strokeStyle = 'rgba(0,0,0,0.22)';
+        ctx.strokeRect(tx, ty, tileW, tileH);
+
+        if (!isWall) {
+          addClickRect(`tile_${c}_${r}`, tx, ty, tileW, tileH, () => {
+            const dx = Math.sign(c - hero.x);
+            const dy = dx === 0 ? Math.sign(r - hero.y) : 0;
+            if (dx !== 0 || dy !== 0) moveHero(dx, dy);
+          });
+        }
+      }
+    }
+
+    // Shop Tile (2, 2)
+    const sx = offX + 2 * tileW, sy = offY + 2 * tileH;
+    ctx.fillStyle = '#ffe600';
+    ctx.fillRect(sx + 6, sy + 6, tileW - 12, tileH - 12);
+    ctx.fillStyle = '#070711';
+    ctx.font = '9px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText('SHOP', sx + tileW / 2, sy + 30);
+
+    // Signpost Tile (4, 2)
+    const gx = offX + 4 * tileW, gy = offY + 2 * tileH;
+    ctx.fillStyle = '#00f3ff';
+    ctx.fillRect(gx + 10, gy + 10, tileW - 20, tileH - 20);
+    ctx.fillStyle = '#070711';
+    ctx.fillText('HINT', gx + tileW / 2, gy + 30);
+
+    // Portal Tile (14, 5)
+    const px = offX + 14 * tileW, py = offY + 5 * tileH;
+    const allClear = monsters.every(m => m.defeated);
+    ctx.fillStyle = allClear ? '#00f3ff' : '#555';
+    ctx.beginPath();
+    ctx.arc(px + tileW / 2, py + tileH / 2, 22, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = '8px "Press Start 2P"';
+    ctx.fillText(allClear ? 'GATE' : 'LOCK', px + tileW / 2, py + 29);
+
+    // Draw Monsters
+    monsters.forEach(m => {
+      if (m.defeated) return;
+      const mx = offX + m.x * tileW;
+      const my = offY + m.y * tileH;
+      // Shield Badge above monster
+      ctx.fillStyle = '#121225';
+      ctx.fillRect(mx - 8, my - 18, tileW + 16, 18);
+      ctx.strokeStyle = '#ffe600';
+      ctx.strokeRect(mx - 8, my - 18, tileW + 16, 18);
+      ctx.fillStyle = '#ffe600';
+      ctx.font = '9px "Press Start 2P"';
+      ctx.fillText(`[${m.problem.numbers.join(',')}]`, mx + tileW / 2, my - 5);
+
+      // Monster Body
+      ctx.fillStyle = m.isBoss ? '#ff007f' : '#ff4757';
+      ctx.beginPath();
+      ctx.arc(mx + tileW / 2, my + tileH / 2 + 4, m.isBoss ? 20 : 16, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // Draw Hero
+    const hx = offX + hero.x * tileW;
+    const hy = offY + hero.y * tileH;
+    ctx.fillStyle = '#00f3ff';
+    ctx.fillRect(hx + 10, hy + 8, tileW - 20, tileH - 14);
+    ctx.strokeStyle = '#ffffff';
+    ctx.strokeRect(hx + 10, hy + 8, tileW - 20, tileH - 14);
+    ctx.fillStyle = '#ffe600';
+    ctx.font = '8px "Press Start 2P"';
+    ctx.fillText('HERO', hx + tileW / 2, hy + 30);
+
+    // Status Banner at Bottom
+    ctx.fillStyle = '#141826';
+    ctx.fillRect(0, H - 64, W, 64);
+    ctx.fillStyle = zCfg.colors.accent;
+    ctx.font = '10px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText(`${zCfg.name} — ${statusBanner}`, W / 2, H - 28);
+  }
+
+  function drawCombat() {
+    if (!activeMonster) return;
+    const prob = activeMonster.problem;
+
+    ctx.fillStyle = '#101424';
+    ctx.fillRect(0, 92, W, H - 92);
+
+    // Concept Banner
+    ctx.fillStyle = '#1b2238';
+    ctx.fillRect(40, 110, W - 80, 44);
+    ctx.strokeStyle = '#00f3ff';
+    ctx.strokeRect(40, 110, W - 80, 44);
+    ctx.fillStyle = '#00f3ff';
+    ctx.font = '9px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText(prob.conceptHint, W / 2, 137);
+
+    // Hero Left Side
+    ctx.fillStyle = '#00f3ff';
+    ctx.fillRect(160, 270, 85, 95);
+    ctx.strokeStyle = '#fff';
+    ctx.strokeRect(160, 270, 85, 95);
+    ctx.fillStyle = '#ffe600';
+    ctx.font = '10px "Press Start 2P"';
+    ctx.fillText('HERO', 202, 322);
+
+    // Monster Right Side + Mathematical Shield
+    ctx.fillStyle = '#1e243b';
+    ctx.fillRect(610, 180, 250, 74);
+    ctx.strokeStyle = '#ffe600';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(610, 180, 250, 74);
+    ctx.fillStyle = '#ffe600';
+    ctx.font = '11px "Press Start 2P"';
+    ctx.fillText('🛡️ MATH SHIELD', 735, 206);
+    ctx.font = '20px "Press Start 2P"';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(`[ ${prob.numbers.join(' , ')} ]`, 735, 240);
+
+    ctx.fillStyle = activeMonster.isBoss ? '#ff007f' : '#ff4757';
+    ctx.beginPath();
+    ctx.arc(735, 325, 48, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = '11px "Press Start 2P"';
+    ctx.fillText(activeMonster.name, 735, 395);
+
+    // Spell Cards (1 - 4)
+    ctx.font = '11px "Press Start 2P"';
+    ctx.fillStyle = '#ffe600';
+    ctx.fillText('SELECT THE LEAST COMMON MULTIPLE (LCM) SPELL CARD:', W / 2, 445);
+
+    prob.spellCards.forEach((val, idx) => {
+      const cx = 112 + idx * 210;
+      const cy = 470;
+      const cw = 170;
+      const ch = 95;
+      ctx.fillStyle = selectedCard === idx ? '#2a3558' : '#181e33';
+      ctx.fillRect(cx, cy, cw, ch);
+      ctx.strokeStyle = selectedCard === idx ? '#ffe600' : '#00f3ff';
+      ctx.lineWidth = selectedCard === idx ? 3 : 2;
+      ctx.strokeRect(cx, cy, cw, ch);
+
+      ctx.fillStyle = '#00f3ff';
+      ctx.font = '9px "Press Start 2P"';
+      ctx.fillText(`SPELL [${idx + 1}]`, cx + cw / 2, cy + 26);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '22px "Press Start 2P"';
+      ctx.fillText(String(val), cx + cw / 2, cy + 68);
+
+      addClickRect(`card_${idx}`, cx, cy, cw, ch, () => castSpellCard(idx));
+    });
+
+    // Fairy Tutor Button
+    const fx = W - 260, fy = 600, fw = 220, fh = 42;
+    ctx.fillStyle = '#ff007f';
+    ctx.fillRect(fx, fy, fw, fh);
+    ctx.fillStyle = '#fff';
+    ctx.font = '9px "Press Start 2P"';
+    ctx.fillText('🧚 FAIRY TUTOR [H]', fx + fw / 2, fy + 26);
+    addClickRect('fairy_btn', fx, fy, fw, fh, () => {
+      fairyTab = 'short_division';
+      scene = 'FAIRY';
+      sound.play('fairy');
+    });
+
+    // Combat Feedback Bar
+    ctx.fillStyle = '#fff';
+    ctx.font = '10px "Press Start 2P"';
+    ctx.fillText(combatFeedback, W / 2 - 90, 625);
+  }
+
+  function drawFairyModal() {
+    drawCombat();
+    ctx.fillStyle = 'rgba(7, 7, 17, 0.88)';
+    ctx.fillRect(0, 0, W, H);
+
+    const prob = activeMonster ? activeMonster.problem : createProblem(ProblemType.OVERLAPPING);
+    ctx.fillStyle = '#161b2e';
+    ctx.fillRect(90, 90, W - 180, H - 160);
+    ctx.strokeStyle = '#ff007f';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(90, 90, W - 180, H - 160);
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#ffe600';
+    ctx.font = '15px "Press Start 2P"';
+    ctx.fillText(`🧚 SHORT DIVISION (短除法) FAIRY TUTOR — SHIELD [${prob.numbers.join(', ')}]`, W / 2, 135);
+
+    // Tab Switcher
+    addClickRect('tab_sd', 220, 155, 260, 36, () => { fairyTab = 'short_division'; });
+    addClickRect('tab_mult', 520, 155, 260, 36, () => { fairyTab = 'multiples'; });
+
+    ctx.fillStyle = fairyTab === 'short_division' ? '#00f3ff' : '#262c44';
+    ctx.fillRect(220, 155, 260, 36);
+    ctx.fillStyle = fairyTab === 'short_division' ? '#070711' : '#fff';
+    ctx.font = '9px "Press Start 2P"';
+    ctx.fillText('1. SHORT DIVISION (短除法)', 350, 178);
+
+    ctx.fillStyle = fairyTab === 'multiples' ? '#00f3ff' : '#262c44';
+    ctx.fillRect(520, 155, 260, 36);
+    ctx.fillStyle = fairyTab === 'multiples' ? '#070711' : '#fff';
+    ctx.fillText('2. MULTIPLES LISTING', 650, 178);
+
+    ctx.textAlign = 'left';
+    if (fairyTab === 'short_division') {
+      let y = 235;
+      if (prob.steps.length === 0) {
+        ctx.fillStyle = '#78eb8c';
+        ctx.font = '11px "Press Start 2P"';
+        ctx.fillText(`No shared prime factor > 1! Multiply directly:`, 150, y);
+        y += 45;
+      } else {
+        prob.steps.forEach((st, idx) => {
+          ctx.fillStyle = '#ffe600';
+          ctx.font = '12px "Press Start 2P"';
+          ctx.fillText(`${st.divisor}  |  ${st.input.join('   ')}`, 160, y);
+          ctx.strokeStyle = '#00f3ff';
+          ctx.beginPath();
+          ctx.moveTo(195, y - 16);
+          ctx.lineTo(195, y + 10);
+          ctx.lineTo(390, y + 10);
+          ctx.stroke();
+          ctx.fillStyle = '#cbd5e1';
+          ctx.font = '9px "Press Start 2P"';
+          ctx.fillText(`Step ${idx + 1}: ${st.explanation}`, 420, y);
+          y += 52;
+        });
+        ctx.fillStyle = '#00f3ff';
+        ctx.font = '12px "Press Start 2P"';
+        ctx.fillText(`      ${prob.remainders.join('   ')}   (Coprime remainders)`, 160, y);
+        y += 55;
+      }
+
+      ctx.fillStyle = '#ffe600';
+      ctx.font = '12px "Press Start 2P"';
+      ctx.fillText(`Multiply outside L-factors: ${prob.allFactors.join(' × ')} = ${prob.lcm}`, 150, y + 20);
+    } else {
+      let y = 245;
+      Object.entries(prob.multiples).forEach(([num, list]) => {
+        ctx.fillStyle = '#00f3ff';
+        ctx.font = '11px "Press Start 2P"';
+        ctx.fillText(`Multiples of ${num}:`, 140, y);
+        list.forEach((mVal, i) => {
+          const mx = 340 + i * 62;
+          ctx.fillStyle = mVal === prob.lcm ? '#ffe600' : '#ffffff';
+          ctx.fillText(String(mVal), mx, y);
+        });
+        y += 60;
+      });
+      ctx.fillStyle = '#ffe600';
+      ctx.fillText(`Smallest shared multiple (LCM) = ${prob.lcm}!`, 140, y + 20);
+    }
+
+    // Close Button
+    const bx = W / 2 - 140, by = H - 130, bw = 280, bh = 44;
+    ctx.fillStyle = '#ff007f';
+    ctx.fillRect(bx, by, bw, bh);
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.font = '10px "Press Start 2P"';
+    ctx.fillText('GOT IT! BACK TO BATTLE [ESC]', W / 2, by + 27);
+    addClickRect('close_fairy', bx, by, bw, bh, () => {
+      scene = activeMonster ? 'COMBAT' : 'EXPLORE';
+    });
+  }
+
+  function drawShopModal() {
+    drawExplore();
+    ctx.fillStyle = 'rgba(7, 7, 17, 0.88)';
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.fillStyle = '#161b2e';
+    ctx.fillRect(80, 80, W - 160, H - 140);
+    ctx.strokeStyle = '#ffe600';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(80, 80, W - 160, H - 140);
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#ffe600';
+    ctx.font = '16px "Press Start 2P"';
+    ctx.fillText(`🏪 VILLAGE EQUIPMENT SHOP — GOLD: ${hero.gold} 🪙`, W / 2, 122);
+
+    SHOP_ITEMS.forEach((item, idx) => {
+      const iy = 152 + idx * 68;
+      ctx.fillStyle = '#1f2640';
+      ctx.fillRect(110, iy, W - 220, 58);
+      ctx.strokeStyle = item.purchased ? '#78eb8c' : '#00f3ff';
+      ctx.strokeRect(110, iy, W - 220, 58);
+
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '10px "Press Start 2P"';
+      ctx.fillText(`[${idx + 1}] ${item.name} (${item.cost} 🪙)`, 128, iy + 23);
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '8px "Press Start 2P"';
+      ctx.fillText(item.desc, 128, iy + 44);
+
+      const bx = W - 250, by = iy + 12, bw = 120, bh = 34;
+      ctx.fillStyle = item.purchased && item.id !== 'potion' ? '#475569' : '#ffe600';
+      ctx.fillRect(bx, by, bw, bh);
+      ctx.fillStyle = '#070711';
+      ctx.textAlign = 'center';
+      ctx.font = '9px "Press Start 2P"';
+      ctx.fillText(item.purchased && item.id !== 'potion' ? 'OWNED' : 'BUY', bx + bw / 2, by + 22);
+      addClickRect(`buy_${idx}`, bx, by, bw, bh, () => buyItem(idx));
+    });
+
+    const cx = W / 2 - 120, cy = H - 110, cw = 240, ch = 40;
+    ctx.fillStyle = '#ff007f';
+    ctx.fillRect(cx, cy, cw, ch);
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.fillText('CLOSE SHOP [ESC]', W / 2, cy + 25);
+    addClickRect('close_shop', cx, cy, cw, ch, () => { scene = 'EXPLORE'; });
+  }
+
+  function drawAiModal() {
+    drawExplore();
+    ctx.fillStyle = 'rgba(7, 7, 17, 0.88)';
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.fillStyle = '#161b2e';
+    ctx.fillRect(90, 90, W - 180, H - 160);
+    ctx.strokeStyle = '#00f3ff';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(90, 90, W - 180, H - 160);
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#00f3ff';
+    ctx.font = '15px "Press Start 2P"';
+    ctx.fillText('🤖 ADAPTIVE EDGE AI PERFORMANCE MODEL', W / 2, 132);
+
+    ctx.textAlign = 'left';
+    let y = 185;
+    Object.entries(ai.records).forEach(([pt, rec]) => {
+      const acc = rec.attempts ? Math.round((rec.correct / rec.attempts) * 100) : 100;
+      const avgLat = rec.latencies.length ? (rec.latencies.reduce((a, b) => a + b, 0) / rec.latencies.length).toFixed(1) : '0.0';
+      ctx.fillStyle = '#ffe600';
+      ctx.font = '10px "Press Start 2P"';
+      ctx.fillText(`${pt.toUpperCase()} — Spawn Weight: ${rec.weight.toFixed(2)}x`, 130, y);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '9px "Press Start 2P"';
+      ctx.fillText(`Attempts: ${rec.attempts} | Accuracy: ${acc}% | Avg Latency: ${avgLat}s | Slow (>15s): ${rec.slow}`, 130, y + 22);
+      y += 62;
+    });
+
+    ctx.fillStyle = '#78eb8c';
+    ctx.font = '9px "Press Start 2P"';
+    ctx.fillText(`Latest AI Log: ${ai.eventLog[0] || ''}`, 130, 465);
+
+    const cx = W / 2 - 120, cy = H - 130, cw = 240, ch = 40;
+    ctx.fillStyle = '#ff007f';
+    ctx.fillRect(cx, cy, cw, ch);
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.fillText('CLOSE [ESC]', W / 2, cy + 25);
+    addClickRect('close_ai', cx, cy, cw, ch, () => { scene = 'EXPLORE'; });
+  }
+
+  function drawCutscene() {
+    const zCfg = ZONES[currentZone];
+    ctx.fillStyle = '#0d1021';
+    ctx.fillRect(0, 92, W, H - 92);
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#ffe600';
+    ctx.font = '20px "Press Start 2P"';
+    ctx.fillText(`👑 STAGE ${currentZone} CLEARED! PRINCESS TOWER GIFT 👑`, W / 2, 185);
+
+    ctx.fillStyle = '#00f3ff';
+    ctx.font = '13px "Press Start 2P"';
+    ctx.fillText(`Princess Aria bestows: ✨ ${zCfg.gift} ✨`, W / 2, 260);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(`Promoted to Hero Tier: ${zCfg.tierName}!`, W / 2, 315);
+
+    const bx = W / 2 - 170, by = 430, bw = 340, bh = 54;
+    ctx.fillStyle = '#ffe600';
+    ctx.fillRect(bx, by, bw, bh);
+    ctx.fillStyle = '#070711';
+    ctx.font = '12px "Press Start 2P"';
+    ctx.fillText(currentZone < 4 ? 'NEXT ZONE [ENTER]' : 'CLAIM VICTORY [ENTER]', W / 2, by + 34);
+    addClickRect('next_zone', bx, by, bw, bh, () => {
+      if (currentZone < 4) {
+        loadZone(currentZone + 1);
+        scene = 'EXPLORE';
+      } else {
+        scene = 'VICTORY';
+      }
+    });
+  }
+
+  function drawEndScreen(isWin) {
+    ctx.fillStyle = '#0b0e1a';
+    ctx.fillRect(0, 92, W, H - 92);
+    ctx.textAlign = 'center';
+    ctx.fillStyle = isWin ? '#ffe600' : '#ff007f';
+    ctx.font = '24px "Press Start 2P"';
+    ctx.fillText(isWin ? '🏆 PRINCESS RESCUED! GRAND VICTORY! 🏆' : '💔 SHIELD SHATTERED — TRY AGAIN!', W / 2, 230);
+
+    ctx.fillStyle = '#00f3ff';
+    ctx.font = '14px "Press Start 2P"';
+    ctx.fillText(`FINAL STAR SCORE: ${hero.starPoints} ⭐ (Recorded to Hall of Fame)`, W / 2, 310);
+
+    const bx = W / 2 - 160, by = 410, bw = 320, bh = 54;
+    ctx.fillStyle = '#00f3ff';
+    ctx.fillRect(bx, by, bw, bh);
+    ctx.fillStyle = '#070711';
+    ctx.font = '12px "Press Start 2P"';
+    ctx.fillText('PLAY AGAIN [ENTER]', W / 2, by + 34);
+    addClickRect('restart', bx, by, bw, bh, () => {
+      hero.hp = hero.maxHp;
+      if (isWin) {
+        hero.starPoints = 0;
+        zonesCleared = 0;
+        loadZone(1);
+      } else {
+        loadZone(currentZone);
+      }
+      scene = 'EXPLORE';
+    });
+  }
+
+  function render() {
+    clickableRects = [];
+    ctx.clearRect(0, 0, W, H);
+
+    if (scene === 'TITLE') {
+      drawTitle();
+    } else {
+      drawTopHud();
+      if (scene === 'EXPLORE') drawExplore();
+      else if (scene === 'COMBAT') drawCombat();
+      else if (scene === 'FAIRY') drawFairyModal();
+      else if (scene === 'SHOP') drawShopModal();
+      else if (scene === 'AI') drawAiModal();
+      else if (scene === 'CUTSCENE') drawCutscene();
+      else if (scene === 'VICTORY') drawEndScreen(true);
+      else if (scene === 'GAMEOVER') drawEndScreen(false);
+    }
+
+    // Particles
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.12;
+      p.life--;
+      ctx.fillStyle = p.color;
+      ctx.fillRect(p.x, p.y, 5, 5);
+      if (p.life <= 0) particles.splice(i, 1);
+    }
+
+    requestAnimationFrame(render);
+  }
+
+  // =========================================================================
+  // INPUT LISTENERS
+  // =========================================================================
+  canvas.addEventListener('click', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mx = ((e.clientX - rect.left) / rect.width) * W;
+    const my = ((e.clientY - rect.top) / rect.height) * H;
+    for (let i = clickableRects.length - 1; i >= 0; i--) {
+      const r = clickableRects[i];
+      if (mx >= r.x && mx <= r.x + r.w && my >= r.y && my <= r.y + r.h) {
+        r.action();
+        return;
+      }
+    }
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) e.preventDefault();
+
+    if (scene === 'TITLE' && (e.key === 'Enter' || e.key === ' ')) {
+      sound.play('cutscene');
+      scene = 'EXPLORE';
+      return;
+    }
+    if (scene === 'EXPLORE') {
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') moveHero(-1, 0);
+      else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') moveHero(1, 0);
+      else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') moveHero(0, -1);
+      else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') moveHero(0, 1);
+      else if (e.key === 'b' || e.key === 'B') scene = 'SHOP';
+      else if (e.key === 'i' || e.key === 'I') scene = 'AI';
+      else if (e.key === 'h' || e.key === 'H') scene = 'FAIRY';
+      return;
+    }
+    if (scene === 'COMBAT') {
+      if (activeMonster && activeMonster.defeated && (e.key === 'Enter' || e.key === ' ')) {
+        scene = 'EXPLORE';
+        activeMonster = null;
+        return;
+      }
+      if (e.key === '1') castSpellCard(0);
+      else if (e.key === '2') castSpellCard(1);
+      else if (e.key === '3') castSpellCard(2);
+      else if (e.key === '4') castSpellCard(3);
+      else if (e.key === 'h' || e.key === 'H') { fairyTab = 'short_division'; scene = 'FAIRY'; sound.play('fairy'); }
+      else if (e.key === 'ArrowLeft') selectedCard = (selectedCard + 3) % 4;
+      else if (e.key === 'ArrowRight') selectedCard = (selectedCard + 1) % 4;
+      else if (e.key === 'Enter' || e.key === ' ') castSpellCard(selectedCard);
+      return;
+    }
+    if (scene === 'FAIRY' || scene === 'SHOP' || scene === 'AI') {
+      if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') {
+        scene = activeMonster && !activeMonster.defeated ? 'COMBAT' : 'EXPLORE';
+      } else if (scene === 'SHOP' && ['1', '2', '3', '4', '5', '6'].includes(e.key)) {
+        buyItem( Number(e.key) - 1 );
+      }
+      return;
+    }
+    if (scene === 'CUTSCENE' && (e.key === 'Enter' || e.key === ' ')) {
+      if (currentZone < 4) { loadZone(currentZone + 1); scene = 'EXPLORE'; }
+      else scene = 'VICTORY';
+    }
+  });
+
+  // Top & Mobile Buttons
+  document.getElementById('topShopBtn').onclick = () => { scene = scene === 'SHOP' ? 'EXPLORE' : 'SHOP'; };
+  document.getElementById('topAiBtn').onclick = () => { scene = scene === 'AI' ? 'EXPLORE' : 'AI'; };
+  document.getElementById('topFairyBtn').onclick = () => { scene = scene === 'FAIRY' ? (activeMonster ? 'COMBAT' : 'EXPLORE') : 'FAIRY'; };
+  document.getElementById('topSoundBtn').onclick = (e) => {
+    sound.enabled = !sound.enabled;
+    e.currentTarget.textContent = `🔊 SOUND: ${sound.enabled ? 'ON' : 'OFF'}`;
+  };
+
+  document.getElementById('btnLeft').onclick = () => moveHero(-1, 0);
+  document.getElementById('btnRight').onclick = () => moveHero(1, 0);
+  document.getElementById('btnUp').onclick = () => moveHero(0, -1);
+  document.getElementById('btnDown').onclick = () => moveHero(0, 1);
+  document.getElementById('btnCard1').onclick = () => castSpellCard(0);
+  document.getElementById('btnCard2').onclick = () => castSpellCard(1);
+  document.getElementById('btnCard3').onclick = () => castSpellCard(2);
+  document.getElementById('btnCard4').onclick = () => castSpellCard(3);
+  document.getElementById('btnAction').onclick = () => {
+    if (scene === 'TITLE') scene = 'EXPLORE';
+    else if (scene === 'COMBAT' && activeMonster && activeMonster.defeated) { scene = 'EXPLORE'; activeMonster = null; }
+    else if (scene === 'CUTSCENE') {
+      if (currentZone < 4) { loadZone(currentZone + 1); scene = 'EXPLORE'; }
+      else scene = 'VICTORY';
+    } else if (scene === 'FAIRY' || scene === 'SHOP' || scene === 'AI') {
+      scene = activeMonster && !activeMonster.defeated ? 'COMBAT' : 'EXPLORE';
+    }
+  };
+
+  requestAnimationFrame(render);
+})();
+</script>
+</body>
+</html>

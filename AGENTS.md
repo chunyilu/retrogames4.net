@@ -37,9 +37,13 @@ This document provides project context, architecture overview, conventions, and 
 │   │   └── game.js             # Standalone Cyber Maze canvas logic & score submission
 │   ├── moon-festival/
 │   │   └── index.html          # Self-contained Mid-Autumn Festival space shooter ("Jade Rabbit vs Grapefruit Monsters")
-│   └── raiden/
-│       ├── index.html          # Self-contained vertical scrolling shoot-'em-up game
-│       └── assets/             # Spritesheets, stage backgrounds, tilemaps, and boss graphics
+│   ├── raiden/
+│   │   ├── index.html          # Self-contained vertical scrolling shoot-'em-up game
+│   │   └── assets/             # Spritesheets, stage backgrounds, tilemaps, and boss graphics
+│   ├── streets-of-neon/
+│   │   └── index.html          # Self-contained 2.5D retro arcade beat-'em-up game ("Streets of Neon")
+│   └── lcm-hero/
+│       └── index.html          # Self-contained 2D educational math JRPG ("LCM Hero Adventure")
 └── docs/
     └── REGISTER_TROUBLESHOOTING.md # Troubleshooting guide for backend cold starts, CORS, and `/register`
 ```

@@ -101,6 +101,12 @@ function launchDemo(title) {
     } else if (title === 'Block Stacker' || title === 'BlockStacker' || title === 'block-stacker') {
         // Open Block Stacker game
         window.location.href = 'games/block-stacker/index.html';
+    } else if (title === 'Streets of Neon' || title === 'streets-of-neon' || title === 'StreetsOfNeon') {
+        // Open Streets of Neon 2.5D beat 'em up game
+        window.location.href = 'games/streets-of-neon/index.html';
+    } else if (title === 'LCM Hero Adventure' || title === 'LCM Hero' || title === 'lcm-hero') {
+        // Open LCM Hero Adventure math JRPG game
+        window.location.href = 'games/lcm-hero/index.html';
     } else {
         alert(`Loading demo instance for [${title}] on retrogames4.net!`);
     }
@@ -1269,8 +1275,10 @@ if (document.readyState === 'loading') {
     loadLeaderboard('breakout');
 }
 
-// Register November Showcase game display name & fallback leaderboard
+// Register November Showcase & new playable games display names & fallback leaderboards
 GAME_NAMES['raiden'] = 'Raiden';
+GAME_NAMES['streets-of-neon'] = 'Streets of Neon';
+GAME_NAMES['lcm-hero'] = 'LCM Hero Adventure';
 
 const _origRenderFallbackLeaderboard = renderFallbackLeaderboard;
 renderFallbackLeaderboard = function(gameId) {
@@ -1280,6 +1288,22 @@ renderFallbackLeaderboard = function(gameId) {
             { player: 'LEONID_PILOT', score: 192400 },
             { player: 'RAIDEN_ONE', score: 154000 }
         ], 'raiden');
+        return;
+    }
+    if (gameId === 'streets-of-neon') {
+        renderLeaderboard([
+            { player: 'AXEL_SYNDICATE', score: 42800 },
+            { player: 'NEON_BRAWLER', score: 31500 },
+            { player: 'ALLEY_STRIKER', score: 22900 }
+        ], 'streets-of-neon');
+        return;
+    }
+    if (gameId === 'lcm-hero') {
+        renderLeaderboard([
+            { player: 'GRAND_ARITHMANCER', score: 1850 },
+            { player: 'SIR_EUCLID', score: 1400 },
+            { player: 'LADY_HYPATIA', score: 1050 }
+        ], 'lcm-hero');
         return;
     }
     _origRenderFallbackLeaderboard(gameId);
