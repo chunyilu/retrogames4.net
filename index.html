@@ -43,21 +43,21 @@
     <!-- CRT Overlay Layer -->
     <div class="fixed inset-0 scanlines z-50 opacity-40"></div>
 
-    <!-- Moon Festival Seasonal Announcement Bar -->
-    <aside id="moonFestivalBanner" class="w-full bg-gradient-to-r from-neon-purple/95 via-amber-950/85 to-neon-purple/95 border-b border-amber-400/50 py-2.5 px-4 z-50 backdrop-blur-md transition-all duration-300" aria-label="Moon Festival Event Announcement">
+    <!-- November Cosmic Event: Leonid Meteor Shower & Raiden Air-Raid Announcement Bar -->
+    <aside id="moonFestivalBanner" class="w-full bg-gradient-to-r from-neon-purple/95 via-indigo-950/90 to-neon-pink/90 border-b border-neon-cyan/50 py-2.5 px-4 z-50 backdrop-blur-md transition-all duration-300" aria-label="November Cosmic Event Announcement">
         <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 font-arcade">
-            <div class="flex items-center gap-2 text-neon-yellow flex-1 justify-center sm:justify-start">
-                <span class="animate-float-lantern text-sm sm:text-base select-none" aria-hidden="true">🏮</span>
+            <div class="flex items-center gap-2 text-neon-cyan flex-1 justify-center sm:justify-start">
+                <span class="animate-float-lantern text-sm sm:text-base select-none" aria-hidden="true">☄️</span>
                 <span class="text-[10px] sm:text-xs tracking-wide">
-                    <span class="text-white">MID-AUTUMN EVENT:</span> DEFEND THE MOON WITH JADE RABBIT! 🥮
+                    <span class="text-neon-yellow">NOVEMBER COSMIC EVENT:</span> <span class="text-white">LEONID METEOR SHOWER — SCRAMBLE THE RAIDEN INTERCEPTOR!</span> 🚀
                 </span>
-                <span class="animate-float-lantern-delayed text-sm sm:text-base select-none hidden sm:inline" aria-hidden="true">🏮</span>
+                <span class="animate-float-lantern-delayed text-sm sm:text-base select-none hidden sm:inline" aria-hidden="true">⚡</span>
             </div>
             <div class="flex items-center gap-2 mx-auto sm:mx-0">
-                <a href="games/moon-festival/index.html" onclick="playRetroSound('click')" class="px-3.5 py-1.5 rounded bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-neon-dark font-bold text-[9px] sm:text-[10px] transition-all transform hover:scale-105 shadow-[0_0_10px_rgba(255,230,0,0.7)] flex items-center gap-1.5" aria-label="Play Moon Festival event game">
-                    <span>🌕</span> PLAY NOW
+                <a href="games/raiden/index.html" onclick="playRetroSound('click')" class="px-3.5 py-1.5 rounded bg-gradient-to-r from-neon-cyan to-neon-pink hover:from-cyan-300 hover:to-pink-500 text-neon-dark font-bold text-[9px] sm:text-[10px] transition-all transform hover:scale-105 shadow-[0_0_12px_rgba(0,243,255,0.75)] flex items-center gap-1.5" aria-label="Play Raiden Cosmic Air-Raid game">
+                    <span>🚀</span> SCRAMBLE NOW
                 </a>
-                <button onclick="dismissFestivalBanner()" class="p-1 text-gray-400 hover:text-white rounded hover:bg-white/10 transition-colors ml-1" title="Dismiss banner" aria-label="Dismiss banner">
+                <button onclick="dismissFestivalBanner()" class="p-1 text-gray-300 hover:text-white rounded hover:bg-white/10 transition-colors ml-1" title="Dismiss banner" aria-label="Dismiss banner">
                     <i class="fa-solid fa-xmark text-xs" aria-hidden="true"></i>
                 </button>
             </div>
@@ -191,38 +191,45 @@
 
         <!-- Hero Banner -->
         <section id="hero" class="relative pt-12 pb-20 md:py-28 synth-grid overflow-hidden border-b border-neon-purple/20">
-            <!-- Celestial Full Moon & Jade Rabbit Background Graphic (MoonRabbit reference) -->
-            <div class="absolute -top-6 right-1/2 translate-x-1/2 md:translate-x-0 md:right-8 lg:right-16 w-80 h-80 sm:w-96 sm:h-96 md:w-[440px] md:h-[440px] pointer-events-none select-none z-0 opacity-80 md:opacity-90 animate-moon-float" aria-hidden="true">
-                <svg class="w-full h-full animate-rabbit-glow" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Luminous Full Moon and Jade Rabbit">
+            <!-- Leonid Meteor Shower Animated Streaks -->
+            <div class="meteor-streak top-10 right-[15%] meteor-delay-1" aria-hidden="true"></div>
+            <div class="meteor-streak meteor-streak-gold top-24 right-[35%] meteor-delay-2" aria-hidden="true"></div>
+            <div class="meteor-streak top-6 right-[55%] meteor-delay-3" aria-hidden="true"></div>
+            <div class="meteor-streak meteor-streak-gold top-40 right-[8%] meteor-delay-4" aria-hidden="true"></div>
+
+            <!-- Cosmic Leonid Meteor Shower & Raiden Supersonic Interceptor Artwork -->
+            <div class="absolute -top-6 right-1/2 translate-x-1/2 md:translate-x-0 md:right-6 lg:right-14 w-80 h-80 sm:w-96 sm:h-96 md:w-[450px] md:h-[450px] pointer-events-none select-none z-0 opacity-85 md:opacity-95 animate-moon-float" aria-hidden="true">
+                <svg class="w-full h-full animate-rabbit-glow" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="November Leonid Meteor Shower and Raiden Supersonic Interceptor">
                     <defs>
-                        <!-- Lunar Radial Gradient -->
-                        <radialGradient id="heroLunarGlow" cx="40%" cy="38%" r="60%">
+                        <!-- Synthwave Cosmic Planet / Horizon Sun Gradient -->
+                        <radialGradient id="heroLunarGlow" cx="42%" cy="35%" r="62%">
                             <stop offset="0%" stop-color="#fffef2" />
-                            <stop offset="30%" stop-color="#ffea75" />
-                            <stop offset="65%" stop-color="#f59e0b" />
-                            <stop offset="88%" stop-color="#d97706" />
-                            <stop offset="100%" stop-color="#78350f" />
+                            <stop offset="28%" stop-color="#ffe600" />
+                            <stop offset="62%" stop-color="#ff007f" />
+                            <stop offset="88%" stop-color="#9d00ff" />
+                            <stop offset="100%" stop-color="#121225" />
                         </radialGradient>
 
                         <!-- Outer Celestial Aura -->
                         <radialGradient id="heroAtmosphereAura" cx="50%" cy="50%" r="50%">
-                            <stop offset="45%" stop-color="#ffe600" stop-opacity="0.35" />
-                            <stop offset="70%" stop-color="#ff007f" stop-opacity="0.18" />
-                            <stop offset="90%" stop-color="#00f3ff" stop-opacity="0.08" />
+                            <stop offset="40%" stop-color="#00f3ff" stop-opacity="0.32" />
+                            <stop offset="68%" stop-color="#ff007f" stop-opacity="0.22" />
+                            <stop offset="88%" stop-color="#9d00ff" stop-opacity="0.1" />
                             <stop offset="100%" stop-color="#0a0a12" stop-opacity="0" />
                         </radialGradient>
 
-                        <!-- Jade Rabbit Pearlescent Gradient -->
-                        <linearGradient id="heroRabbitGrad" x1="20%" y1="10%" x2="90%" y2="90%">
+                        <!-- Raiden Fighter Metallic Hull Gradient -->
+                        <linearGradient id="raidenHullGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stop-color="#ffffff" />
-                            <stop offset="60%" stop-color="#f0f9ff" />
-                            <stop offset="100%" stop-color="#bae6fd" />
+                            <stop offset="45%" stop-color="#e0f2fe" />
+                            <stop offset="80%" stop-color="#38bdf8" />
+                            <stop offset="100%" stop-color="#0284c7" />
                         </linearGradient>
 
-                        <!-- Inner Ear Rose Accent -->
-                        <linearGradient id="heroEarGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stop-color="#fbcfe8" />
-                            <stop offset="100%" stop-color="#f472b6" />
+                        <!-- Raiden Crimson/Pink Wing Accent -->
+                        <linearGradient id="raidenWingAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#ff007f" />
+                            <stop offset="100%" stop-color="#9d00ff" />
                         </linearGradient>
 
                         <!-- Glow Filter -->
@@ -234,99 +241,97 @@
                             </feMerge>
                         </filter>
 
-                        <!-- Soft Drop Shadow -->
+                        <!-- Fighter Drop Shadow -->
                         <filter id="heroRabbitShadow" x="-20%" y="-20%" width="140%" height="140%">
-                            <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000000" flood-opacity="0.45" />
+                            <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000000" flood-opacity="0.6" />
                         </filter>
                     </defs>
 
                     <!-- Outer Atmospheric Glow -->
                     <circle cx="200" cy="200" r="190" fill="url(#heroAtmosphereAura)" />
 
-                    <!-- Golden Full Moon Disk -->
-                    <circle cx="200" cy="200" r="135" fill="url(#heroLunarGlow)" filter="url(#heroMoonGlow)" />
+                    <!-- Tactical Radar Rings -->
+                    <circle cx="200" cy="200" r="162" stroke="rgba(0, 243, 255, 0.25)" stroke-width="1.5" stroke-dasharray="8 6" />
+                    <circle cx="200" cy="200" r="146" stroke="rgba(255, 0, 127, 0.25)" stroke-width="1" />
 
-                    <!-- Lunar Maria / Crater Shading (Authentic Moon Textures) -->
-                    <ellipse cx="160" cy="140" rx="22" ry="16" fill="#92400e" opacity="0.22" />
-                    <ellipse cx="240" cy="165" rx="26" ry="18" fill="#92400e" opacity="0.18" />
-                    <ellipse cx="195" cy="275" rx="36" ry="18" fill="#92400e" opacity="0.2" />
-                    <circle cx="140" cy="235" r="14" fill="#92400e" opacity="0.18" />
-                    <circle cx="255" cy="245" r="16" fill="#92400e" opacity="0.22" />
-                    <ellipse cx="210" cy="125" rx="14" ry="10" fill="#92400e" opacity="0.15" />
+                    <!-- Synthwave Cosmic Sun / Moon Disk -->
+                    <circle cx="200" cy="200" r="130" fill="url(#heroLunarGlow)" filter="url(#heroMoonGlow)" />
 
-                    <!-- Cosmic Synthwave Ribbon Rings -->
-                    <path d="M 50 240 Q 130 200 210 245 T 350 220" stroke="rgba(0, 243, 255, 0.4)" stroke-width="3" stroke-linecap="round" fill="none" />
-                    <path d="M 70 270 Q 170 240 250 275 T 370 255" stroke="rgba(255, 0, 127, 0.35)" stroke-width="2.5" stroke-linecap="round" fill="none" />
+                    <!-- Retro Synthwave Horizon Cutout Stripes -->
+                    <rect x="65" y="245" width="270" height="5" fill="#0a0a12" opacity="0.65" />
+                    <rect x="65" y="260" width="270" height="7" fill="#0a0a12" opacity="0.72" />
+                    <rect x="65" y="278" width="270" height="10" fill="#0a0a12" opacity="0.8" />
+                    <rect x="65" y="298" width="270" height="14" fill="#0a0a12" opacity="0.88" />
+
+                    <!-- Cosmic Synthwave Ribbon Rings & Leonid Meteor Trails -->
+                    <path d="M 45 235 Q 130 195 210 240 T 355 215" stroke="rgba(0, 243, 255, 0.5)" stroke-width="3" stroke-linecap="round" fill="none" />
+                    <path d="M 65 268 Q 170 238 250 272 T 370 250" stroke="rgba(255, 230, 0, 0.4)" stroke-width="2.5" stroke-linecap="round" fill="none" />
+
+                    <!-- SVG Leonid Meteors -->
+                    <g filter="url(#heroMoonGlow)">
+                        <line x1="330" y1="65" x2="255" y2="120" stroke="#00f3ff" stroke-width="3" stroke-linecap="round" />
+                        <circle cx="255" cy="120" r="4" fill="#ffffff" />
+                        <line x1="145" y1="55" x2="80" y2="105" stroke="#ffe600" stroke-width="2.5" stroke-linecap="round" />
+                        <circle cx="80" cy="105" r="3.5" fill="#ffffff" />
+                    </g>
 
                     <!-- Twinkling Stardust & Sparkles -->
                     <g fill="#ffffff">
-                        <!-- Sparkle 1 -->
                         <polygon points="85,115 89,126 100,130 89,134 85,145 81,134 70,130 81,126" fill="#ffe600" opacity="0.9" />
-                        <!-- Sparkle 2 -->
-                        <polygon points="315,95 318,103 326,106 318,109 315,117 312,109 304,106 312,103" fill="#00f3ff" opacity="0.85" />
-                        <!-- Sparkle 3 -->
-                        <polygon points="330,290 332,296 338,298 332,300 330,306 328,300 322,298 328,296" fill="#ff007f" opacity="0.8" />
-                        <circle cx="110" cy="80" r="2.5" fill="#ffffff" opacity="0.8" />
-                        <circle cx="290" cy="315" r="3" fill="#ffe600" opacity="0.75" />
-                        <circle cx="65" cy="190" r="2" fill="#00f3ff" opacity="0.7" />
-                        <circle cx="340" cy="170" r="2" fill="#ffffff" opacity="0.6" />
+                        <polygon points="315,95 318,103 326,106 318,109 315,117 312,109 304,106 312,103" fill="#00f3ff" opacity="0.9" />
+                        <polygon points="330,290 332,296 338,298 332,300 330,306 328,300 322,298 328,296" fill="#ff007f" opacity="0.85" />
+                        <circle cx="110" cy="80" r="2.5" fill="#ffffff" opacity="0.85" />
+                        <circle cx="290" cy="315" r="3" fill="#ffe600" opacity="0.8" />
+                        <circle cx="65" cy="190" r="2" fill="#00f3ff" opacity="0.75" />
+                        <circle cx="340" cy="170" r="2.5" fill="#ffffff" opacity="0.7" />
                     </g>
 
-                    <!-- Iconic Jade Rabbit Figure (Moon Rabbit Artwork) -->
-                    <g id="heroJadeRabbit" filter="url(#heroRabbitShadow)">
-                        <!-- Rabbit Fluffy Tail -->
-                        <circle cx="132" cy="225" r="14" fill="#ffffff" />
-                        <circle cx="130" cy="223" r="9" fill="#e0f2fe" />
+                    <!-- Iconic Raiden Supersonic Interceptor Fighter -->
+                    <g id="heroRaidenInterceptor" class="animate-interceptor-flight" filter="url(#heroRabbitShadow)" transform="translate(200, 195) rotate(-28) translate(-200, -195)">
+                        <!-- Twin Plasma Laser Beams -->
+                        <line x1="178" y1="115" x2="178" y2="35" stroke="#00f3ff" stroke-width="4" stroke-linecap="round" filter="url(#heroMoonGlow)" />
+                        <line x1="222" y1="115" x2="222" y2="35" stroke="#00f3ff" stroke-width="4" stroke-linecap="round" filter="url(#heroMoonGlow)" />
+                        <line x1="152" y1="145" x2="132" y2="65" stroke="#ff007f" stroke-width="3" stroke-linecap="round" filter="url(#heroMoonGlow)" />
+                        <line x1="248" y1="145" x2="268" y2="65" stroke="#ff007f" stroke-width="3" stroke-linecap="round" filter="url(#heroMoonGlow)" />
 
-                        <!-- Hind Leg & Paw -->
-                        <path d="M 152 230 C 135 220 130 242 142 258 C 152 270 172 268 182 252 C 178 240 166 234 152 230 Z" fill="url(#heroRabbitGrad)" />
-                        <ellipse cx="160" cy="264" rx="18" ry="8" transform="rotate(-10 160 264)" fill="url(#heroRabbitGrad)" />
+                        <!-- Twin Afterburner Plumes -->
+                        <polygon points="184,262 192,312 198,262" fill="#00f3ff" filter="url(#heroMoonGlow)" />
+                        <polygon points="202,262 208,312 216,262" fill="#00f3ff" filter="url(#heroMoonGlow)" />
+                        <polygon points="187,262 192,295 196,262" fill="#ffe600" />
+                        <polygon points="204,262 208,295 213,262" fill="#ffe600" />
 
-                        <!-- Main Rabbit Torso -->
-                        <path d="M 148 220 C 142 195 170 175 204 182 C 232 188 245 215 232 238 C 218 256 168 256 148 220 Z" fill="url(#heroRabbitGrad)" />
+                        <!-- Swept Main Delta Wings -->
+                        <polygon points="200,138 112,226 124,244 182,228 200,245 218,228 276,244 288,226" fill="url(#raidenHullGrad)" stroke="#00f3ff" stroke-width="1.5" />
 
-                        <!-- Forelegs & Paws -->
-                        <path d="M 218 215 C 232 215 250 225 255 238 C 252 244 238 246 225 235 Z" fill="url(#heroRabbitGrad)" />
-                        <path d="M 208 222 C 222 225 235 236 238 250 C 232 254 220 252 210 238 Z" fill="url(#heroRabbitGrad)" opacity="0.9" />
+                        <!-- Crimson Wing Squadron Stripes -->
+                        <polygon points="168,176 125,222 140,228 178,195" fill="url(#raidenWingAccent)" />
+                        <polygon points="232,176 275,222 260,228 222,195" fill="url(#raidenWingAccent)" />
 
-                        <!-- Rabbit Head -->
-                        <ellipse cx="235" cy="172" rx="22" ry="19" transform="rotate(-18 235 172)" fill="url(#heroRabbitGrad)" />
+                        <!-- Forward Canards -->
+                        <polygon points="188,142 156,164 162,174 190,162" fill="#ff007f" />
+                        <polygon points="212,142 244,164 238,174 210,162" fill="#ff007f" />
 
-                        <!-- Snout & Mouth -->
-                        <path d="M 248 164 C 259 166 262 177 251 185 Z" fill="url(#heroRabbitGrad)" />
+                        <!-- Central Supersonic Fuselage -->
+                        <polygon points="200,92 182,165 184,262 200,252 216,262 218,165" fill="url(#raidenHullGrad)" stroke="#ffffff" stroke-width="1.5" />
 
-                        <!-- Long Ears (Graceful Moon Rabbit Silhouette) -->
-                        <!-- Back Ear -->
-                        <path d="M 230 160 C 226 128 210 92 196 84 C 190 88 198 120 215 155 Z" fill="url(#heroRabbitGrad)" />
-                        <path d="M 220 155 C 212 130 200 102 194 94 C 192 96 198 120 208 148 Z" fill="url(#heroEarGrad)" opacity="0.75" />
+                        <!-- Neon Cyan Cockpit Canopy -->
+                        <polygon points="200,126 191,164 200,192 209,164" fill="#00f3ff" stroke="#ffffff" stroke-width="1.2" filter="url(#heroMoonGlow)" />
 
-                        <!-- Front Ear -->
-                        <path d="M 242 158 C 246 125 240 94 228 84 C 222 88 226 120 234 152 Z" fill="url(#heroRabbitGrad)" />
-                        <path d="M 238 152 C 240 128 236 104 230 94 C 228 96 230 120 234 146 Z" fill="url(#heroEarGrad)" opacity="0.7" />
-
-                        <!-- Ruby Glowing Eye -->
-                        <ellipse cx="240" cy="168" rx="3.5" ry="4" fill="#ff007f" />
-                        <circle cx="241" cy="166.5" r="1.2" fill="#ffffff" />
-
-                        <!-- Mid-Autumn Folklore Elixir Mortar & Pestle Accent -->
-                        <g transform="translate(252, 220) scale(0.85)">
-                            <path d="M 0 16 C 0 38 34 38 34 16 C 34 10 0 10 0 16 Z" fill="#fbbf24" stroke="#d97706" stroke-width="2.5" />
-                            <line x1="14" y1="2" x2="28" y2="24" stroke="#f59e0b" stroke-width="4.5" stroke-linecap="round" />
-                            <!-- Luminous Elixir Sparkle -->
-                            <circle cx="17" cy="6" r="4" fill="#00f3ff" filter="url(#heroMoonGlow)" />
-                        </g>
+                        <!-- Twin Tail Stabilizers -->
+                        <polygon points="184,230 166,265 180,266 190,248" fill="#9d00ff" stroke="#00f3ff" stroke-width="1" />
+                        <polygon points="216,230 234,265 220,266 210,248" fill="#9d00ff" stroke="#00f3ff" stroke-width="1" />
                     </g>
                 </svg>
             </div>
 
-            <!-- Floating Cyber Lanterns -->
-            <div class="absolute top-8 left-4 sm:left-12 text-2xl sm:text-3xl opacity-75 animate-float-lantern pointer-events-none select-none" aria-hidden="true">🏮</div>
-            <div class="absolute top-20 right-4 sm:right-16 text-xl sm:text-2xl opacity-75 animate-float-lantern-delayed pointer-events-none select-none" aria-hidden="true">🏮</div>
+            <!-- Floating Cosmic & Cyber Accents -->
+            <div class="absolute top-8 left-4 sm:left-12 text-2xl sm:text-3xl opacity-80 animate-float-lantern pointer-events-none select-none" aria-hidden="true">☄️</div>
+            <div class="absolute top-20 right-4 sm:right-16 text-xl sm:text-2xl opacity-80 animate-float-lantern-delayed pointer-events-none select-none" aria-hidden="true">🚀</div>
 
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div class="text-center max-w-3xl mx-auto space-y-6">
-                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/15 border border-amber-400/60 text-neon-yellow font-arcade text-[10px] sm:text-xs mb-2 animate-pulse">
-                        <span>🥮</span> <span>MID-AUTUMN SPECIAL EVENT IS LIVE!</span> <span>🌕</span>
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-neon-cyan/15 border border-neon-cyan/70 text-neon-cyan font-arcade text-[10px] sm:text-xs mb-2 shadow-[0_0_15px_rgba(0,243,255,0.3)] animate-pulse">
+                        <span>☄️</span> <span>NOVEMBER LEONID METEOR SHOWER EVENT IS LIVE!</span> <span>🚀</span>
                     </div>
 
                     <h1 class="text-4xl sm:text-6xl font-heading font-extrabold uppercase tracking-tight text-white leading-none">
@@ -334,25 +339,29 @@
                     </h1>
 
                     <p class="text-gray-300 text-base sm:text-lg max-w-2xl mx-auto font-light leading-relaxed">
-                        Welcome to <strong class="text-neon-cyan">retrogames4.net</strong>! Play classic retro-inspired mini games, break high scores, and explore curated arcade nostalgia right inside your browser.
+                        Welcome to <strong class="text-neon-cyan">retrogames4.net</strong>! Scramble into our November <strong class="text-neon-yellow">Cyber-Autumn &amp; Leonid Meteor Shower</strong> showcase, pilot the Raiden supersonic fighter, and break global high scores right inside your browser.
                     </p>
 
-                    <!-- Moon Rabbit Event Feature Badge & Fast Action -->
-                    <div class="max-w-xl mx-auto bg-neon-card/85 backdrop-blur-md border border-amber-400/50 rounded-2xl p-4 shadow-[0_0_25px_rgba(255,230,0,0.15)] flex flex-col sm:flex-row items-center justify-between gap-4 text-left">
+                    <!-- Raiden November Feature Callout Card + Moon Rabbit Secondary Link -->
+                    <div class="max-w-2xl mx-auto bg-neon-card/90 backdrop-blur-md border-2 border-neon-cyan/70 rounded-2xl p-4 sm:p-5 shadow-[0_0_30px_rgba(0,243,255,0.22)] flex flex-col sm:flex-row items-center justify-between gap-4 text-left">
                         <div class="flex items-center gap-3.5">
-                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400/30 to-neon-pink/30 border border-amber-400/60 flex items-center justify-center flex-shrink-0 text-2xl drop-shadow-[0_0_8px_rgba(255,230,0,0.8)]">
-                                🐇
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-neon-cyan/30 via-neon-purple/30 to-neon-pink/30 border border-neon-cyan flex items-center justify-center flex-shrink-0 text-2xl sm:text-3xl shadow-[0_0_12px_rgba(0,243,255,0.6)]">
+                                🚀
                             </div>
                             <div>
-                                <div class="font-arcade text-[10px] sm:text-xs text-neon-yellow flex items-center gap-1.5">
-                                    <span>MOON RABBIT DEFENDER</span>
-                                    <span class="px-1.5 py-0.5 rounded text-[8px] bg-neon-pink text-white font-bold">HOT</span>
+                                <div class="font-arcade text-[10px] sm:text-xs text-neon-cyan flex flex-wrap items-center gap-1.5">
+                                    <span>RAIDEN: COSMIC AIR-RAID</span>
+                                    <span class="px-1.5 py-0.5 rounded text-[8px] bg-neon-pink text-white font-bold shadow-[0_0_8px_rgba(255,0,127,0.8)]">NEW NOVEMBER FEATURE</span>
                                 </div>
-                                <div class="text-xs text-gray-300 mt-0.5">Defend the luminous celestial moon & unlock new planetary systems!</div>
+                                <div class="text-xs text-gray-300 mt-1">Pilot the supersonic interceptor through 8 explosive stages, upgrade plasma weapons &amp; conquer alien bosses!</div>
+                                <div class="mt-1.5 flex items-center gap-2 text-[10px] font-arcade text-neon-yellow">
+                                    <span>🌕 Also Featured:</span>
+                                    <a href="games/moon-festival/index.html" onclick="playRetroSound('click')" class="underline hover:text-white transition-colors">Moon Rabbit Defender &rarr;</a>
+                                </div>
                             </div>
                         </div>
-                        <a href="games/moon-festival/index.html" onclick="playRetroSound('click')" class="w-full sm:w-auto flex-shrink-0 px-4 py-2.5 rounded-lg bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-neon-dark font-arcade text-[10px] font-bold tracking-wider transition-all transform hover:scale-105 shadow-[0_0_12px_rgba(255,230,0,0.6)] flex items-center justify-center gap-1.5" aria-label="Play Moon Rabbit game">
-                            <span>🌕 PLAY NOW</span>
+                        <a href="games/raiden/index.html" onclick="playRetroSound('click')" class="w-full sm:w-auto flex-shrink-0 px-4 py-3 rounded-lg bg-gradient-to-r from-neon-cyan to-neon-pink hover:from-cyan-300 hover:to-pink-500 text-neon-dark font-arcade text-[10px] font-bold tracking-wider transition-all transform hover:scale-105 shadow-[0_0_15px_rgba(0,243,255,0.7)] flex items-center justify-center gap-1.5" aria-label="Play Raiden vertical shoot-em-up game">
+                            <span>⚡ SCRAMBLE NOW</span>
                         </a>
                     </div>
 
@@ -375,26 +384,42 @@
         <!-- Interactive Canvas Game Section -->
         <section id="arcade" class="py-16 bg-neon-dark/90 relative border-b border-neon-cyan/20">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
+                <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-6 gap-4">
                     <div>
-                        <h2 class="text-3xl font-heading font-bold text-white tracking-wide">
-                            <i class="fa-solid fa-gamepad text-neon-pink mr-2" aria-hidden="true"></i> RETRO BREAKOUT MINI-GAME
+                        <h2 id="arcadeCabinetTitle" class="text-3xl font-heading font-bold text-white tracking-wide">
+                            <i class="fa-solid fa-gamepad text-neon-pink mr-2" aria-hidden="true"></i> INTERACTIVE ARCADE CABINET
                         </h2>
-                        <p class="text-sm text-gray-400">Use Left/Right arrow keys or touch buttons to smash all neon bricks!</p>
+                        <p id="arcadeCabinetSubtitle" class="text-sm text-gray-400">Switch between embedded mini-games below or use Left/Right arrows &amp; WASD to play!</p>
                     </div>
-                    <div class="flex items-center gap-4">
-                        <div class="bg-neon-card px-4 py-2 rounded border border-neon-pink/40 font-arcade text-xs text-neon-yellow">
-                            SCORE: <span id="gameScore" aria-label="Game score">0000</span>
+
+                    <!-- In-Cabinet Game Switcher & HUD Controls -->
+                    <div class="flex flex-wrap items-center gap-2 sm:gap-3 w-full lg:w-auto justify-between lg:justify-end">
+                        <div class="inline-flex items-center rounded-lg bg-neon-card p-1 border border-neon-cyan/40" role="group" aria-label="In-Cabinet Game Switcher">
+                            <button id="cabinetBreakoutBtn" onclick="switchArcadeCabinet('breakout')" class="font-arcade text-[9px] sm:text-[10px] px-3 py-1.5 rounded bg-neon-cyan text-neon-dark font-bold transition-all" aria-label="Switch cabinet to Retro Breakout">
+                                <i class="fa-solid fa-table-tennis-paddle-ball mr-1" aria-hidden="true"></i> BREAKOUT
+                            </button>
+                            <button id="cabinetCyberMazeBtn" onclick="switchArcadeCabinet('cyber-maze')" class="font-arcade text-[9px] sm:text-[10px] px-3 py-1.5 rounded text-gray-300 hover:text-neon-cyan transition-all" aria-label="Switch cabinet to Cyber Maze">
+                                <i class="fa-solid fa-ghost mr-1" aria-hidden="true"></i> CYBER MAZE
+                            </button>
                         </div>
-                        <button id="startBtn" class="font-arcade text-xs px-4 py-2 bg-neon-pink text-white rounded hover:bg-neon-pink/80 glow-pink" aria-label="Start game">
-                            RESTART
-                        </button>
+
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <div class="bg-neon-card px-3.5 py-2 rounded border border-neon-pink/40 font-arcade text-xs text-neon-yellow">
+                                SCORE: <span id="gameScore" aria-label="Game score">0000</span>
+                            </div>
+                            <button id="startBtn" class="font-arcade text-xs px-3.5 py-2 bg-neon-pink text-white rounded hover:bg-neon-pink/80 glow-pink transition-all" aria-label="Restart game">
+                                RESTART
+                            </button>
+                            <button id="fullscreenBtn" onclick="toggleGameFullscreen()" class="font-arcade text-xs px-3 py-2 bg-neon-card border border-neon-cyan/60 text-neon-cyan rounded hover:bg-neon-cyan hover:text-neon-dark transition-all" title="Toggle Fullscreen" aria-label="Toggle Fullscreen">
+                                <i id="fullscreenIcon" class="fa-solid fa-expand" aria-hidden="true"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Game Canvas Container -->
                 <div class="relative w-full max-w-4xl mx-auto aspect-[16/9] bg-black rounded-xl overflow-hidden border-2 border-neon-cyan glow-cyan flex flex-col items-center justify-center">
-                    <canvas id="arcadeCanvas" class="w-full h-full block bg-black" aria-label="Breakout game canvas"></canvas>
+                    <canvas id="arcadeCanvas" class="w-full h-full block bg-black" aria-label="Arcade cabinet game canvas"></canvas>
 
                     <!-- Onscreen Touch Controls for Mobile -->
                     <div class="absolute bottom-4 left-4 right-4 flex justify-between md:hidden pointer-events-none">
@@ -409,10 +434,15 @@
                     <!-- Overlay message when game is stopped/ended -->
                     <div id="gameOverlay" class="absolute inset-0 bg-black/85 flex flex-col items-center justify-center text-center p-6 space-y-4">
                         <h3 id="overlayTitle" class="font-arcade text-xl sm:text-2xl text-neon-pink">READY PLAYER ONE?</h3>
-                        <p id="overlaySub" class="text-gray-300 text-sm max-w-md">Click Start Game to launch retro ball & paddle demo.</p>
-                        <button onclick="startGame()" class="font-arcade text-xs px-6 py-3 bg-neon-cyan text-neon-dark font-bold rounded glow-cyan hover:scale-105 transition-transform" aria-label="Start game">
-                            START GAME
-                        </button>
+                        <p id="overlaySub" class="text-gray-300 text-sm max-w-md">Choose an in-cabinet arcade classic below to start playing immediately.</p>
+                        <div class="flex flex-wrap items-center justify-center gap-3">
+                            <button onclick="startGame()" class="font-arcade text-xs px-6 py-3 bg-neon-cyan text-neon-dark font-bold rounded glow-cyan hover:scale-105 transition-transform" aria-label="Start Retro Breakout">
+                                START BREAKOUT
+                            </button>
+                            <button onclick="startCyberMazeGame()" class="font-arcade text-xs px-5 py-3 bg-neon-card border border-neon-pink text-neon-pink font-bold rounded hover:bg-neon-pink hover:text-white transition-all" aria-label="Start Cyber Maze">
+                                PLAY CYBER MAZE
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -423,10 +453,10 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-2xl mx-auto mb-12">
                     <h2 class="text-3xl font-heading font-bold text-white tracking-wide uppercase">
-                        FEATURED RETRO CLASSICS
+                        GAMES VAULT &amp; NOVEMBER SHOWCASE
                     </h2>
                     <div class="w-20 h-1 bg-neon-pink mx-auto my-3 rounded-full"></div>
-                    <p class="text-gray-400 text-sm">Explore our expanding vault of pixel-perfect retro titles.</p>
+                    <p class="text-gray-400 text-sm">Explore our expanding vault of playable pixel-perfect retro titles.</p>
                 </div>
 
                 <!-- Filter Buttons -->
@@ -434,8 +464,8 @@
                     <button onclick="filterVault('all', this)" class="vault-filter-btn px-4 py-2 rounded bg-neon-pink text-white font-bold" aria-label="Show all games">
                         ALL
                     </button>
-                    <button onclick="filterVault('moon-festival', this)" class="vault-filter-btn px-4 py-2 rounded bg-neon-card text-neon-yellow border border-amber-400/60 hover:border-neon-yellow flex items-center gap-1.5" aria-label="Show Moon Festival game">
-                        <span>🌕</span> FESTIVAL
+                    <button onclick="filterVault('featured', this)" class="vault-filter-btn px-4 py-2 rounded bg-neon-card text-neon-yellow border border-amber-400/60 hover:border-neon-yellow flex items-center gap-1.5" aria-label="Show Featured Cosmic Event games">
+                        <span>☄️</span> EVENT / FEATURED
                     </button>
                     <button onclick="filterVault('arcade', this)" class="vault-filter-btn px-4 py-2 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-cyan" aria-label="Show arcade games">
                         ARCADE
@@ -450,26 +480,97 @@
 
                 <!-- Games Grid -->
                 <div id="gamesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Game Card 1 -->
+                    <!-- Game Card 1: RAIDEN (November Showcase Feature) -->
+                    <article class="game-card arcade action featured moon-festival relative bg-neon-card rounded-xl border-2 border-neon-cyan shadow-[0_0_25px_rgba(0,243,255,0.28)] overflow-hidden hover:border-neon-pink transition-all duration-300 hover:-translate-y-2 group">
+                        <div class="absolute -top-1 -right-1 z-30 font-arcade text-[8px] sm:text-[9px] px-3 py-1 rounded-bl-lg rounded-tr-xl bg-gradient-to-r from-neon-cyan via-neon-pink to-neon-yellow text-black font-extrabold shadow-[0_0_12px_rgba(0,243,255,0.8)] animate-pulse flex items-center gap-1">
+                            <span>☄️</span> NOV SHOWCASE
+                        </div>
+                        <div class="h-48 bg-gray-800 relative overflow-hidden flex items-center justify-center">
+                            <div class="absolute w-32 h-32 rounded-full bg-neon-cyan/20 blur-xl pointer-events-none"></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-neon-card to-transparent z-10"></div>
+                            <i class="fa-solid fa-jet-fighter-up text-6xl text-neon-cyan group-hover:scale-125 group-hover:-translate-y-1 transition-all duration-300 drop-shadow-[0_0_15px_rgba(0,243,255,0.85)]" aria-hidden="true"></i>
+                            <span class="absolute top-3 left-3 z-20 font-arcade text-[9px] px-2 py-1 rounded bg-neon-pink text-white font-bold shadow-[0_0_8px_rgba(255,0,127,0.8)]">NEW / PLAYABLE</span>
+                        </div>
+                        <div class="p-6 relative z-20 space-y-3">
+                            <h3 class="font-heading text-2xl font-bold text-white group-hover:text-neon-cyan flex items-center gap-2">
+                                RAIDEN <span class="text-base">⚡</span>
+                            </h3>
+                            <p class="text-gray-400 text-xs leading-relaxed">Scramble the supersonic Raiden fighter through 8 explosive vertical stages, upgrade plasma lasers, and obliterate alien bosses!</p>
+                            <div class="flex items-center justify-between pt-2">
+                                <span class="text-xs text-neon-yellow font-mono"><i class="fa-solid fa-star" aria-hidden="true"></i> 5.0 / 5.0 (Featured)</span>
+                                <button onclick="launchDemo('Raiden')" class="font-arcade text-[10px] px-3.5 py-1.5 rounded bg-gradient-to-r from-neon-cyan to-neon-pink text-neon-dark font-bold hover:from-cyan-300 hover:to-pink-400 transition-all shadow-[0_0_10px_rgba(0,243,255,0.6)] transform hover:scale-105 flex items-center gap-1" aria-label="Launch Raiden game">
+                                    <span>SCRAMBLE</span> <span>🚀</span>
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Game Card 2: CYBER MAZE -->
                     <article class="game-card arcade bg-neon-card rounded-xl border border-neon-purple/40 overflow-hidden hover:border-neon-pink transition-all duration-300 hover:-translate-y-2 group">
                         <div class="h-48 bg-gray-800 relative overflow-hidden flex items-center justify-center">
                             <div class="absolute inset-0 bg-gradient-to-t from-neon-card to-transparent z-10"></div>
                             <i class="fa-solid fa-ghost text-6xl text-neon-pink group-hover:scale-125 transition-transform duration-300" aria-hidden="true"></i>
+                            <span class="absolute top-3 left-3 z-20 font-arcade text-[9px] px-2 py-1 rounded bg-neon-cyan/20 border border-neon-cyan text-neon-cyan font-bold">PLAYABLE</span>
                             <span class="absolute top-3 right-3 z-20 font-arcade text-[9px] px-2 py-1 rounded bg-neon-purple text-white">ARCADE</span>
                         </div>
                         <div class="p-6 relative z-20 space-y-3">
                             <h3 class="font-heading text-2xl font-bold text-white group-hover:text-neon-cyan">CYBER MAZE</h3>
-                            <p class="text-gray-400 text-xs leading-relaxed">Navigate neon labyrinths, collect glowing dots, and evade rogue AI security bots.</p>
+                            <p class="text-gray-400 text-xs leading-relaxed">Navigate neon labyrinths, collect glowing data cores, and evade rogue AI security bots.</p>
                             <div class="flex items-center justify-between pt-2">
                                 <span class="text-xs text-neon-yellow font-mono"><i class="fa-solid fa-star" aria-hidden="true"></i> 4.9 / 5.0</span>
-                                <button onclick="launchDemo('Cyber Maze')" class="font-arcade text-[10px] px-3 py-1.5 rounded bg-neon-cyan/20 border border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-black transition-colors" aria-label="Launch Cyber Maze demo">
+                                <button onclick="launchDemo('Cyber Maze')" class="font-arcade text-[10px] px-3 py-1.5 rounded bg-neon-cyan/20 border border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-black transition-colors" aria-label="Launch Cyber Maze game">
                                     LAUNCH
                                 </button>
                             </div>
                         </div>
                     </article>
 
-                    <!-- Game Card 2 -->
+                    <!-- Game Card 3: BLOCK STACKER -->
+                    <article class="game-card puzzle arcade bg-neon-card rounded-xl border border-neon-purple/40 overflow-hidden hover:border-neon-pink transition-all duration-300 hover:-translate-y-2 group">
+                        <div class="h-48 bg-gray-800 relative overflow-hidden flex items-center justify-center">
+                            <div class="absolute inset-0 bg-gradient-to-t from-neon-card to-transparent z-10"></div>
+                            <i class="fa-solid fa-cubes text-6xl text-neon-yellow group-hover:scale-125 transition-transform duration-300" aria-hidden="true"></i>
+                            <span class="absolute top-3 left-3 z-20 font-arcade text-[9px] px-2 py-1 rounded bg-neon-cyan/20 border border-neon-cyan text-neon-cyan font-bold">PLAYABLE</span>
+                            <span class="absolute top-3 right-3 z-20 font-arcade text-[9px] px-2 py-1 rounded bg-neon-yellow text-black font-bold">PUZZLE</span>
+                        </div>
+                        <div class="p-6 relative z-20 space-y-3">
+                            <h3 class="font-heading text-2xl font-bold text-white group-hover:text-neon-yellow">BLOCK STACKER</h3>
+                            <p class="text-gray-400 text-xs leading-relaxed">Stack falling polyomino blocks into complete lines with hold queue, combos, and increasing battle speeds.</p>
+                            <div class="flex items-center justify-between pt-2">
+                                <span class="text-xs text-neon-yellow font-mono"><i class="fa-solid fa-star" aria-hidden="true"></i> 4.9 / 5.0</span>
+                                <button onclick="launchDemo('Block Stacker')" class="font-arcade text-[10px] px-3 py-1.5 rounded bg-neon-cyan/20 border border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-black transition-colors" aria-label="Launch Block Stacker game">
+                                    LAUNCH
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Game Card 4: MOON FESTIVAL -->
+                    <article class="game-card arcade action featured moon-festival relative bg-neon-card rounded-xl border-2 border-amber-400/70 shadow-[0_0_20px_rgba(255,230,0,0.2)] overflow-hidden hover:border-neon-yellow transition-all duration-300 hover:-translate-y-2 group">
+                        <div class="absolute -top-1 -right-1 z-30 font-arcade text-[8px] sm:text-[9px] px-3 py-1 rounded-bl-lg rounded-tr-xl bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-300 text-black font-extrabold shadow-[0_0_12px_rgba(255,230,0,0.8)] flex items-center gap-1">
+                            <span>🌕</span> COSMIC CLASSIC
+                        </div>
+                        <div class="h-48 bg-gray-800 relative overflow-hidden flex items-center justify-center">
+                            <div class="absolute w-28 h-28 rounded-full bg-amber-400/20 blur-xl pointer-events-none"></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-neon-card to-transparent z-10"></div>
+                            <i class="fa-solid fa-moon text-6xl text-neon-yellow group-hover:scale-125 group-hover:rotate-12 transition-all duration-300 drop-shadow-[0_0_15px_rgba(255,230,0,0.8)]" aria-hidden="true"></i>
+                            <span class="absolute top-3 left-3 z-20 font-arcade text-[9px] px-2 py-1 rounded bg-amber-500/30 text-neon-yellow border border-amber-400/50">PLAYABLE</span>
+                        </div>
+                        <div class="p-6 relative z-20 space-y-3">
+                            <h3 class="font-heading text-2xl font-bold text-white group-hover:text-neon-yellow flex items-center gap-2">
+                                MOON FESTIVAL <span class="text-base">🐇</span>
+                            </h3>
+                            <p class="text-gray-400 text-xs leading-relaxed">Defend the Celestial Moon! Play as Jade Rabbit and blast incoming grapefruit monsters across planetary systems.</p>
+                            <div class="flex items-center justify-between pt-2">
+                                <span class="text-xs text-neon-yellow font-mono"><i class="fa-solid fa-star" aria-hidden="true"></i> 5.0 / 5.0 (Event)</span>
+                                <button onclick="launchDemo('Moon Festival')" class="font-arcade text-[10px] px-3.5 py-1.5 rounded bg-gradient-to-r from-yellow-400 to-amber-500 text-neon-dark font-bold hover:from-yellow-300 hover:to-amber-400 transition-all shadow-[0_0_8px_rgba(255,230,0,0.5)] transform hover:scale-105 flex items-center gap-1" aria-label="Launch Moon Festival game">
+                                    <span>PLAY</span> <span>🌕</span>
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Game Card 5: NEON DEFENDER -->
                     <article class="game-card action bg-neon-card rounded-xl border border-neon-purple/40 overflow-hidden hover:border-neon-pink transition-all duration-300 hover:-translate-y-2 group">
                         <div class="h-48 bg-gray-800 relative overflow-hidden flex items-center justify-center">
                             <div class="absolute inset-0 bg-gradient-to-t from-neon-card to-transparent z-10"></div>
@@ -479,7 +580,7 @@
                         </div>
                         <div class="p-6 relative z-20 space-y-3">
                             <h3 class="font-heading text-2xl font-bold text-white group-hover:text-neon-pink">NEON DEFENDER</h3>
-                            <p class="text-gray-400 text-xs leading-relaxed">Classic vertical space shooter! Upgrade your ship weapons and defeat cosmic bosses.</p>
+                            <p class="text-gray-400 text-xs leading-relaxed">Deep-sector starfighter defense! Upgrade your ship shields and repel cosmic dreadnoughts.</p>
                             <div class="flex items-center justify-between pt-2">
                                 <span class="text-xs text-neon-yellow font-mono"><i class="fa-solid fa-star" aria-hidden="true"></i> 4.8 / 5.0</span>
                                 <button disabled class="font-arcade text-[10px] px-3 py-1.5 rounded bg-gray-800/60 border border-gray-600 text-gray-500 cursor-not-allowed opacity-60" aria-label="Neon Defender demo coming soon">
@@ -489,25 +590,7 @@
                         </div>
                     </article>
 
-                    <!-- Game Card 3 -->
-                    <article class="game-card puzzle bg-neon-card rounded-xl border border-neon-purple/40 overflow-hidden hover:border-neon-pink transition-all duration-300 hover:-translate-y-2 group">
-                        <div class="h-48 bg-gray-800 relative overflow-hidden flex items-center justify-center">
-                            <div class="absolute inset-0 bg-gradient-to-t from-neon-card to-transparent z-10"></div>
-                            <i class="fa-solid fa-cubes text-6xl text-neon-yellow group-hover:scale-125 transition-transform duration-300" aria-hidden="true"></i>
-                            <span class="absolute top-3 right-3 z-20 font-arcade text-[9px] px-2 py-1 rounded bg-neon-yellow text-black">PUZZLE</span>
-                        </div>
-                        <div class="p-6 relative z-20 space-y-3">
-                            <h3 class="font-heading text-2xl font-bold text-white group-hover:text-neon-yellow">BLOCK STACKER</h3>
-                            <p class="text-gray-400 text-xs leading-relaxed">Stack falling polyomino blocks into complete lines under increasing battle speeds.</p>
-                            <div class="flex items-center justify-between pt-2">
-                                <span class="text-xs text-neon-yellow font-mono"><i class="fa-solid fa-star" aria-hidden="true"></i> 4.9 / 5.0</span>
-                                <button onclick="launchDemo('Block Stacker')" class="font-arcade text-[10px] px-3 py-1.5 rounded bg-neon-cyan/20 border border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-black transition-colors" aria-label="Launch Block Stacker demo">
-                                    LAUNCH
-                                </button>
-                            </div>
-                        </div>
-                    </article>
-                    <!-- Game Card 4 -->
+                    <!-- Game Card 6: GALAXIAN -->
                     <article class="game-card action bg-neon-card rounded-xl border border-neon-purple/40 overflow-hidden hover:border-neon-pink transition-all duration-300 hover:-translate-y-2 group">
                         <div class="h-48 bg-gray-800 relative overflow-hidden flex items-center justify-center">
                             <div class="absolute inset-0 bg-gradient-to-t from-neon-card to-transparent z-10"></div>
@@ -517,37 +600,11 @@
                         </div>
                         <div class="p-6 relative z-20 space-y-3">
                             <h3 class="font-heading text-2xl font-bold text-white group-hover:text-neon-cyan">GALAXIAN</h3>
-                            <p class="text-gray-400 text-xs leading-relaxed">Classic space shooter! Defend against waves of alien invaders.</p>
+                            <p class="text-gray-400 text-xs leading-relaxed">Classic space swarm shooter! Defend your fleet against diving alien squadrons.</p>
                             <div class="flex items-center justify-between pt-2">
                                 <span class="text-xs text-neon-yellow font-mono"><i class="fa-solid fa-star" aria-hidden="true"></i> 4.7 / 5.0</span>
                                 <button disabled class="font-arcade text-[10px] px-3 py-1.5 rounded bg-gray-800/60 border border-gray-600 text-gray-500 cursor-not-allowed opacity-60" aria-label="Galaxian demo coming soon">
                                     LAUNCH
-                                </button>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Game Card 5 (Moon Festival) -->
-                    <article class="game-card arcade action moon-festival relative bg-neon-card rounded-xl border-2 border-amber-400/70 shadow-[0_0_20px_rgba(255,230,0,0.25)] overflow-hidden hover:border-neon-yellow transition-all duration-300 hover:-translate-y-2 group">
-                        <!-- Event Highlight Ribbon -->
-                        <div class="absolute -top-1 -right-1 z-30 font-arcade text-[8px] sm:text-[9px] px-3 py-1 rounded-bl-lg rounded-tr-xl bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-300 text-black font-extrabold shadow-[0_0_12px_rgba(255,230,0,0.8)] animate-pulse flex items-center gap-1">
-                            <span>🥮</span> MID-AUTUMN EVENT
-                        </div>
-                        <div class="h-48 bg-gray-800 relative overflow-hidden flex items-center justify-center">
-                            <div class="absolute w-28 h-28 rounded-full bg-amber-400/20 blur-xl pointer-events-none"></div>
-                            <div class="absolute inset-0 bg-gradient-to-t from-neon-card to-transparent z-10"></div>
-                            <i class="fa-solid fa-moon text-6xl text-neon-yellow group-hover:scale-125 group-hover:rotate-12 transition-all duration-300 drop-shadow-[0_0_15px_rgba(255,230,0,0.8)]" aria-hidden="true"></i>
-                            <span class="absolute top-3 left-3 z-20 font-arcade text-[9px] px-2 py-1 rounded bg-amber-500/30 text-neon-yellow border border-amber-400/50">SEASONAL</span>
-                        </div>
-                        <div class="p-6 relative z-20 space-y-3">
-                            <h3 class="font-heading text-2xl font-bold text-white group-hover:text-neon-yellow flex items-center gap-2">
-                                MOON FESTIVAL <span class="text-base">🌕</span>
-                            </h3>
-                            <p class="text-gray-400 text-xs leading-relaxed">Defend the Mid-Autumn Moon! Play as Jade Rabbit and blast incoming grapefruit monsters with mooncakes.</p>
-                            <div class="flex items-center justify-between pt-2">
-                                <span class="text-xs text-neon-yellow font-mono"><i class="fa-solid fa-star" aria-hidden="true"></i> 5.0 / 5.0 (Event)</span>
-                                <button onclick="launchDemo('Moon Festival')" class="font-arcade text-[10px] px-3.5 py-1.5 rounded bg-gradient-to-r from-yellow-400 to-amber-500 text-neon-dark font-bold hover:from-yellow-300 hover:to-amber-400 transition-all shadow-[0_0_8px_rgba(255,230,0,0.5)] transform hover:scale-105 flex items-center gap-1" aria-label="Launch Moon Festival game">
-                                    <span>PLAY</span> <span>🥮</span>
                                 </button>
                             </div>
                         </div>
@@ -563,7 +620,7 @@
                     <h2 class="text-3xl font-heading font-bold text-white tracking-wide uppercase">
                         🏆 HALL OF FAME
                     </h2>
-                    <p class="text-gray-400 text-xs font-arcade mt-1 text-neon-cyan">RETROGAMES4 HIGH SCORES & LEADERBOARD</p>
+                    <p class="text-gray-400 text-xs font-arcade mt-1 text-neon-cyan">RETROGAMES4 HIGH SCORES &amp; LEADERBOARD</p>
                 </div>
 
                 <!-- Leaderboard Game Selector Tabs -->
@@ -571,6 +628,9 @@
                     <div class="flex flex-wrap gap-2 font-arcade text-[10px]">
                         <button onclick="switchLeaderboardTab('breakout')" id="leaderboardTab-breakout" class="leaderboard-tab-btn px-3.5 py-1.5 rounded bg-neon-pink text-white font-bold transition-all" aria-label="Show Breakout Leaderboard">
                             BREAKOUT
+                        </button>
+                        <button onclick="switchLeaderboardTab('raiden')" id="leaderboardTab-raiden" class="leaderboard-tab-btn px-3.5 py-1.5 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-cyan transition-all" aria-label="Show Raiden Leaderboard">
+                            RAIDEN ⚡
                         </button>
                         <button onclick="switchLeaderboardTab('cyber-maze')" id="leaderboardTab-cyber-maze" class="leaderboard-tab-btn px-3.5 py-1.5 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-cyan transition-all" aria-label="Show Cyber Maze Leaderboard">
                             CYBER MAZE
@@ -757,15 +817,15 @@
         </div>
     </div>
 
-    <!-- Floating Moon Rabbit Quick Access Widget -->
-    <aside id="floatingMoonRabbitWidget" class="fixed bottom-6 right-6 z-40 group select-none hidden sm:block" aria-label="Moon Rabbit Quick Launch">
-        <a href="games/moon-festival/index.html" onclick="playRetroSound('click')" class="flex items-center gap-2.5 bg-neon-dark/95 backdrop-blur-md border-2 border-amber-400/80 rounded-full py-2 px-3.5 shadow-[0_0_20px_rgba(255,230,0,0.35)] hover:shadow-[0_0_30px_rgba(255,230,0,0.7)] hover:border-neon-yellow transition-all transform hover:scale-105 group" title="Play Moon Rabbit: Cosmic Space Defender">
-            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-300 to-amber-500 flex items-center justify-center text-lg animate-bounce shadow-inner">
-                🐇
+    <!-- Floating Raiden Interceptor Quick Access Widget -->
+    <aside id="floatingMoonRabbitWidget" class="fixed bottom-6 right-6 z-40 group select-none hidden sm:block" aria-label="Raiden Quick Launch">
+        <a href="games/raiden/index.html" onclick="playRetroSound('click')" class="flex items-center gap-2.5 bg-neon-dark/95 backdrop-blur-md border-2 border-neon-cyan/80 rounded-full py-2 px-3.5 shadow-[0_0_20px_rgba(0,243,255,0.35)] hover:shadow-[0_0_30px_rgba(255,0,127,0.7)] hover:border-neon-pink transition-all transform hover:scale-105 group" title="Play Raiden: Cosmic Air-Raid">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-neon-cyan to-neon-pink flex items-center justify-center text-lg animate-bounce shadow-inner">
+                ☄️
             </div>
-            <div class="font-arcade text-[9px] text-neon-yellow group-hover:text-white transition-colors">
-                <span>MOON RABBIT</span>
-                <span class="block text-[7px] text-amber-300 font-sans tracking-tight">DEFEND THE MOON 🌕</span>
+            <div class="font-arcade text-[9px] text-neon-cyan group-hover:text-white transition-colors">
+                <span>RAIDEN: SCRAMBLE NOW</span>
+                <span class="block text-[7px] text-neon-yellow font-sans tracking-tight">COSMIC AIR-RAID ⚡</span>
             </div>
         </a>
     </aside>
