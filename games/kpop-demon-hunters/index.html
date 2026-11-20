@@ -278,7 +278,7 @@
   const H = 270;
   const FLOOR_MIN_Y = 152;
   const FLOOR_MAX_Y = 248;
-  const WORLD_WIDTH = 1200;
+  let currentWorldWidth = 1200;
   const GRAVITY = 780;
 
   const canvas = document.getElementById('game');
@@ -528,25 +528,59 @@
       this.noise(0.2, 0.12, 0, 200);
       this.tone(300, 0.22, 'sawtooth', 0.09, 55);
     }
+    playExplosion() {
+      this.noise(0.32, 0.16, 0, 140);
+      this.tone(140, 0.34, 'sawtooth', 0.12, 38);
+      this.tone(240, 0.18, 'square', 0.08, 65, 0.04);
+    }
+    playZap() {
+      this.tone(760, 0.09, 'sawtooth', 0.08, 220);
+      this.noise(0.08, 0.08, 0.02, 1600);
+    }
+    playStageClear() {
+      const notes = [523, 659, 784, 1046, 987, 1046, 1318];
+      notes.forEach((n, i) => this.tone(n, 0.14, 'square', 0.08, null, i * 0.08));
+    }
     startBGM(mode) {
       if (this.mode === mode && this.bgmTimer) return;
       this.stopBGM();
       this.mode = mode;
       this.bgmStep = 0;
-      const bpm = mode === 'boss' ? 148 : 132;
-      const stepMs = (60 / bpm / 2) * 1000;
-
-      // Upbeat K-pop electro-arcade synth lines (Hz)
-      const stageBass = [110, 110, 220, 110, 130.8, 130.8, 146.8, 164.8, 110, 110, 220, 110, 174.6, 164.8, 146.8, 130.8];
-      const stageLead = [440, 0, 523, 587, 659, 0, 587, 523, 440, 0, 659, 784, 880, 784, 659, 587];
-      const bossBass  = [98, 98, 196, 98, 116.5, 98, 130.8, 146.8, 98, 98, 196, 146.8, 130.8, 116.5, 110, 98];
-      const bossLead  = [392, 466, 587, 466, 622, 587, 466, 392, 784, 0, 698, 622, 587, 466, 523, 466];
+      const tracks = {
+        stage0: {
+          bpm: 132,
+          bass: [110, 110, 220, 110, 130.8, 130.8, 146.8, 164.8, 110, 110, 220, 110, 174.6, 164.8, 146.8, 130.8],
+          lead: [440, 0, 523, 587, 659, 0, 587, 523, 440, 0, 659, 784, 880, 784, 659, 587],
+        },
+        stage1: {
+          bpm: 136,
+          bass: [123.5, 123.5, 246.9, 123.5, 146.8, 146.8, 164.8, 185, 123.5, 123.5, 246.9, 123.5, 196, 185, 164.8, 146.8],
+          lead: [494, 587, 0, 659, 740, 659, 587, 0, 494, 659, 740, 880, 740, 659, 587, 494],
+        },
+        stage2: {
+          bpm: 146,
+          bass: [130.8, 261.6, 130.8, 261.6, 155.6, 311.1, 174.6, 196, 130.8, 261.6, 130.8, 261.6, 233.1, 196, 174.6, 155.6],
+          lead: [523, 622, 784, 622, 880, 784, 698, 622, 523, 784, 932, 784, 1046, 932, 784, 622],
+        },
+        stage3: {
+          bpm: 140,
+          bass: [92.5, 92.5, 185, 92.5, 110, 110, 123.5, 138.6, 92.5, 92.5, 185, 138.6, 123.5, 110, 103.8, 92.5],
+          lead: [370, 440, 554, 440, 587, 554, 494, 440, 740, 0, 659, 587, 554, 494, 440, 370],
+        },
+        boss: {
+          bpm: 150,
+          bass: [98, 98, 196, 98, 116.5, 98, 130.8, 146.8, 98, 98, 196, 146.8, 130.8, 116.5, 110, 98],
+          lead: [392, 466, 587, 466, 622, 587, 466, 392, 784, 0, 698, 622, 587, 466, 523, 466],
+        },
+      };
+      const tr = tracks[mode] || tracks.stage0;
+      const stepMs = (60 / tr.bpm / 2) * 1000;
 
       this.bgmTimer = setInterval(() => {
         if (this.muted || !this.ctx || this.ctx.state !== 'running') return;
         const s = this.bgmStep % 16;
-        const bass = mode === 'boss' ? bossBass[s] : stageBass[s];
-        const lead = mode === 'boss' ? bossLead[s] : stageLead[s];
+        const bass = tr.bass[s];
+        const lead = tr.lead[s];
         this.tone(bass, 0.11, 'triangle', 0.055);
         if (lead > 0) this.tone(lead, 0.09, 'square', 0.028);
         if (s % 4 === 0) this.tone(95, 0.07, 'sine', 0.07, 36); // Kick
@@ -726,6 +760,7 @@
     portraits: {},
     enemies: {},
     items: {},
+    props: {},
   };
 
   function bakeHunterPose(h, pose) {
@@ -1013,38 +1048,48 @@
     return c;
   }
 
+  function isBossType(type) {
+    return type === 'boss' || type.startsWith('boss_');
+  }
+
   function bakeEnemyPose(type, pose) {
-    // 64x56 for normal demons, 84x76 for mini-boss
-    const isBoss = type === 'boss';
+    // 64x56 for normal demons, 84x76 for bosses
+    const isBoss = isBossType(type);
     const cw = isBoss ? 84 : 64;
     const ch = isBoss ? 76 : 56;
     const { c, g } = createOffscreen(cw, ch);
     const r = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h)); };
 
     const palettes = {
-      imp:     { skin: '#74a852', shade: '#436e33', cloth: '#542573', cloth2: '#33124a', eye: '#ffe64d', accent: '#ff3b8d', horn: '#d9386b' },
-      banshee: { skin: '#449be8', shade: '#22599e', cloth: '#25174a', cloth2: '#140b2e', eye: '#70ffff', accent: '#ff4da6', horn: '#3bf0ff' },
-      gat:     { skin: '#7d52b8', shade: '#4c2b7a', cloth: '#201336', cloth2: '#421d6b', eye: '#ffea54', accent: '#ff2e93', horn: '#160a24' },
-      boss:    { skin: '#8a52c9', shade: '#52288a', cloth: '#1f0e38', cloth2: '#8c1655', eye: '#ff3366', accent: '#ff42b3', horn: '#140821' },
+      imp:           { skin: '#74a852', shade: '#436e33', cloth: '#542573', cloth2: '#33124a', eye: '#ffe64d', accent: '#ff3b8d', horn: '#d9386b' },
+      banshee:       { skin: '#449be8', shade: '#22599e', cloth: '#25174a', cloth2: '#140b2e', eye: '#70ffff', accent: '#ff4da6', horn: '#3bf0ff' },
+      gat:           { skin: '#7d52b8', shade: '#4c2b7a', cloth: '#201336', cloth2: '#421d6b', eye: '#ffea54', accent: '#ff2e93', horn: '#160a24' },
+      crooner:       { skin: '#e8a8d8', shade: '#9e5494', cloth: '#182452', cloth2: '#2d1a5e', eye: '#5ef6ff', accent: '#ffe066', horn: '#ff45b5' },
+      heavy:         { skin: '#d9534f', shade: '#8c2328', cloth: '#262438', cloth2: '#4a3d66', eye: '#ffe066', accent: '#ff8833', horn: '#ffe066' },
+      boss:          { skin: '#8a52c9', shade: '#52288a', cloth: '#1f0e38', cloth2: '#8c1655', eye: '#ff3366', accent: '#ff42b3', horn: '#140821' },
+      boss_vanguard: { skin: '#54a8d9', shade: '#245885', cloth: '#141c40', cloth2: '#1c5a8a', eye: '#5ef6ff', accent: '#3ff5ff', horn: '#10142e' },
+      boss_diva:     { skin: '#f09cd8', shade: '#a64d94', cloth: '#38104a', cloth2: '#b82575', eye: '#ffe066', accent: '#ff59b8', horn: '#ffe066' },
+      boss_reaper:   { skin: '#99a8c4', shade: '#525f7a', cloth: '#181829', cloth2: '#7a1936', eye: '#ff3355', accent: '#5ef6ff', horn: '#ff3b6b' },
+      boss_king:     { skin: '#c92e54', shade: '#73102d', cloth: '#1c0618', cloth2: '#8f113b', eye: '#ffe066', accent: '#ffbb33', horn: '#ffe066' },
     };
-    const p = palettes[type];
+    const p = palettes[type] || palettes.imp;
     const bob = pose === 'walk0' ? -1 : pose === 'walk1' ? 1 : pose === 'atk' ? 1 : 0;
 
     if (isBoss) {
-      // Towering Jeoseung Saja Demon Captain! Anchor feet at (42, 69)
+      // Towering Demon Boss! Anchor feet at (42, 69)
       const bx = pose === 'atk' ? 44 : pose === 'hurt' ? 35 : 38;
       const by = 18 + bob;
       // Flowing demon hanbok cape
       r(bx - 13, by + 16, 26, 26, p.cloth);
       r(bx - 16, by + 26, 32, 16, p.cloth);
       r(bx - 11, by + 20, 22, 20, p.cloth2);
-      // Glowing magenta spirit trim
+      // Glowing spirit trim
       r(bx - 15, by + 39, 30, 3, p.accent);
       // Legs / boots
       const sOff = pose === 'walk0' ? 5 : pose === 'walk1' ? -4 : 0;
       r(bx - 8 + sOff, by + 40, 6, 11, '#180a2b');
       r(bx + 3 - sOff, by + 40, 6, 11, '#180a2b');
-      // Broad shoulders & rib chest armor
+      // Broad shoulders & chest armor
       r(bx - 10, by + 13, 21, 14, p.cloth);
       r(bx - 6, by + 15, 13, 10, p.skin);
       r(bx - 4, by + 17, 9, 2, p.accent);
@@ -1052,35 +1097,64 @@
       // Head
       r(bx - 5, by + 2, 11, 11, p.skin);
       r(bx - 5, by + 10, 11, 3, p.shade);
-      // Glowing crimson eyes + fanged grin
+      // Glowing eyes + fanged grin
       r(bx + 0, by + 6, 2, 2, p.eye);
       r(bx + 4, by + 6, 2, 2, p.eye);
       r(bx + 0, by + 10, 5, 2, '#1a0624');
       r(bx + 1, by + 10, 1, 1, '#ffffff');
       r(bx + 4, by + 10, 1, 1, '#ffffff');
-      // Iconic Traditional Korean Wide-Brimmed GAT Hat (with glowing trim!)
-      r(bx - 15, by + 1, 31, 3, p.horn);
-      r(bx - 14, by + 2, 29, 1, p.accent);
-      r(bx - 6, by - 9, 13, 11, p.horn);
-      r(bx - 5, by - 7, 11, 2, p.cloth2);
-      // Demon horns poking through hat
-      pxLine(g, bx - 4, by - 7, bx - 9, by - 14, '#ff4588', 2);
-      pxLine(g, bx + 5, by - 7, bx + 10, by - 14, '#ff4588', 2);
+
+      // Boss-specific crown / hat / silhouette
+      if (type === 'boss_diva') {
+        // Flowing neon diva hair + crown
+        r(bx - 13, by + 1, 10, 18, '#ff45b5');
+        r(bx - 15, by + 6, 8, 16, '#b82575');
+        r(bx - 6, by - 4, 13, 5, '#ffe066');
+        r(bx - 4, by - 8, 2, 4, '#5ef6ff');
+        r(bx + 0, by - 10, 3, 6, '#ffe066');
+        r(bx + 4, by - 8, 2, 4, '#5ef6ff');
+      } else if (type === 'boss_reaper') {
+        // Cyber Conductor cap + glowing red visor
+        r(bx - 10, by - 2, 22, 4, '#181829');
+        r(bx - 7, by - 9, 15, 7, '#292945');
+        r(bx - 5, by - 6, 11, 2, '#5ef6ff');
+        r(bx - 2, by + 5, 9, 3, '#ff3355');
+        r(bx + 0, by + 6, 6, 1, '#ffe066');
+      } else if (type === 'boss_king') {
+        // Towering Demon King flaming golden crown + giant horns
+        r(bx - 10, by - 3, 21, 5, '#ffe066');
+        r(bx - 8, by - 9, 3, 6, '#ffbb33');
+        r(bx - 1, by - 12, 4, 9, '#ff3366');
+        r(bx + 6, by - 9, 3, 6, '#ffbb33');
+        pxLine(g, bx - 7, by - 2, bx - 16, by - 15, '#ffe066', 3);
+        pxLine(g, bx + 8, by - 2, bx + 17, by - 15, '#ffe066', 3);
+        // Blazing shoulder spikes
+        r(bx - 16, by + 10, 6, 6, '#ff3366');
+        r(bx + 11, by + 10, 6, 6, '#ff3366');
+      } else {
+        // Traditional Korean Wide-Brimmed GAT Hat (Saja Overlord & Saja Vanguard)
+        r(bx - 15, by + 1, 31, 3, p.horn);
+        r(bx - 14, by + 2, 29, 1, p.accent);
+        r(bx - 6, by - 9, 13, 11, p.horn);
+        r(bx - 5, by - 7, 11, 2, p.cloth2);
+        pxLine(g, bx - 4, by - 7, bx - 9, by - 14, p.accent, 2);
+        pxLine(g, bx + 5, by - 7, bx + 10, by - 14, p.accent, 2);
+      }
 
       // Arms & Attack Claw/Spirit Blade
       if (pose === 'windup') {
         pxLine(g, bx - 6, by + 16, bx - 18, by + 8, p.skin, 4);
         pxLine(g, bx + 6, by + 16, bx - 2, by + 6, p.skin, 4);
-        r(bx - 20, by + 4, 6, 6, '#ff42b3');
+        r(bx - 20, by + 4, 6, 6, p.accent);
       } else if (pose === 'atk') {
         pxLine(g, bx + 7, by + 17, bx + 28, by + 20, p.skin, 4);
-        pxLine(g, bx + 20, by + 8, bx + 36, by + 22, '#ff2e93', 4);
-        pxLine(g, bx + 36, by + 22, bx + 22, by + 36, '#ff2e93', 4);
+        pxLine(g, bx + 20, by + 8, bx + 36, by + 22, p.accent, 4);
+        pxLine(g, bx + 36, by + 22, bx + 22, by + 36, p.accent, 4);
         pxLine(g, bx + 23, by + 11, bx + 33, by + 22, '#ffe066', 2);
       } else if (pose === 'slam') {
         pxLine(g, bx - 8, by + 16, bx - 16, by + 32, p.skin, 4);
         pxLine(g, bx + 8, by + 16, bx + 18, by + 32, p.skin, 4);
-        r(bx - 18, by + 32, 38, 4, '#ff3399');
+        r(bx - 18, by + 32, 38, 4, p.accent);
       } else {
         pxLine(g, bx - 8, by + 17, bx - 14, by + 29, p.skin, 3);
         pxLine(g, bx + 8, by + 17, bx + 18, by + 25, p.skin, 4);
@@ -1090,19 +1164,27 @@
     }
 
     // Standard Demons (Anchor feet at 32, 50)
+    const isHeavy = type === 'heavy';
     const bx = pose === 'atk' ? 35 : pose === 'hurt' ? 27 : 31;
-    const by = 18 + bob;
+    const by = (isHeavy ? 14 : 18) + bob;
     const stride = pose === 'walk0' ? 5 : pose === 'walk1' ? -5 : 0;
 
     // Legs
-    pxLine(g, bx - 3, by + 21, bx - 6 + stride, 49, p.shade, 3);
-    pxLine(g, bx + 3, by + 21, bx + 5 - stride, 49, p.skin, 3);
+    pxLine(g, bx - (isHeavy ? 5 : 3), by + (isHeavy ? 24 : 21), bx - 6 + stride, 49, p.shade, isHeavy ? 5 : 3);
+    pxLine(g, bx + (isHeavy ? 5 : 3), by + (isHeavy ? 24 : 21), bx + 5 - stride, 49, p.skin, isHeavy ? 5 : 3);
 
     // Torso
-    r(bx - 5, by + 10, 11, 13, p.cloth);
-    r(bx - 4, by + 12, 9, 8, p.cloth2);
-    // Glowing demonic sigil on chest
-    r(bx - 1, by + 14, 4, 3, p.accent);
+    if (isHeavy) {
+      r(bx - 10, by + 9, 21, 17, p.cloth);
+      r(bx - 8, by + 11, 17, 12, p.cloth2);
+      r(bx - 12, by + 8, 5, 7, '#605285'); // Armored pauldrons
+      r(bx + 8, by + 8, 5, 7, '#605285');
+      r(bx - 3, by + 14, 7, 4, p.accent);
+    } else {
+      r(bx - 5, by + 10, 11, 13, p.cloth);
+      r(bx - 4, by + 12, 9, 8, p.cloth2);
+      r(bx - 1, by + 14, 4, 3, p.accent);
+    }
 
     // Head
     r(bx - 4, by, 10, 10, p.skin);
@@ -1120,32 +1202,50 @@
       pxLine(g, bx - 2, by, bx - 5, by - 5, p.horn, 2);
       pxLine(g, bx + 3, by, bx + 6, by - 5, p.horn, 2);
     } else if (type === 'banshee') {
-      // Wild electric-blue hair
       r(bx - 8, by - 1, 6, 12, '#1a2f7a');
       r(bx - 10, by + 3, 6, 10, '#2a56ba');
       r(bx - 5, by - 2, 9, 3, '#3875e0');
     } else if (type === 'gat') {
-      // Traditional Korean Gat hat!
       r(bx - 10, by - 1, 22, 2, '#190b2e');
       r(bx - 9, by, 20, 1, p.accent);
       r(bx - 4, by - 7, 10, 6, '#190b2e');
+    } else if (type === 'crooner') {
+      // Spiky idol demon hair + neon visor + cursed mic
+      r(bx - 6, by - 4, 14, 5, '#ff45b5');
+      r(bx - 4, by - 6, 8, 3, '#ffe066');
+      r(bx + 0, by + 2, 7, 3, '#5ef6ff');
+    } else if (type === 'heavy') {
+      // Thick golden Dokkaebi oni horns!
+      pxLine(g, bx - 3, by, bx - 8, by - 8, '#ffe066', 3);
+      pxLine(g, bx + 4, by, bx + 9, by - 8, '#ffe066', 3);
     }
 
-    // Arms & Claws
+    // Arms & Weapons/Claws
     if (pose === 'windup') {
-      pxLine(g, bx - 2, by + 12, bx - 11, by + 5, p.skin, 3);
-      r(bx - 13, by + 3, 4, 4, p.eye);
+      pxLine(g, bx - 2, by + 12, bx - 11, by + 5, p.skin, isHeavy ? 4 : 3);
+      r(bx - 14, by + 2, isHeavy ? 6 : 4, isHeavy ? 6 : 4, p.eye);
     } else if (pose === 'atk') {
-      pxLine(g, bx + 4, by + 12, bx + 20, by + 12, p.skin, 3);
-      pxLine(g, bx + 16, by + 6, bx + 25, by + 14, p.accent, 3);
-      pxLine(g, bx + 18, by + 8, bx + 24, by + 14, '#ffffff', 1);
+      pxLine(g, bx + 4, by + 12, bx + 20, by + 12, p.skin, isHeavy ? 4 : 3);
+      if (isHeavy) {
+        // Spiked Iron Kanabo Club!
+        pxLine(g, bx + 16, by + 4, bx + 28, by + 20, '#8088a8', 5);
+        r(bx + 21, by + 9, 3, 3, '#ffe066');
+        r(bx + 25, by + 14, 3, 3, '#ff8833');
+      } else if (type === 'crooner') {
+        // Glowing Cursed Microphone blast!
+        r(bx + 18, by + 9, 6, 6, '#ffe066');
+        r(bx + 20, by + 10, 4, 4, '#5ef6ff');
+      } else {
+        pxLine(g, bx + 16, by + 6, bx + 25, by + 14, p.accent, 3);
+        pxLine(g, bx + 18, by + 8, bx + 24, by + 14, '#ffffff', 1);
+      }
     } else if (pose === 'hurt') {
       pxLine(g, bx - 4, by + 12, bx - 10, by + 7, p.skin, 3);
       pxLine(g, bx + 4, by + 12, bx + 10, by + 8, p.skin, 3);
     } else {
-      pxLine(g, bx - 4, by + 12, bx - 8, by + 20, p.shade, 3);
-      pxLine(g, bx + 4, by + 12, bx + 13, by + 15, p.skin, 3);
-      r(bx + 12, by + 14, 3, 3, p.accent);
+      pxLine(g, bx - 4, by + 12, bx - 8, by + 20, p.shade, isHeavy ? 4 : 3);
+      pxLine(g, bx + 4, by + 12, bx + 13, by + 15, p.skin, isHeavy ? 4 : 3);
+      r(bx + 12, by + 14, isHeavy ? 5 : 3, isHeavy ? 5 : 3, p.accent);
     }
 
     return applyOutline(c, '#160726');
@@ -1163,10 +1263,10 @@
       SPRITES.portraits[h.id] = bakePortrait(h);
     }
 
-    const enemyTypes = ['imp', 'banshee', 'gat', 'boss'];
+    const enemyTypes = ['imp', 'banshee', 'gat', 'crooner', 'heavy', 'boss', 'boss_vanguard', 'boss_diva', 'boss_reaper', 'boss_king'];
     for (const t of enemyTypes) {
       SPRITES.enemies[t] = {};
-      const poses = t === 'boss' ? ['idle','walk0','walk1','windup','atk','slam','hurt'] : ['idle','walk0','walk1','windup','atk','hurt'];
+      const poses = isBossType(t) ? ['idle','walk0','walk1','windup','atk','slam','hurt'] : ['idle','walk0','walk1','windup','atk','hurt'];
       for (const p of poses) {
         const sp = bakeEnemyPose(t, p);
         SPRITES.enemies[t][p] = sp;
@@ -1174,7 +1274,7 @@
       }
     }
 
-    // Health Pickups: Gimbap Plate & Spicy Cup Ramyeon!
+    // Health & Encore Pickups: Gimbap, Spicy Cup Ramyeon, Golden Lightstick Star!
     SPRITES.items.gimbap = bakePixelGrid([
       '....kkkk....',
       '..kkwwwwkk..',
@@ -1197,6 +1297,55 @@
       '...rwwwwr...',
       '...rrrrrr...',
     ], { w: '#ffffff', y: '#ffe066', r: '#ff3b4e' }, 2, '#18082b');
+
+    SPRITES.items.star = bakePixelGrid([
+      '....yy....',
+      '....yy....',
+      '..yywwyy..',
+      'yyyywwyyyy',
+      '..yccccy..',
+      '...yccy...',
+      '..yy..yy..',
+      '.yy....yy.',
+    ], { y: '#ffe066', w: '#ffffff', c: '#5ef6ff' }, 2, '#18082b');
+
+    // Interactive Breakable Props (Speaker Crate, Ramen Cart, Explosive Neon Hydrant)
+    SPRITES.props.crate = bakePixelGrid([
+      'bbbbbbbbbbbb',
+      'bccccccccccb',
+      'bcddddddddcb',
+      'bcdppddppdcb',
+      'bcdpddddpdcb',
+      'bcddddddddcb',
+      'bcdppddppdcb',
+      'bcddddddddcb',
+      'bccccccccccb',
+      'bbbbbbbbbbbb',
+    ], { b: '#2b1352', c: '#5ef6ff', d: '#3d1c73', p: '#ff45b5' }, 2, '#120521');
+
+    SPRITES.props.cart = bakePixelGrid([
+      '.rrrrrrrrrr.',
+      'ryryryryryry',
+      'rwwwwwwwwwwr',
+      '.d..yyyy..d.',
+      '.d..rrrr..d.',
+      'dddddddddddd',
+      'dppppppppppd',
+      'dddddddddddd',
+      '..kk....kk..',
+      '..kk....kk..',
+    ], { r: '#ff3b6b', y: '#ffe066', w: '#ffffff', d: '#381e66', p: '#ff9075', k: '#140826' }, 2, '#120521');
+
+    SPRITES.props.hydrant = bakePixelGrid([
+      '...yyyy...',
+      '..yrrrrr..',
+      '.rrrrrrrr.',
+      'crrwwwwrrc',
+      '.rrryyrrr.',
+      '.rrrrrrrr.',
+      '..rrrrrr..',
+      '.dddddddd.',
+    ], { y: '#ffe066', r: '#ff2e63', c: '#5ef6ff', w: '#ffffff', d: '#28154a' }, 2, '#120521');
   }
 
   function drawSprite(img, x, y, facing = 1, anchorX = 0.5, anchorY = 1) {
@@ -1232,248 +1381,465 @@
     winColor: i % 3 === 0 ? '#ffe066' : i % 3 === 1 ? '#5ef6ff' : '#ff7acc',
   }));
 
-  function drawBackground(camX, time, encoreIntensity) {
-    // 1) 16-bit Banded Sunset Sky
-    const bands = [
-      { y: 0,   h: 26, c: '#23124d' },
-      { y: 26,  h: 22, c: '#3f1c73' },
-      { y: 48,  h: 20, c: '#6e288c' },
-      { y: 68,  h: 18, c: '#ad3a91' },
-      { y: 86,  h: 16, c: '#e35b8e' },
-      { y: 102, h: 16, c: '#ff9075' },
-      { y: 118, h: 16, c: '#ffd180' },
-    ];
-    for (const b of bands) {
-      ctx.fillStyle = b.c;
-      ctx.fillRect(0, b.y, W, b.h);
-      // 16-bit checkerboard dither seam
-      ctx.fillStyle = b.c;
-      for (let x = 0; x < W; x += 4) {
-        ctx.fillRect(x, b.y - 2, 2, 2);
+  function drawBackground(camX, time, encoreIntensity, theme = 'rooftop') {
+    if (theme === 'market') {
+      // STAGE 2: HONGDAE NEON MARKET (Midnight Street & Glowing Shopfronts)
+      const bands = [
+        { y: 0, h: 32, c: '#0d0724' },
+        { y: 32, h: 28, c: '#190e3d' },
+        { y: 60, h: 28, c: '#291454' },
+        { y: 88, h: 46, c: '#3d196b' },
+      ];
+      for (const b of bands) {
+        ctx.fillStyle = b.c;
+        ctx.fillRect(0, b.y, W, b.h);
       }
-    }
-
-    // 2) Twinkling Stars & Crescent Moon
-    for (const s of STARS) {
-      const blink = Math.sin(time * 3 + s.phase) > 0.2;
-      ctx.fillStyle = blink ? '#fff5c2' : '#d6a8ff';
-      ctx.fillRect(s.x, s.y, s.big ? 2 : 1, s.big ? 2 : 1);
-      if (s.big && blink) {
-        ctx.fillRect(s.x - 1, s.y, 4, 1);
-        ctx.fillRect(s.x, s.y - 1, 1, 4);
+      for (const s of STARS) {
+        const blink = Math.sin(time * 3 + s.phase) > 0.2;
+        ctx.fillStyle = blink ? '#5ef6ff' : '#9c6ade';
+        ctx.fillRect(s.x, s.y * 0.7, 1, 1);
       }
-    }
-    // Crescent moon (crisp pixel crescent, top right)
-    const moonRows = [
-      '....1111..',
-      '..11111...',
-      '.1111.....',
-      '1111......',
-      '1111......',
-      '1111......',
-      '.1111.....',
-      '..11111...',
-      '....1111..',
-    ];
-    ctx.fillStyle = '#fff1b8';
-    for (let mr = 0; mr < moonRows.length; mr++) {
-      for (let mc = 0; mc < moonRows[mr].length; mc++) {
-        if (moonRows[mr][mc] === '1') ctx.fillRect(432 + mc * 2, 46 + mr * 2, 2, 2);
-      }
-    }
-
-    // 3) Far Parallax: Namsan Mountain + Seoul Tower
-    const farX = Math.round(camX * 0.16);
-    ctx.fillStyle = '#572275';
-    for (let x = -40; x < W + 40; x += 4) {
-      const ridge = Math.sin((x + farX) * 0.015) * 12 + Math.cos((x + farX) * 0.032) * 5;
-      ctx.fillRect(x, Math.round(112 + ridge), 4, 30);
-    }
-    // Namsan Seoul Tower silhouette
-    const tx = Math.round(410 - camX * 0.14);
-    ctx.fillStyle = '#471b6b';
-    ctx.fillRect(tx - 2, 74, 4, 48);
-    ctx.fillRect(tx - 7, 82, 14, 7);
-    ctx.fillRect(tx - 5, 80, 10, 2);
-    ctx.fillRect(tx - 1, 58, 2, 18);
-    // Tower neon beacon
-    ctx.fillStyle = Math.sin(time * 6) > 0 ? '#ff3b8d' : '#ff99cc';
-    ctx.fillRect(tx - 1, 56, 2, 2);
-    ctx.fillStyle = '#5ef6ff';
-    ctx.fillRect(tx - 6, 85, 12, 1);
-
-    // 4) Mid Parallax: Seoul Neon Skyline
-    const midX = Math.round(camX * 0.35);
-    for (const b of SKYLINE_FAR) {
-      const sx = Math.round(b.x - midX);
-      if (sx + b.w < 0 || sx > W) continue;
-      const sy = 132 - b.h;
-      ctx.fillStyle = '#36185e';
-      ctx.fillRect(sx, sy, b.w, b.h);
-      ctx.fillStyle = '#4a237d';
-      ctx.fillRect(sx, sy, b.w, 2);
-      if (b.neon) {
-        ctx.fillStyle = b.neon;
-        ctx.fillRect(sx + 3, sy + 4, b.w - 6, 2);
-      }
-    }
-    const nearX = Math.round(camX * 0.55);
-    for (const b of SKYLINE_NEAR) {
-      const sx = Math.round(b.x - nearX);
-      if (sx + b.w < 0 || sx > W) continue;
-      const sy = 136 - b.h;
-      ctx.fillStyle = '#241145';
-      ctx.fillRect(sx, sy, b.w, b.h);
-      ctx.fillStyle = b.winColor;
-      for (let wy = sy + 5; wy < 128; wy += 6) {
-        for (let wx = sx + 4; wx < sx + b.w - 4; wx += 6) {
-          if (((wx + wy) % 3) !== 0) ctx.fillRect(wx, wy, 3, 3);
+      // Far apartment silhouettes
+      const midX = Math.round(camX * 0.35);
+      for (const b of SKYLINE_FAR) {
+        const sx = Math.round(b.x - midX);
+        if (sx + b.w < 0 || sx > W) continue;
+        const sy = 128 - b.h;
+        ctx.fillStyle = '#1c0f38';
+        ctx.fillRect(sx, sy, b.w, b.h);
+        if (b.neon) {
+          ctx.fillStyle = b.neon;
+          ctx.fillRect(sx + 3, sy + 6, b.w - 6, 2);
         }
       }
-    }
-
-    // 5) World-Space Rooftop Setpieces (1:1 Scroll)
-    const wx = (worldX) => Math.round(worldX - camX);
-
-    // Zone 1 Prop: Neon "K-BEAT" Rooftop Sign
-    const s1 = wx(140);
-    if (s1 > -120 && s1 < W + 40) {
-      ctx.fillStyle = '#1b0b33';
-      ctx.fillRect(s1 + 8, 96, 4, 38);
-      ctx.fillRect(s1 + 78, 96, 4, 38);
-      ctx.fillStyle = '#2b1252';
-      ctx.fillRect(s1, 66, 90, 34);
-      ctx.fillStyle = '#5ef6ff';
-      ctx.fillRect(s1, 66, 90, 2);
-      ctx.fillRect(s1, 98, 90, 2);
-      ctx.fillRect(s1, 66, 2, 34);
-      ctx.fillRect(s1 + 88, 66, 2, 34);
-      drawText('SEOUL', s1 + 45, 73, '#ff61c3', 1, 'center');
-      drawText('LIVE STAGE', s1 + 45, 85, '#ffe066', 1, 'center');
-    }
-
-    // Zone 2 Prop: Giant Concert Speaker Stacks & Light Rig
-    const s2 = wx(520);
-    if (s2 > -140 && s2 < W + 40) {
-      // Left & right speaker towers
-      for (const ox of [0, 128]) {
-        const px = s2 + ox;
-        ctx.fillStyle = '#1c0d36';
-        ctx.fillRect(px, 76, 30, 58);
-        ctx.fillStyle = '#381e66';
-        ctx.fillRect(px + 2, 78, 26, 54);
-        // Woofer cones pulsing to beat!
-        const pulse = Math.sin(time * 14) > 0.3 ? 1 : 0;
-        for (const cy of [92, 114]) {
-          ctx.fillStyle = '#120724';
-          ctx.fillRect(px + 6 - pulse, cy - 8 - pulse, 18 + pulse * 2, 16 + pulse * 2);
-          ctx.fillStyle = '#ff4da6';
-          ctx.fillRect(px + 10, cy - 4, 10, 8);
-          ctx.fillStyle = '#5ef6ff';
-          ctx.fillRect(px + 13, cy - 1, 4, 2);
+      // Street-level Hongdae Neon Storefronts (1:1 scroll)
+      const shops = [
+        { x: 30, w: 120, sign: 'K-RAMEN', col: '#ff45b5', awning: '#ff3b6b' },
+        { x: 190, w: 130, sign: 'ARCADE 99', col: '#5ef6ff', awning: '#2a56ba' },
+        { x: 370, w: 118, sign: 'NORAEBANG', col: '#ffe066', awning: '#7a1fa2' },
+        { x: 540, w: 126, sign: 'HUNTRIX FM', col: '#ff69c0', awning: '#c92e54' },
+        { x: 720, w: 120, sign: 'GIMBAP BAR', col: '#5eff8f', awning: '#1b7a5e' },
+        { x: 890, w: 132, sign: 'NEON CLUB', col: '#5ef6ff', awning: '#52288a' },
+        { x: 1080, w: 140, sign: 'LIVE STAGE', col: '#ffe066', awning: '#ff3b8d' },
+        { x: 1270, w: 130, sign: 'SEOUL BEAT', col: '#ff45b5', awning: '#243a8a' },
+      ];
+      for (const sh of shops) {
+        const sx = Math.round(sh.x - camX);
+        if (sx + sh.w < -20 || sx > W + 20) continue;
+        // Building facade
+        ctx.fillStyle = '#1d103b';
+        ctx.fillRect(sx, 54, sh.w, 94);
+        ctx.fillStyle = '#2d1957';
+        ctx.fillRect(sx + 2, 56, sh.w - 4, 90);
+        // Glowing neon marquee sign
+        ctx.fillStyle = '#120726';
+        ctx.fillRect(sx + 8, 62, sh.w - 16, 20);
+        ctx.strokeStyle = sh.col;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(sx + 8, 62, sh.w - 16, 20);
+        drawText(sh.sign, sx + sh.w / 2, 69, sh.col, 1, 'center');
+        // Striped Pojangmacha / Shop Awning
+        for (let ax = 0; ax < sh.w - 8; ax += 10) {
+          ctx.fillStyle = (ax / 10) % 2 === 0 ? sh.awning : '#f7e9ff';
+          ctx.fillRect(sx + 4 + ax, 92, 10, 10);
+        }
+        // Lit shop window
+        ctx.fillStyle = 'rgba(94, 246, 255, 0.22)';
+        ctx.fillRect(sx + 12, 108, sh.w - 24, 34);
+        ctx.fillStyle = sh.col;
+        ctx.fillRect(sx + 12, 108, sh.w - 24, 2);
+      }
+      // Sidewalk curb
+      ctx.fillStyle = '#4e3380';
+      ctx.fillRect(0, 142, W, 8);
+      ctx.fillStyle = '#8b68c9';
+      ctx.fillRect(0, 142, W, 2);
+      // Wet midnight asphalt street floor
+      ctx.fillStyle = '#241740';
+      ctx.fillRect(0, 150, W, 108);
+      ctx.fillStyle = '#2d1d4d';
+      ctx.fillRect(0, 182, W, 42);
+      // Dashed yellow road divider + neon wet reflections
+      const dashOff = -(Math.round(camX) % 48);
+      for (let dx = dashOff; dx < W + 48; dx += 48) {
+        ctx.fillStyle = '#ffe066';
+        ctx.fillRect(dx + 8, 202, 22, 3);
+        ctx.fillStyle = 'rgba(255, 69, 181, 0.16)';
+        ctx.fillRect(dx + 4, 162, 18, 4);
+        ctx.fillStyle = 'rgba(94, 246, 255, 0.16)';
+        ctx.fillRect(dx + 20, 232, 20, 4);
+      }
+    } else if (theme === 'express') {
+      // STAGE 3: SEOUL SKY-EXPRESS (High-Speed Bullet Train over Han River!)
+      const scroll = stageScrollOffset;
+      const bands = [
+        { y: 0, h: 28, c: '#0b0c29' },
+        { y: 28, h: 26, c: '#14194a' },
+        { y: 54, h: 26, c: '#1f286b' },
+        { y: 80, h: 24, c: '#2e3a8a' },
+      ];
+      for (const b of bands) {
+        ctx.fillStyle = b.c;
+        ctx.fillRect(0, b.y, W, b.h);
+      }
+      // Fast streaking stars & Han River city skyline blur
+      for (const s of STARS) {
+        const sx = ((s.x - scroll * 0.12) % W + W) % W;
+        ctx.fillStyle = '#d6f5ff';
+        ctx.fillRect(Math.round(sx), s.y * 0.8, 3, 1);
+      }
+      // Distant Seoul city lights scrolling past
+      const cityOff = Math.round(scroll * 0.35);
+      for (const b of SKYLINE_FAR) {
+        const sx = ((b.x - cityOff) % (W + 120) + (W + 120)) % (W + 120) - 60;
+        const sy = 104 - Math.round(b.h * 0.65);
+        ctx.fillStyle = '#15193d';
+        ctx.fillRect(sx, sy, b.w, Math.round(b.h * 0.65));
+        if (b.neon) {
+          ctx.fillStyle = b.neon;
+          ctx.fillRect(sx + 2, sy + 3, b.w - 4, 2);
         }
       }
-      // Overhead light truss
-      ctx.fillStyle = '#3b2466';
-      ctx.fillRect(s2 + 24, 72, 110, 6);
-      for (let i = 0; i < 5; i++) {
-        const lx = s2 + 34 + i * 22;
-        const col = (Math.floor(time * 4) + i) % 2 === 0 ? '#5ef6ff' : '#ff4da6';
-        ctx.fillStyle = col;
-        ctx.fillRect(lx, 78, 6, 4);
+      // Han River shimmering reflections (y = 104..136)
+      ctx.fillStyle = '#101d47';
+      ctx.fillRect(0, 104, W, 34);
+      for (let i = 0; i < 24; i++) {
+        const rx = (((i * 37) - scroll * 0.65) % (W + 40) + (W + 40)) % (W + 40) - 20;
+        const ry = 108 + (i % 5) * 5;
+        ctx.fillStyle = i % 2 === 0 ? 'rgba(94,246,255,0.45)' : 'rgba(255,69,181,0.45)';
+        ctx.fillRect(Math.round(rx), ry, 18, 2);
       }
-    }
-
-    // Zone 3 Prop (Mini-Boss Stage): GIANT HUNTRIX BILLBOARD!
-    const sb = wx(890);
-    if (sb > -170 && sb < W + 40) {
-      // Support struts
-      ctx.fillStyle = '#1d0d36';
-      ctx.fillRect(sb + 14, 114, 6, 22);
-      ctx.fillRect(sb + 124, 114, 6, 22);
-      // Billboard frame
-      ctx.fillStyle = '#32145c';
-      ctx.fillRect(sb, 48, 144, 70);
-      ctx.fillStyle = '#e8c4ff';
-      ctx.fillRect(sb + 4, 52, 136, 62);
-      ctx.fillStyle = '#ffd9f5';
-      ctx.fillRect(sb + 4, 52, 136, 24);
-      // Animated marquee bulbs
-      for (let i = 0; i < 18; i++) {
-        const on = (i + Math.floor(time * 8)) % 2 === 0;
-        ctx.fillStyle = on ? '#5ef6ff' : '#ff45b5';
-        ctx.fillRect(sb + 2 + i * 8, 49, 4, 2);
-        ctx.fillRect(sb + 2 + i * 8, 115, 4, 2);
-      }
-      drawText('HUNTRIX', sb + 72, 56, '#7a1fa2', 2, 'center', '#ffffff');
-      // Mini portraits of all 3 HUNTRIX idols on the billboard!
-      const order = ['mira', 'rumi', 'zoey'];
-      order.forEach((id, idx) => {
-        const pImg = SPRITES.portraits[id];
-        if (pImg) {
-          ctx.drawImage(pImg, sb + 18 + idx * 42, 78, 28, 28);
-          ctx.strokeStyle = '#ff4da6';
-          ctx.strokeRect(sb + 17.5 + idx * 42, 77.5, 29, 29);
-        }
-      });
-    }
-
-    // 6) Rooftop Parapet & Safety Railing (y = 126..148)
-    ctx.fillStyle = '#392866';
-    ctx.fillRect(0, 134, W, 14);
-    ctx.fillStyle = '#5a4396';
-    ctx.fillRect(0, 134, W, 2);
-    ctx.fillStyle = '#241747';
-    ctx.fillRect(0, 145, W, 3);
-    // Railing posts & top bar
-    ctx.fillStyle = '#6f59ad';
-    ctx.fillRect(0, 126, W, 2);
-    ctx.fillStyle = '#4c3880';
-    ctx.fillRect(0, 130, W, 1);
-    const railOffset = -(Math.round(camX) % 32);
-    for (let rx = railOffset; rx < W + 32; rx += 32) {
-      ctx.fillStyle = '#5e4799';
-      ctx.fillRect(rx, 126, 3, 18);
-      ctx.fillStyle = '#8b75c9';
-      ctx.fillRect(rx, 126, 1, 18);
-    }
-
-    // 7) Playable 2.5D Rooftop Concrete Floor (y = 148..258)
-    ctx.fillStyle = '#cbb2e3';
-    ctx.fillRect(0, 148, W, 110);
-    // Subtle 16-bit depth gradient bands on floor
-    ctx.fillStyle = '#bfa2db';
-    ctx.fillRect(0, 148, W, 18);
-    ctx.fillStyle = '#d4bfe8';
-    ctx.fillRect(0, 186, W, 36);
-    ctx.fillStyle = '#b99cd4';
-    ctx.fillRect(0, 222, W, 36);
-
-    // Concrete tile seam lines (scrolling perspective)
-    ctx.fillStyle = '#a483c4';
-    ctx.fillRect(0, 174, W, 1);
-    ctx.fillRect(0, 206, W, 1);
-    ctx.fillRect(0, 238, W, 1);
-    const tileOff = -(Math.round(camX) % 64);
-    for (let tx2 = tileOff; tx2 < W + 64; tx2 += 64) {
-      ctx.fillStyle = '#a483c4';
-      ctx.fillRect(tx2, 148, 1, 110);
-      // Decorative neon stage tape chevron every 128px
-      if (Math.floor((tx2 + Math.round(camX)) / 64) % 2 === 0) {
-        ctx.fillStyle = '#ff85c8';
-        ctx.fillRect(tx2 + 24, 198, 12, 2);
+      // High-speed bridge steel trusses rushing past!
+      const girderOff = -(Math.round(scroll * 1.45) % 120);
+      ctx.fillStyle = '#232854';
+      ctx.fillRect(0, 118, W, 6);
+      for (let gx = girderOff; gx < W + 120; gx += 120) {
+        ctx.fillStyle = '#2e356e';
+        ctx.fillRect(gx, 42, 8, 96);
         ctx.fillStyle = '#5ef6ff';
-        ctx.fillRect(tx2 + 26, 201, 12, 2);
+        ctx.fillRect(gx + 2, 46, 2, 88);
+        ctx.fillStyle = '#ff45b5';
+        ctx.fillRect(gx - 2, 52, 12, 4);
+      }
+      // Bullet Train Metallic Roof Deck (y = 142..258)
+      ctx.fillStyle = '#363b69';
+      ctx.fillRect(0, 140, W, 10);
+      ctx.fillStyle = '#5ef6ff';
+      ctx.fillRect(0, 146, W, 2);
+      ctx.fillStyle = '#6c73a8';
+      ctx.fillRect(0, 148, W, 110);
+      ctx.fillStyle = '#585f91';
+      ctx.fillRect(0, 148, W, 18);
+      ctx.fillStyle = '#7e86bd';
+      ctx.fillRect(0, 184, W, 38);
+      ctx.fillStyle = '#585f91';
+      ctx.fillRect(0, 222, W, 36);
+      // Train car coupling gaps & caution stripes (world-space)
+      const carOff = -(Math.round(camX) % 160);
+      for (let cx = carOff; cx < W + 160; cx += 160) {
+        ctx.fillStyle = '#1b1d36';
+        ctx.fillRect(cx, 148, 8, 110);
+        // Yellow/black safety hazard trim on car seam
+        for (let sy = 150; sy < 252; sy += 12) {
+          ctx.fillStyle = '#ffe066';
+          ctx.fillRect(cx - 3, sy, 3, 6);
+          ctx.fillRect(cx + 8, sy, 3, 6);
+        }
+        // Train car number & neon skylight vent
+        ctx.fillStyle = '#3b4273';
+        ctx.fillRect(cx + 42, 162, 68, 12);
+        ctx.fillStyle = '#5ef6ff';
+        ctx.fillRect(cx + 46, 166, 60, 4);
+      }
+      // Speed wind lines!
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+      for (let i = 0; i < 8; i++) {
+        const wx2 = (((i * 97) - scroll * 2.1) % (W + 80) + (W + 80)) % (W + 80) - 40;
+        const wy2 = 24 + (i * 29) % 110;
+        ctx.fillRect(Math.round(wx2), wy2, 24, 1);
+      }
+    } else if (theme === 'throne') {
+      // STAGE 4: HONMOON THRONE (Dimensional Rift Crimson-Violet Sanctuary)
+      const bands = [
+        { y: 0, h: 28, c: '#16041c' },
+        { y: 28, h: 26, c: '#2b0833' },
+        { y: 54, h: 26, c: '#4a0d47' },
+        { y: 80, h: 28, c: '#73144d' },
+        { y: 108, h: 32, c: '#9e1c52' },
+      ];
+      for (const b of bands) {
+        ctx.fillStyle = b.c;
+        ctx.fillRect(0, b.y, W, b.h);
+      }
+      // Massive pulsing Honmoon Seal Mandala in the center sky!
+      const sealX = Math.round(W / 2 - (camX - 240) * 0.08);
+      const sealY = 74;
+      ctx.save();
+      ctx.strokeStyle = Math.floor(time * 6) % 2 === 0 ? '#ff42b3' : '#ffe066';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(sealX, sealY, 44, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = '#5ef6ff';
+      ctx.beginPath();
+      ctx.arc(sealX, sealY, 32, 0, Math.PI * 2);
+      ctx.stroke();
+      // Rotating rune spokes
+      for (let i = 0; i < 8; i++) {
+        const a = time * 0.6 + (i * Math.PI) / 4;
+        ctx.beginPath();
+        ctx.moveTo(sealX + Math.cos(a) * 16, sealY + Math.sin(a) * 16);
+        ctx.lineTo(sealX + Math.cos(a) * 44, sealY + Math.sin(a) * 44);
+        ctx.stroke();
+      }
+      ctx.restore();
+      // Shattered Floating Obsidian Pillars
+      const pilOff = -(Math.round(camX * 0.5) % 96);
+      for (let px = pilOff; px < W + 96; px += 96) {
+        const hover = Math.round(Math.sin(time * 2.5 + px) * 3);
+        ctx.fillStyle = '#1a0726';
+        ctx.fillRect(px + 12, 54 + hover, 22, 84);
+        ctx.fillStyle = '#38104a';
+        ctx.fillRect(px + 14, 56 + hover, 6, 80);
+        ctx.fillStyle = '#ff3366';
+        ctx.fillRect(px + 20, 68 + hover, 4, 48);
+      }
+      // Ceremonial Arcane Stone Arena Floor
+      ctx.fillStyle = '#2e103b';
+      ctx.fillRect(0, 138, W, 12);
+      ctx.fillStyle = '#ff42b3';
+      ctx.fillRect(0, 146, W, 2);
+      ctx.fillStyle = '#3b1547';
+      ctx.fillRect(0, 148, W, 110);
+      ctx.fillStyle = '#4c1c5c';
+      ctx.fillRect(0, 184, W, 38);
+      ctx.fillStyle = '#2d0f38';
+      ctx.fillRect(0, 222, W, 36);
+      // Glowing Honmoon rune tile lines
+      const runeOff = -(Math.round(camX) % 72);
+      for (let rx = runeOff; rx < W + 72; rx += 72) {
+        ctx.fillStyle = '#6e287d';
+        ctx.fillRect(rx, 148, 2, 110);
+        ctx.fillStyle = 'rgba(255, 224, 102, 0.35)';
+        ctx.fillRect(rx + 28, 198, 16, 4);
+        ctx.fillStyle = 'rgba(94, 246, 255, 0.35)';
+        ctx.fillRect(rx + 32, 194, 8, 12);
+      }
+    } else {
+      // STAGE 1: SUNSET SEOUL ROOFTOP + HUNTRIX BILLBOARD
+      const bands = [
+        { y: 0,   h: 26, c: '#23124d' },
+        { y: 26,  h: 22, c: '#3f1c73' },
+        { y: 48,  h: 20, c: '#6e288c' },
+        { y: 68,  h: 18, c: '#ad3a91' },
+        { y: 86,  h: 16, c: '#e35b8e' },
+        { y: 102, h: 16, c: '#ff9075' },
+        { y: 118, h: 16, c: '#ffd180' },
+      ];
+      for (const b of bands) {
+        ctx.fillStyle = b.c;
+        ctx.fillRect(0, b.y, W, b.h);
+        ctx.fillStyle = b.c;
+        for (let x = 0; x < W; x += 4) {
+          ctx.fillRect(x, b.y - 2, 2, 2);
+        }
+      }
+      for (const s of STARS) {
+        const blink = Math.sin(time * 3 + s.phase) > 0.2;
+        ctx.fillStyle = blink ? '#fff5c2' : '#d6a8ff';
+        ctx.fillRect(s.x, s.y, s.big ? 2 : 1, s.big ? 2 : 1);
+        if (s.big && blink) {
+          ctx.fillRect(s.x - 1, s.y, 4, 1);
+          ctx.fillRect(s.x, s.y - 1, 1, 4);
+        }
+      }
+      const moonRows = [
+        '....1111..',
+        '..11111...',
+        '.1111.....',
+        '1111......',
+        '1111......',
+        '1111......',
+        '.1111.....',
+        '..11111...',
+        '....1111..',
+      ];
+      ctx.fillStyle = '#fff1b8';
+      for (let mr = 0; mr < moonRows.length; mr++) {
+        for (let mc = 0; mc < moonRows[mr].length; mc++) {
+          if (moonRows[mr][mc] === '1') ctx.fillRect(432 + mc * 2, 46 + mr * 2, 2, 2);
+        }
+      }
+      const farX = Math.round(camX * 0.16);
+      ctx.fillStyle = '#572275';
+      for (let x = -40; x < W + 40; x += 4) {
+        const ridge = Math.sin((x + farX) * 0.015) * 12 + Math.cos((x + farX) * 0.032) * 5;
+        ctx.fillRect(x, Math.round(112 + ridge), 4, 30);
+      }
+      const tx = Math.round(410 - camX * 0.14);
+      ctx.fillStyle = '#471b6b';
+      ctx.fillRect(tx - 2, 74, 4, 48);
+      ctx.fillRect(tx - 7, 82, 14, 7);
+      ctx.fillRect(tx - 5, 80, 10, 2);
+      ctx.fillRect(tx - 1, 58, 2, 18);
+      ctx.fillStyle = Math.sin(time * 6) > 0 ? '#ff3b8d' : '#ff99cc';
+      ctx.fillRect(tx - 1, 56, 2, 2);
+      ctx.fillStyle = '#5ef6ff';
+      ctx.fillRect(tx - 6, 85, 12, 1);
+
+      const midX = Math.round(camX * 0.35);
+      for (const b of SKYLINE_FAR) {
+        const sx = Math.round(b.x - midX);
+        if (sx + b.w < 0 || sx > W) continue;
+        const sy = 132 - b.h;
+        ctx.fillStyle = '#36185e';
+        ctx.fillRect(sx, sy, b.w, b.h);
+        ctx.fillStyle = '#4a237d';
+        ctx.fillRect(sx, sy, b.w, 2);
+        if (b.neon) {
+          ctx.fillStyle = b.neon;
+          ctx.fillRect(sx + 3, sy + 4, b.w - 6, 2);
+        }
+      }
+      const nearX = Math.round(camX * 0.55);
+      for (const b of SKYLINE_NEAR) {
+        const sx = Math.round(b.x - nearX);
+        if (sx + b.w < 0 || sx > W) continue;
+        const sy = 136 - b.h;
+        ctx.fillStyle = '#241145';
+        ctx.fillRect(sx, sy, b.w, b.h);
+        ctx.fillStyle = b.winColor;
+        for (let wy = sy + 5; wy < 128; wy += 6) {
+          for (let wx = sx + 4; wx < sx + b.w - 4; wx += 6) {
+            if (((wx + wy) % 3) !== 0) ctx.fillRect(wx, wy, 3, 3);
+          }
+        }
+      }
+
+      const wx = (worldX) => Math.round(worldX - camX);
+      const s1 = wx(140);
+      if (s1 > -120 && s1 < W + 40) {
+        ctx.fillStyle = '#1b0b33';
+        ctx.fillRect(s1 + 8, 96, 4, 38);
+        ctx.fillRect(s1 + 78, 96, 4, 38);
+        ctx.fillStyle = '#2b1252';
+        ctx.fillRect(s1, 66, 90, 34);
+        ctx.fillStyle = '#5ef6ff';
+        ctx.fillRect(s1, 66, 90, 2);
+        ctx.fillRect(s1, 98, 90, 2);
+        ctx.fillRect(s1, 66, 2, 34);
+        ctx.fillRect(s1 + 88, 66, 2, 34);
+        drawText('SEOUL', s1 + 45, 73, '#ff61c3', 1, 'center');
+        drawText('LIVE STAGE', s1 + 45, 85, '#ffe066', 1, 'center');
+      }
+
+      const s2 = wx(520);
+      if (s2 > -140 && s2 < W + 40) {
+        for (const ox of [0, 128]) {
+          const px = s2 + ox;
+          ctx.fillStyle = '#1c0d36';
+          ctx.fillRect(px, 76, 30, 58);
+          ctx.fillStyle = '#381e66';
+          ctx.fillRect(px + 2, 78, 26, 54);
+          const pulse = Math.sin(time * 14) > 0.3 ? 1 : 0;
+          for (const cy of [92, 114]) {
+            ctx.fillStyle = '#120724';
+            ctx.fillRect(px + 6 - pulse, cy - 8 - pulse, 18 + pulse * 2, 16 + pulse * 2);
+            ctx.fillStyle = '#ff4da6';
+            ctx.fillRect(px + 10, cy - 4, 10, 8);
+            ctx.fillStyle = '#5ef6ff';
+            ctx.fillRect(px + 13, cy - 1, 4, 2);
+          }
+        }
+        ctx.fillStyle = '#3b2466';
+        ctx.fillRect(s2 + 24, 72, 110, 6);
+        for (let i = 0; i < 5; i++) {
+          const lx = s2 + 34 + i * 22;
+          const col = (Math.floor(time * 4) + i) % 2 === 0 ? '#5ef6ff' : '#ff4da6';
+          ctx.fillStyle = col;
+          ctx.fillRect(lx, 78, 6, 4);
+        }
+      }
+
+      const sb = wx(890);
+      if (sb > -170 && sb < W + 40) {
+        ctx.fillStyle = '#1d0d36';
+        ctx.fillRect(sb + 14, 114, 6, 22);
+        ctx.fillRect(sb + 124, 114, 6, 22);
+        ctx.fillStyle = '#32145c';
+        ctx.fillRect(sb, 48, 144, 70);
+        ctx.fillStyle = '#e8c4ff';
+        ctx.fillRect(sb + 4, 52, 136, 62);
+        ctx.fillStyle = '#ffd9f5';
+        ctx.fillRect(sb + 4, 52, 136, 24);
+        for (let i = 0; i < 18; i++) {
+          const on = (i + Math.floor(time * 8)) % 2 === 0;
+          ctx.fillStyle = on ? '#5ef6ff' : '#ff45b5';
+          ctx.fillRect(sb + 2 + i * 8, 49, 4, 2);
+          ctx.fillRect(sb + 2 + i * 8, 115, 4, 2);
+        }
+        drawText('HUNTRIX', sb + 72, 56, '#7a1fa2', 2, 'center', '#ffffff');
+        const order = ['mira', 'rumi', 'zoey'];
+        order.forEach((id, idx) => {
+          const pImg = SPRITES.portraits[id];
+          if (pImg) {
+            ctx.drawImage(pImg, sb + 18 + idx * 42, 78, 28, 28);
+            ctx.strokeStyle = '#ff4da6';
+            ctx.strokeRect(sb + 17.5 + idx * 42, 77.5, 29, 29);
+          }
+        });
+      }
+
+      ctx.fillStyle = '#392866';
+      ctx.fillRect(0, 134, W, 14);
+      ctx.fillStyle = '#5a4396';
+      ctx.fillRect(0, 134, W, 2);
+      ctx.fillStyle = '#241747';
+      ctx.fillRect(0, 145, W, 3);
+      ctx.fillStyle = '#6f59ad';
+      ctx.fillRect(0, 126, W, 2);
+      ctx.fillStyle = '#4c3880';
+      ctx.fillRect(0, 130, W, 1);
+      const railOffset = -(Math.round(camX) % 32);
+      for (let rx = railOffset; rx < W + 32; rx += 32) {
+        ctx.fillStyle = '#5e4799';
+        ctx.fillRect(rx, 126, 3, 18);
+        ctx.fillStyle = '#8b75c9';
+        ctx.fillRect(rx, 126, 1, 18);
+      }
+
+      ctx.fillStyle = '#cbb2e3';
+      ctx.fillRect(0, 148, W, 110);
+      ctx.fillStyle = '#bfa2db';
+      ctx.fillRect(0, 148, W, 18);
+      ctx.fillStyle = '#d4bfe8';
+      ctx.fillRect(0, 186, W, 36);
+      ctx.fillStyle = '#b99cd4';
+      ctx.fillRect(0, 222, W, 36);
+
+      ctx.fillStyle = '#a483c4';
+      ctx.fillRect(0, 174, W, 1);
+      ctx.fillRect(0, 206, W, 1);
+      ctx.fillRect(0, 238, W, 1);
+      const tileOff = -(Math.round(camX) % 64);
+      for (let tx2 = tileOff; tx2 < W + 64; tx2 += 64) {
+        ctx.fillStyle = '#a483c4';
+        ctx.fillRect(tx2, 148, 1, 110);
+        if (Math.floor((tx2 + Math.round(camX)) / 64) % 2 === 0) {
+          ctx.fillStyle = '#ff85c8';
+          ctx.fillRect(tx2 + 24, 198, 12, 2);
+          ctx.fillStyle = '#5ef6ff';
+          ctx.fillRect(tx2 + 26, 201, 12, 2);
+        }
       }
     }
 
-    // Glowing Honmoon protective seal waves during high combo or Encore!
+    // Glowing Honmoon protective seal waves during Encore!
     if (encoreIntensity > 0.01) {
       ctx.save();
       ctx.globalAlpha = Math.min(0.65, encoreIntensity);
       ctx.fillStyle = '#180533';
       ctx.fillRect(0, 0, W, H);
-      // Concert spotlight beams!
       for (let i = 0; i < 4; i++) {
         const bx = 60 + i * 120 + Math.sin(time * 5 + i) * 30;
         ctx.fillStyle = i % 2 === 0 ? 'rgba(94,246,255,0.22)' : 'rgba(255,69,181,0.22)';
@@ -1488,11 +1854,24 @@
     }
   }
 
-  function drawForegroundParapet(camX) {
-    // Bottom rooftop ledge & AC unit silhouette for 2.5D depth
-    ctx.fillStyle = '#251345';
+  function drawForegroundParapet(camX, theme = 'rooftop') {
+    if (theme === 'express') {
+      ctx.fillStyle = '#1b1d36';
+      ctx.fillRect(0, 256, W, 14);
+      ctx.fillStyle = '#5ef6ff';
+      ctx.fillRect(0, 256, W, 2);
+      return;
+    }
+    if (theme === 'throne') {
+      ctx.fillStyle = '#16041c';
+      ctx.fillRect(0, 256, W, 14);
+      ctx.fillStyle = '#ff3366';
+      ctx.fillRect(0, 256, W, 2);
+      return;
+    }
+    ctx.fillStyle = theme === 'market' ? '#140c29' : '#251345';
     ctx.fillRect(0, 256, W, 14);
-    ctx.fillStyle = '#472878';
+    ctx.fillStyle = theme === 'market' ? '#5ef6ff' : '#472878';
     ctx.fillRect(0, 256, W, 2);
     const fgOff = -(Math.round(camX * 1.15) % 160);
     for (let fx = fgOff; fx < W + 160; fx += 160) {
@@ -1585,18 +1964,35 @@
   // =========================================================================
   // 7. GAME STATE, ENTITIES, PARTICLES, WAVES & COMBAT ENGINE
   // =========================================================================
-  let gameState = 'title'; // 'title', 'playing', 'paused', 'victory', 'gameover'
+  let gameState = 'title'; // 'title', 'playing', 'paused', 'stageclear', 'victory', 'gameover'
   let selectedHunterIdx = 0;
+  let selectedStageIdx = 0;
+  let stageIndex = 0;
+  let stageScrollOffset = 0;
   let time = 0;
 
   let player = null;
   let enemies = [];
   let items = [];
+  let props = [];
+  let hazards = [];
+  let projectiles = [];
+  let laneDrones = [];
+  let laneDroneTimer = 0;
   let particles = [];
   let shockwaves = [];
   let rifts = [];
   let floatingTexts = [];
   let encoreMembers = []; // Summoned Rumi/Mira/Zoey ghosts during Encore Special!
+
+  let stageStats = {
+    hazardHits: 0,
+    propsSmashed: 0,
+    stageMaxCombo: 0,
+    clearBonus: 0,
+    hpBonus: 0,
+    challenges: [],
+  };
 
   let camX = 0;
   let targetCamX = 0;
@@ -1690,7 +2086,7 @@
     }
   }
 
-  let waveIndex = 0;        // 0 = Wave 1, 1 = Wave 2, 2 = Mini-Boss
+  let waveIndex = 0;        // Zone index within current stage
   let wavePhase = 'spawn';  // 'spawn', 'fight', 'go', 'warning', 'done'
   let waveSubIndex = 0;
   let waveTimer = 0;
@@ -1701,52 +2097,261 @@
   let encoreTimer = 0;
   let encoreBubbleText = '';
 
-  const WAVE_CONFIG = [
+  // Data-driven 4-Stage Campaign (following BEAT_EM_UP_STAGE_DESIGN.md)
+  const STAGES = [
     {
-      name: 'WAVE 1 / 2',
-      subtitle: 'DEMON AMBUSH!',
-      lockX: 0,
-      subWaves: [
-        [
-          { type: 'imp', x: 350, y: 175 },
-          { type: 'imp', x: 405, y: 222 },
-          { type: 'banshee', x: 430, y: 196 },
-        ],
-        [
-          { type: 'imp', x: 95, y: 215 },
-          { type: 'banshee', x: 420, y: 176 },
-        ],
+      id: 'stage-1-rooftop',
+      shortName: '1: ROOFTOP',
+      name: 'STAGE 1: SEOUL ROOFTOP',
+      subtitle: 'HUNTRIX SHOWTIME!',
+      theme: 'rooftop',
+      bgm: 'stage0',
+      worldWidth: 1200,
+      autoScrollSpeed: 0,
+      hasLaneDrones: false,
+      props: [
+        { kind: 'crate', x: 255, y: 168, hp: 18, drop: 'gimbap' },
+        { kind: 'crate', x: 610, y: 234, hp: 18, drop: 'star' },
+        { kind: 'cart',  x: 840, y: 168, hp: 20, drop: 'ramyeon' },
+      ],
+      hazards: [],
+      zones: [
+        {
+          name: 'WAVE 1 / 2',
+          subtitle: 'DEMON AMBUSH!',
+          lockX: 0,
+          subWaves: [
+            [
+              { type: 'imp', x: 350, y: 175 },
+              { type: 'imp', x: 405, y: 222 },
+              { type: 'banshee', x: 430, y: 196 },
+            ],
+            [
+              { type: 'imp', x: 95, y: 215 },
+              { type: 'banshee', x: 420, y: 176 },
+            ],
+          ],
+        },
+        {
+          name: 'WAVE 2 / 2',
+          subtitle: 'SAJA TRICKSTERS!',
+          lockX: 360,
+          subWaves: [
+            [
+              { type: 'gat', x: 740, y: 185 },
+              { type: 'imp', x: 785, y: 226 },
+              { type: 'banshee', x: 710, y: 232 },
+            ],
+            [
+              { type: 'gat', x: 445, y: 182 },
+              { type: 'gat', x: 780, y: 205 },
+              { type: 'banshee', x: 755, y: 170 },
+              { type: 'imp', x: 470, y: 230 },
+            ],
+          ],
+        },
+        {
+          name: 'STAGE 1 BOSS',
+          subtitle: 'SAJA OVERLORD!',
+          lockX: 720,
+          isBossZone: true,
+          warningSub: 'BOSS: SAJA OVERLORD',
+          subWaves: [
+            [{ type: 'boss', x: 1090, y: 202 }],
+          ],
+        },
       ],
     },
     {
-      name: 'WAVE 2 / 2',
-      subtitle: 'SAJA TRICKSTERS!',
-      lockX: 360,
-      subWaves: [
-        [
-          { type: 'gat', x: 740, y: 185 },
-          { type: 'imp', x: 785, y: 226 },
-          { type: 'banshee', x: 710, y: 232 },
-        ],
-        [
-          { type: 'gat', x: 445, y: 182 },
-          { type: 'gat', x: 780, y: 205 },
-          { type: 'banshee', x: 755, y: 170 },
-          { type: 'imp', x: 470, y: 230 },
-        ],
+      id: 'stage-2-market',
+      shortName: '2: HONGDAE',
+      name: 'STAGE 2: HONGDAE MARKET',
+      subtitle: 'NEON ALLEY BRAWL!',
+      theme: 'market',
+      bgm: 'stage1',
+      worldWidth: 1440,
+      autoScrollSpeed: 0,
+      hasLaneDrones: false,
+      props: [
+        { kind: 'hydrant', x: 280, y: 174, hp: 16, drop: null },
+        { kind: 'crate',   x: 590, y: 164, hp: 18, drop: 'gimbap' },
+        { kind: 'hydrant', x: 760, y: 232, hp: 16, drop: null },
+        { kind: 'cart',    x: 1030, y: 168, hp: 20, drop: 'ramyeon' },
+      ],
+      hazards: [
+        { kind: 'steam', x: 560, y: 188, phase: 0.4 },
+        { kind: 'plank', x: 720, y: 204 },
+        { kind: 'steam', x: 890, y: 220, phase: 1.8 },
+      ],
+      zones: [
+        {
+          name: 'WAVE 1 / 2',
+          subtitle: 'PHANTOM CROONERS!',
+          lockX: 0,
+          subWaves: [
+            [
+              { type: 'imp', x: 340, y: 186 },
+              { type: 'crooner', x: 420, y: 214 },
+              { type: 'banshee', x: 385, y: 168 },
+            ],
+            [
+              { type: 'gat', x: 70, y: 222 },
+              { type: 'crooner', x: 425, y: 178 },
+              { type: 'imp', x: 395, y: 234 },
+            ],
+          ],
+        },
+        {
+          name: 'WAVE 2 / 2',
+          subtitle: 'STREET HAZARD GAUNTLET!',
+          lockX: 480,
+          subWaves: [
+            [
+              { type: 'gat', x: 860, y: 176 },
+              { type: 'crooner', x: 910, y: 228 },
+              { type: 'banshee', x: 830, y: 206 },
+            ],
+            [
+              { type: 'gat', x: 540, y: 172 },
+              { type: 'crooner', x: 915, y: 188 },
+              { type: 'banshee', x: 880, y: 236 },
+              { type: 'imp', x: 560, y: 234 },
+            ],
+          ],
+        },
+        {
+          name: 'STAGE 2 DUO BOSS',
+          subtitle: 'NEON PHANTOM DUO!',
+          lockX: 960,
+          isBossZone: true,
+          warningSub: 'DUO BOSS: VANGUARD + DIVA',
+          subWaves: [
+            [
+              { type: 'boss_vanguard', x: 1320, y: 182 },
+              { type: 'boss_diva', x: 1370, y: 226 },
+            ],
+          ],
+        },
       ],
     },
     {
-      name: 'MINI-BOSS',
-      subtitle: 'SAJA OVERLORD!',
-      lockX: 720,
-      subWaves: [
-        [
-          { type: 'boss', x: 1090, y: 202 },
-        ],
+      id: 'stage-3-express',
+      shortName: '3: EXPRESS',
+      name: 'STAGE 3: SKY-EXPRESS',
+      subtitle: 'MIDNIGHT BULLET TRAIN!',
+      theme: 'express',
+      bgm: 'stage2',
+      worldWidth: 1280,
+      autoScrollSpeed: 220,
+      hasLaneDrones: true,
+      props: [
+        { kind: 'crate',   x: 265, y: 168, hp: 18, drop: 'gimbap' },
+        { kind: 'hydrant', x: 640, y: 228, hp: 16, drop: null },
+        { kind: 'crate',   x: 740, y: 166, hp: 18, drop: 'star' },
+        { kind: 'cart',    x: 910, y: 166, hp: 20, drop: 'ramyeon' },
+      ],
+      hazards: [],
+      zones: [
+        {
+          name: 'CAR 1 / 2',
+          subtitle: 'IRON DOKKAEBI DROP!',
+          lockX: 0,
+          subWaves: [
+            [
+              { type: 'heavy', x: 370, y: 202, skyDrop: true },
+              { type: 'imp', x: 320, y: 174, skyDrop: true },
+              { type: 'banshee', x: 420, y: 228, skyDrop: true },
+            ],
+            [
+              { type: 'heavy', x: 415, y: 184, skyDrop: true },
+              { type: 'crooner', x: 85, y: 220, skyDrop: true },
+              { type: 'gat', x: 390, y: 234, skyDrop: true },
+            ],
+          ],
+        },
+        {
+          name: 'CAR 2 / 2',
+          subtitle: 'HIGH-SPEED AMBUSH!',
+          lockX: 400,
+          subWaves: [
+            [
+              { type: 'heavy', x: 785, y: 186, skyDrop: true },
+              { type: 'crooner', x: 825, y: 226, skyDrop: true },
+              { type: 'gat', x: 735, y: 214, skyDrop: true },
+            ],
+            [
+              { type: 'heavy', x: 470, y: 196, skyDrop: true },
+              { type: 'heavy', x: 820, y: 216, skyDrop: true },
+              { type: 'banshee', x: 790, y: 170, skyDrop: true },
+            ],
+          ],
+        },
+        {
+          name: 'STAGE 3 BOSS',
+          subtitle: 'TRAIN REAPER!',
+          lockX: 800,
+          isBossZone: true,
+          warningSub: 'BOSS: TRAIN REAPER',
+          subWaves: [
+            [{ type: 'boss_reaper', x: 1180, y: 202, skyDrop: true }],
+          ],
+        },
+      ],
+    },
+    {
+      id: 'stage-4-throne',
+      shortName: '4: THRONE',
+      name: 'STAGE 4: HONMOON THRONE',
+      subtitle: 'FINAL ENCORE SHOWDOWN!',
+      theme: 'throne',
+      bgm: 'stage3',
+      worldWidth: 1040,
+      autoScrollSpeed: 0,
+      hasLaneDrones: false,
+      props: [
+        { kind: 'crate', x: 240, y: 168, hp: 18, drop: 'star' },
+        { kind: 'cart',  x: 615, y: 168, hp: 20, drop: 'ramyeon' },
+      ],
+      hazards: [
+        { kind: 'steam', x: 330, y: 176, phase: 0.2 },
+        { kind: 'steam', x: 330, y: 230, phase: 2.1 },
+      ],
+      zones: [
+        {
+          name: 'ELITE GAUNTLET',
+          subtitle: 'DEMON ROYAL GUARD!',
+          lockX: 0,
+          subWaves: [
+            [
+              { type: 'heavy', x: 365, y: 198 },
+              { type: 'crooner', x: 425, y: 172 },
+              { type: 'gat', x: 400, y: 232 },
+            ],
+            [
+              { type: 'heavy', x: 85, y: 205 },
+              { type: 'crooner', x: 425, y: 228 },
+              { type: 'gat', x: 410, y: 174 },
+              { type: 'banshee', x: 365, y: 202 },
+            ],
+          ],
+        },
+        {
+          name: 'FINAL BOSS',
+          subtitle: 'GWI-MA: DEMON KING!',
+          lockX: 560,
+          isBossZone: true,
+          warningSub: 'FINAL BOSS: GWI-MA KING',
+          subWaves: [
+            [{ type: 'boss_king', x: 935, y: 202 }],
+          ],
+        },
       ],
     },
   ];
+
+  function getCurrentStage() {
+    return STAGES[stageIndex] || STAGES[0];
+  }
 
   function createPlayer(hunterDef) {
     return {
@@ -1775,21 +2380,33 @@
     };
   }
 
-  function spawnEnemy(type, x, y) {
-    // Open a magenta dimensional rift first!
-    rifts.push({ x, y, life: 0.7, maxLife: 0.7, radius: type === 'boss' ? 30 : 18 });
+  function spawnEnemy(type, x, y, skyDrop = false) {
+    const isBoss = isBossType(type);
+    if (!skyDrop) {
+      rifts.push({ x, y, life: 0.7, maxLife: 0.7, radius: isBoss ? 30 : 18 });
+    }
     const stats = {
-      imp:     { name: 'DOKKAEBI IMP',   hp: 46,  speed: 62,  dmg: 9,  reach: 30, score: 250, encoreGain: 22, w: 22 },
-      banshee: { name: 'ABYSS BANSHEE',  hp: 38,  speed: 82,  dmg: 10, reach: 28, score: 300, encoreGain: 22, w: 20 },
-      gat:     { name: 'SAJA TRICKSTER', hp: 64,  speed: 74,  dmg: 13, reach: 34, score: 450, encoreGain: 25, w: 22 },
-      boss:    { name: 'SAJA OVERLORD',  hp: 340, speed: 68,  dmg: 18, reach: 44, score: 3000, encoreGain: 35, w: 32 },
-    }[type];
+      imp:           { name: 'DOKKAEBI IMP',   hp: 46,  speed: 62,  dmg: 9,  reach: 30, score: 250,  encoreGain: 22, ranged: false, armor: false },
+      banshee:       { name: 'ABYSS BANSHEE',  hp: 38,  speed: 82,  dmg: 10, reach: 28, score: 300,  encoreGain: 22, ranged: false, armor: false },
+      gat:           { name: 'SAJA TRICKSTER', hp: 64,  speed: 74,  dmg: 13, reach: 34, score: 450,  encoreGain: 25, ranged: false, armor: false },
+      crooner:       { name: 'PHANTOM CROONER',hp: 52,  speed: 68,  dmg: 11, reach: 30, score: 400,  encoreGain: 24, ranged: true,  armor: false },
+      heavy:         { name: 'IRON DOKKAEBI',  hp: 108, speed: 52,  dmg: 16, reach: 38, score: 650,  encoreGain: 28, ranged: false, armor: true  },
+      boss:          { name: 'SAJA OVERLORD',  hp: 320, speed: 68,  dmg: 18, reach: 44, score: 3000, encoreGain: 35, ranged: false, armor: false, hasSlam: true },
+      boss_vanguard: { name: 'SAJA VANGUARD',  hp: 215, speed: 84,  dmg: 16, reach: 42, score: 2200, encoreGain: 30, ranged: false, armor: false, hasSlam: true },
+      boss_diva:     { name: 'BANSHEE DIVA',   hp: 195, speed: 74,  dmg: 14, reach: 36, score: 2200, encoreGain: 30, ranged: true,  armor: false, hasSlam: false },
+      boss_reaper:   { name: 'TRAIN REAPER',   hp: 360, speed: 82,  dmg: 18, reach: 46, score: 3800, encoreGain: 38, ranged: false, armor: true,  hasSlam: true },
+      boss_king:     { name: 'GWI-MA KING',    hp: 450, speed: 76,  dmg: 20, reach: 48, score: 5000, encoreGain: 45, ranged: true,  armor: true,  hasSlam: true },
+    }[type] || { name: 'DOKKAEBI IMP', hp: 46, speed: 62, dmg: 9, reach: 30, score: 250, encoreGain: 22, ranged: false, armor: false };
 
     enemies.push({
       id: Math.random(),
       type,
       name: stats.name,
-      x, y, z: 0,
+      isBoss,
+      ranged: !!stats.ranged,
+      armor: !!stats.armor,
+      hasSlam: !!stats.hasSlam,
+      x, y, z: skyDrop ? 160 : 0,
       vx: 0, vy: 0, vz: 0,
       facing: x > (player ? player.x : 120) ? -1 : 1,
       hp: stats.hp,
@@ -1800,13 +2417,14 @@
       score: stats.score,
       encoreGain: stats.encoreGain,
       state: 'spawn', // 'spawn','chase','windup','atk','slam','hurt','ko'
-      stateTimer: 0.45,
+      stateTimer: skyDrop ? 0.55 : 0.45,
       animTimer: 0,
       atkCooldown: 0.5 + Math.random() * 0.6,
       hitApplied: false,
       flash: 0,
       enraged: false,
-      slamCooldown: 4.0,
+      slamCooldown: 3.8,
+      hazardCooldown: 0,
       flankSide: Math.random() < 0.5 ? -1 : 1,
       flankYOff: (Math.random() - 0.5) * 18,
     });
@@ -1864,6 +2482,7 @@
   function addCombo(hits = 1) {
     comboCount += hits;
     if (comboCount > maxCombo) maxCombo = comboCount;
+    if (comboCount > stageStats.stageMaxCombo) stageStats.stageMaxCombo = comboCount;
     comboTimer = 2.6;
   }
 
@@ -1881,42 +2500,99 @@
     shakeMag = Math.max(shakeMag, mag);
   }
 
-  function startNewGame() {
-    sfx.init();
-    const def = HUNTERS[selectedHunterIdx];
-    player = createPlayer(def);
+  function loadStage(idx, resetPlayerFull = false) {
+    stageIndex = Math.max(0, Math.min(STAGES.length - 1, idx));
+    const st = getCurrentStage();
+    currentWorldWidth = st.worldWidth;
+
+    if (resetPlayerFull || !player) {
+      player = createPlayer(HUNTERS[selectedHunterIdx]);
+    } else {
+      // Carry over player between stages with +50% HP recovery!
+      player.x = 110;
+      player.y = 202;
+      player.z = 0;
+      player.vx = 0;
+      player.vy = 0;
+      player.vz = 0;
+      player.facing = 1;
+      player.state = 'idle';
+      player.stateTimer = 0;
+      player.invuln = 1.0;
+      player.hp = Math.min(player.maxHp, Math.round(player.hp + player.maxHp * 0.5));
+    }
+
     enemies = [];
     items = [];
+    projectiles = [];
+    laneDrones = [];
+    laneDroneTimer = 3.2;
     particles = [];
     shockwaves = [];
     rifts = [];
     floatingTexts = [];
     encoreMembers = [];
 
+    // Clone interactive stage props & two-way hazards
+    props = (st.props || []).map((p, i) => ({
+      id: 'prop_' + stageIndex + '_' + i,
+      kind: p.kind,
+      x: p.x,
+      y: p.y,
+      hp: p.hp,
+      maxHp: p.hp,
+      drop: p.drop || null,
+      flash: 0,
+    }));
+
+    hazards = (st.hazards || []).map((h, i) => ({
+      id: 'haz_' + stageIndex + '_' + i,
+      kind: h.kind,
+      x: h.x,
+      y: h.y,
+      timer: h.phase || 0,
+      state: 'idle', // steam: idle/telegraph/active; plank: idle/armed/snap/cooldown
+      cooldown: 0,
+    }));
+
+    stageStats = {
+      hazardHits: 0,
+      propsSmashed: 0,
+      stageMaxCombo: 0,
+      clearBonus: 0,
+      hpBonus: 0,
+      challenges: [],
+    };
+
     camX = 0;
     targetCamX = 0;
     hitstop = 0;
     shakeTime = 0;
-    score = 0;
-    scoreSubmittedThisRun = false;
-    scoreSyncStatus = '';
     comboCount = 0;
-    maxCombo = 0;
     comboTimer = 0;
-    enemiesDefeated = 0;
 
     waveIndex = 0;
     waveSubIndex = 0;
     wavePhase = 'spawn';
-    waveTimer = 0.4;
+    waveTimer = 0.5;
     encoreTimer = 0;
 
-    bannerText = 'STAGE 1: SEOUL ROOFTOP';
-    bannerSub = 'HUNTRIX SHOWTIME!';
+    bannerText = st.name;
+    bannerSub = st.subtitle;
     bannerTimer = 2.2;
 
     gameState = 'playing';
-    sfx.startBGM('stage');
+    sfx.startBGM(st.bgm || 'stage0');
+  }
+
+  function startNewGame() {
+    sfx.init();
+    score = 0;
+    scoreSubmittedThisRun = false;
+    scoreSyncStatus = '';
+    maxCombo = 0;
+    enemiesDefeated = 0;
+    loadStage(selectedStageIdx, true);
   }
 
   // =========================================================================
@@ -1976,6 +2652,45 @@
   // =========================================================================
   // 9. COMBAT RESOLUTION
   // =========================================================================
+  function damageProp(pr, dmg) {
+    pr.hp -= dmg;
+    pr.flash = 0.14;
+    sfx.playHit(false);
+    spawnParticles(pr.x, pr.y, 12, '#ffe066', 6, 75);
+    if (pr.hp <= 0) {
+      stageStats.propsSmashed++;
+      score += 150;
+      persistLocalHighScore();
+      const idx = props.indexOf(pr);
+      if (idx !== -1) props.splice(idx, 1);
+
+      if (pr.kind === 'hydrant') {
+        // Explosive two-way Neon Hydrant AOE blast!
+        sfx.playExplosion();
+        triggerShake(0.35, 5);
+        addFloatText('BOOM!!', pr.x, pr.y - 34, '#ffe066', 2);
+        shockwaves.push({ x: pr.x, y: pr.y, r: 8, maxR: 115, color: '#5ef6ff', life: 0.45, maxLife: 0.45, friendly: true });
+        spawnParticles(pr.x, pr.y, 16, '#5ef6ff', 18, 145);
+        spawnParticles(pr.x, pr.y, 16, '#ff45b5', 14, 130);
+        for (const e of enemies) {
+          if (e.state === 'ko' || e.state === 'spawn') continue;
+          const dist = Math.hypot(e.x - pr.x, (e.y - pr.y) * 1.6);
+          if (dist <= 115) {
+            damageEnemy(e, 42, 165, 160, e.x >= pr.x ? 1 : -1, true, true);
+          }
+        }
+      } else {
+        sfx.playPickup();
+        spawnParticles(pr.x, pr.y, 14, '#ff69c0', 12, 100);
+        if (pr.drop) {
+          items.push({ kind: pr.drop, x: pr.x, y: pr.y, z: 16, vz: 130, life: 22 });
+          const label = pr.drop === 'ramyeon' ? 'RAMYEON!' : pr.drop === 'star' ? 'ENCORE STAR!' : 'GIMBAP!';
+          addFloatText(label, pr.x, pr.y - 32, '#ffe066', 1);
+        }
+      }
+    }
+  }
+
   function damageEnemy(e, dmg, kbX, kbZ, dir, heavy = false, grantEncore = true) {
     e.hp -= dmg;
     e.flash = 0.14;
@@ -1999,43 +2714,48 @@
       persistLocalHighScore();
       if (grantEncore) addEncore(e.encoreGain);
       sfx.playKo();
-      hitstop = e.type === 'boss' ? 0.16 : 0.06;
-      triggerShake(e.type === 'boss' ? 0.55 : 0.18, e.type === 'boss' ? 6 : 3);
+      hitstop = e.isBoss ? 0.16 : 0.06;
+      triggerShake(e.isBoss ? 0.55 : 0.18, e.isBoss ? 6 : 3);
       addFloatText('+' + Math.round(e.score * mult), e.x, e.y - 52, '#5ef6ff', 1);
 
-      // Chance to drop Gimbap or Cup Ramyeon
-      if (e.type !== 'boss' && Math.random() < 0.26) {
+      // Chance to drop Gimbap, Ramyeon, or Encore Star
+      if (!e.isBoss && Math.random() < 0.24) {
+        const roll = Math.random();
         items.push({
-          kind: Math.random() < 0.65 ? 'gimbap' : 'ramyeon',
+          kind: roll < 0.55 ? 'gimbap' : roll < 0.8 ? 'ramyeon' : 'star',
           x: e.x, y: e.y, z: 18, vz: 110, life: 16,
         });
       }
     } else {
-      // Boss has partial super-armor during slam, otherwise recoils!
-      if (!(e.type === 'boss' && e.state === 'slam' && !heavy)) {
+      // Heavy & Boss enemies resist light hitstun during windup/slam; heavy finishers always stagger!
+      const resistStun = (e.isBoss && e.state === 'slam' && !heavy) || (e.armor && !heavy && (e.state === 'windup' || e.state === 'atk'));
+      if (!resistStun) {
         e.state = 'hurt';
-        e.stateTimer = heavy ? 0.42 : 0.25;
-        e.vx = dir * (e.type === 'boss' ? kbX * 0.45 : kbX);
-        if (kbZ > 0 && e.type !== 'boss') e.vz = kbZ;
+        e.stateTimer = heavy ? 0.42 : 0.24;
+        e.vx = dir * (e.isBoss ? kbX * 0.42 : e.armor ? kbX * 0.6 : kbX);
+        if (kbZ > 0 && !e.isBoss) e.vz = e.armor ? kbZ * 0.65 : kbZ;
       }
       sfx.playHit(heavy);
       hitstop = heavy ? 0.055 : 0.025;
       triggerShake(heavy ? 0.15 : 0.08, heavy ? 3 : 1.5);
 
       // Boss Phase 2 Enrage at <= 50% HP
-      if (e.type === 'boss' && !e.enraged && e.hp <= e.maxHp * 0.5) {
+      if (e.isBoss && !e.enraged && e.hp <= e.maxHp * 0.5) {
         e.enraged = true;
         e.speed *= 1.18;
-        addFloatText('ENRAGED!!', e.x, e.y - 68, '#ff3b8d', 1);
-        shockwaves.push({ x: e.x, y: e.y, r: 10, maxR: 130, color: '#ff2e93', life: 0.45, maxLife: 0.45, friendly: false, dmg: 0 });
-        spawnEnemy('imp', Math.max(camX + 45, e.x - 120), 174);
-        spawnEnemy('imp', Math.min(camX + W - 45, e.x + 90), 232);
+        addFloatText(e.type === 'boss_king' ? 'CRIMSON ECLIPSE!!' : 'ENRAGED!!', e.x, e.y - 68, '#ff3b8d', 1);
+        shockwaves.push({ x: e.x, y: e.y, r: 10, maxR: 135, color: '#ff2e93', life: 0.45, maxLife: 0.45, friendly: false, dmg: 0 });
+        if (e.type === 'boss' || e.type === 'boss_king') {
+          spawnEnemy('imp', Math.max(camX + 45, e.x - 120), 174);
+          spawnEnemy('imp', Math.min(camX + W - 45, e.x + 90), 232);
+        }
       }
     }
   }
 
-  function damagePlayer(dmg, dir) {
+  function damagePlayer(dmg, dir, fromHazard = false) {
     if (player.invuln > 0 || player.state === 'special') return;
+    if (fromHazard) stageStats.hazardHits++;
     player.hp = Math.max(0, player.hp - dmg);
     player.flash = 0.2;
     player.invuln = 0.85;
@@ -2140,6 +2860,17 @@
             damageEnemy(e, Math.round(baseDmg), kbX, kbZ, p.facing, step === 3);
           }
         }
+        // Hit interactive props (crates, ramen carts, explosive hydrants)
+        for (let pi = props.length - 1; pi >= 0; pi--) {
+          const pr = props[pi];
+          if (p.hitIds.has(pr.id)) continue;
+          const dx = (pr.x - p.x) * p.facing;
+          const dy = Math.abs(pr.y - p.y);
+          if (dx >= -8 && dx <= reach + 10 && dy <= 22) {
+            p.hitIds.add(pr.id);
+            damageProp(pr, Math.round(baseDmg));
+          }
+        }
       }
 
       if (p.stateTimer <= 0) {
@@ -2191,6 +2922,16 @@
             damageEnemy(e, Math.round(24 * def.power), 135, 115, p.facing, true);
           }
         }
+        for (let pi = props.length - 1; pi >= 0; pi--) {
+          const pr = props[pi];
+          if (p.hitIds.has(pr.id)) continue;
+          const dx = (pr.x - p.x) * p.facing;
+          const dy = Math.abs(pr.y - p.y);
+          if (dx >= -6 && dx <= 38 && dy <= 22 && p.z <= 28) {
+            p.hitIds.add(pr.id);
+            damageProp(pr, Math.round(24 * def.power));
+          }
+        }
         // Motion sparkle trail
         if (Math.random() < 0.5) {
           spawnParticles(p.x - p.facing * 8, p.y, p.z + 18, '#ff59b8', 1, 30);
@@ -2235,13 +2976,28 @@
 
   function clampPlayerBounds() {
     const minX = camX + 20;
-    const maxX = Math.min(WORLD_WIDTH - 24, camX + W - 20);
+    const maxX = Math.min(currentWorldWidth - 24, camX + W - 20);
     player.x = Math.max(minX, Math.min(maxX, player.x));
     player.y = Math.max(FLOOR_MIN_Y, Math.min(FLOOR_MAX_Y, player.y));
   }
 
+  function fireEnemyProjectile(e, vyOff = 0) {
+    projectiles.push({
+      x: e.x + e.facing * 18,
+      y: e.y,
+      z: 22,
+      vx: e.facing * (e.isBoss ? 175 : 145),
+      vy: vyOff,
+      dmg: e.dmg,
+      color: e.type === 'boss_king' ? '#ffe066' : '#ff45b5',
+      life: 2.6,
+    });
+    sfx.playSwing(2);
+  }
+
   function updateEnemies(dt) {
-    // Limit simultaneous active attackers to 2 for fair beat'em up pacing
+    // Limit simultaneous active attackers to 2 (3 in Stage 4) for fair beat'em up pacing
+    const maxAttackers = stageIndex >= 3 ? 3 : 2;
     let activeAttackers = enemies.filter(e => e.state === 'windup' || e.state === 'atk' || e.state === 'slam').length;
 
     for (let i = enemies.length - 1; i >= 0; i--) {
@@ -2249,7 +3005,8 @@
       e.animTimer += dt;
       if (e.flash > 0) e.flash -= dt;
       if (e.atkCooldown > 0) e.atkCooldown -= dt;
-      if (e.type === 'boss' && e.slamCooldown > 0) e.slamCooldown -= dt;
+      if (e.hazardCooldown > 0) e.hazardCooldown -= dt;
+      if (e.hasSlam && e.slamCooldown > 0) e.slamCooldown -= dt;
 
       // Airborne physics
       if (e.z > 0 || e.vz > 0) {
@@ -2266,7 +3023,7 @@
 
       if (e.state === 'spawn') {
         e.stateTimer -= dt;
-        if (e.stateTimer <= 0) e.state = 'chase';
+        if (e.stateTimer <= 0 && e.z === 0) e.state = 'chase';
         continue;
       }
 
@@ -2274,7 +3031,7 @@
         e.stateTimer -= dt;
         e.x += e.vx * dt;
         e.vx *= 0.92;
-        if (e.type === 'boss' && Math.random() < 0.35) {
+        if (e.isBoss && Math.random() < 0.35) {
           spawnHitStar(e.x + (Math.random() - 0.5) * 32, e.y, e.z + 20 + Math.random() * 24, true);
         }
         if (e.stateTimer <= 0) {
@@ -2302,11 +3059,23 @@
         e.facing = player.x >= e.x ? 1 : -1;
         if (e.stateTimer <= 0) {
           e.state = 'atk';
-          e.stateTimer = e.type === 'boss' ? 0.34 : 0.24;
+          e.stateTimer = e.isBoss ? 0.34 : 0.24;
           e.hitApplied = false;
-          // Lunge forward slightly!
-          e.vx = e.facing * (e.type === 'gat' || e.type === 'boss' ? 130 : 55);
-          sfx.playSwing(1);
+          if (e.ranged && Math.abs(player.x - e.x) > 58) {
+            // Ranged cursed music orb attack!
+            e.hitApplied = true;
+            e.vx = 0;
+            fireEnemyProjectile(e, 0);
+            if (e.type === 'boss_king' && e.enraged) {
+              fireEnemyProjectile(e, -28);
+              fireEnemyProjectile(e, 28);
+            }
+          } else {
+            // Lunge forward slightly (Train Reaper & Bosses dash faster!)
+            const lunge = e.type === 'boss_reaper' ? 210 : (e.type === 'gat' || e.isBoss ? 135 : 58);
+            e.vx = e.facing * lunge;
+            sfx.playSwing(1);
+          }
         }
         continue;
       }
@@ -2315,7 +3084,8 @@
         e.stateTimer -= dt;
         e.x += e.vx * dt;
         e.vx *= 0.88;
-        if (!e.hitApplied && e.stateTimer < (e.type === 'boss' ? 0.24 : 0.16)) {
+        e.x = Math.max(camX + 14, Math.min(camX + W - 14, e.x));
+        if (!e.hitApplied && e.stateTimer < (e.isBoss ? 0.24 : 0.16)) {
           const dx = (player.x - e.x) * e.facing;
           const dy = Math.abs(player.y - e.y);
           if (dx >= -6 && dx <= e.reach + 8 && dy <= 18 && player.z < 26) {
@@ -2325,7 +3095,7 @@
         }
         if (e.stateTimer <= 0) {
           e.state = 'chase';
-          e.atkCooldown = e.type === 'boss' ? (e.enraged ? 0.85 : 1.15) : (0.95 + Math.random() * 0.65);
+          e.atkCooldown = e.isBoss ? (e.enraged ? 0.78 : 1.08) : (e.ranged ? 1.55 : 0.95 + Math.random() * 0.65);
         }
         continue;
       }
@@ -2336,24 +3106,30 @@
           e.hitApplied = true;
           sfx.playHit(true);
           triggerShake(0.28, 4.5);
-          // Ground shockwave ring (player can jump over it!)
           shockwaves.push({
-            x: e.x, y: e.y, r: 12, maxR: 155, color: '#ff2e93',
+            x: e.x, y: e.y, r: 12, maxR: e.type === 'boss_king' ? 185 : 155, color: e.type === 'boss_king' ? '#ffe066' : '#ff2e93',
             life: 0.68, maxLife: 0.68, friendly: false, dmg: 15, hitPlayer: false,
           });
+          if (e.type === 'boss_king' && e.enraged) {
+            shockwaves.push({
+              x: e.x, y: e.y, r: 2, maxR: 205, color: '#ff2e93',
+              life: 0.92, maxLife: 0.92, friendly: false, dmg: 15, hitPlayer: false,
+            });
+          }
           spawnParticles(e.x, e.y, 4, '#ff45b5', 14, 120);
         }
         if (e.stateTimer <= 0) {
           e.state = 'chase';
-          e.slamCooldown = e.enraged ? 3.2 : 4.6;
-          e.atkCooldown = 0.8;
+          e.slamCooldown = e.enraged ? 3.0 : 4.4;
+          e.atkCooldown = 0.75;
         }
         continue;
       }
 
       // CHASE & POSITION AI
-      const desiredX = player.x + e.flankSide * (e.reach - 4);
-      const desiredY = Math.max(FLOOR_MIN_Y + 4, Math.min(FLOOR_MAX_Y - 4, player.y + e.flankYOff * 0.25));
+      const keepDist = e.ranged ? 128 : (e.reach - 4);
+      const desiredX = Math.max(camX + 26, Math.min(camX + W - 26, player.x + e.flankSide * keepDist));
+      const desiredY = Math.max(FLOOR_MIN_Y + 4, Math.min(FLOOR_MAX_Y - 4, player.y + (e.ranged ? 0 : e.flankYOff * 0.25)));
       const dx = desiredX - e.x;
       const dy = desiredY - e.y;
       const distPlayerX = Math.abs(player.x - e.x);
@@ -2362,23 +3138,31 @@
       e.facing = player.x >= e.x ? 1 : -1;
 
       // Boss special Rift Shockwave check
-      if (e.type === 'boss' && e.slamCooldown <= 0 && distPlayerX < 135 && distPlayerY < 48) {
+      if (e.hasSlam && e.slamCooldown <= 0 && distPlayerX < 145 && distPlayerY < 50) {
         e.state = 'slam';
         e.stateTimer = 0.72;
         e.hitApplied = false;
-        addFloatText('RIFT SLAM!', e.x, e.y - 68, '#ff45b5', 1);
+        addFloatText(e.type === 'boss_king' ? 'ECLIPSE SLAM!' : 'RIFT SLAM!', e.x, e.y - 68, '#ff45b5', 1);
         continue;
       }
 
-      // Melee Attack check
-      if (distPlayerX <= e.reach && distPlayerY <= 16 && e.atkCooldown <= 0 && activeAttackers < 2) {
+      // Ranged Attack check (Crooner, Banshee Diva, Gwi-Ma King)
+      if (e.ranged && distPlayerX >= 64 && distPlayerX <= 210 && distPlayerY <= 18 && e.atkCooldown <= 0 && activeAttackers < maxAttackers) {
         e.state = 'windup';
-        e.stateTimer = e.type === 'boss' ? 0.36 : 0.34;
+        e.stateTimer = 0.44;
         activeAttackers++;
         continue;
       }
 
-      // Move toward flanking slot
+      // Melee Attack check
+      if (distPlayerX <= e.reach && distPlayerY <= 16 && e.atkCooldown <= 0 && activeAttackers < maxAttackers) {
+        e.state = 'windup';
+        e.stateTimer = e.isBoss ? 0.36 : 0.34;
+        activeAttackers++;
+        continue;
+      }
+
+      // Move toward flanking/zoning slot
       const len = Math.hypot(dx, dy) || 1;
       if (len > 4) {
         e.x += (dx / len) * e.speed * dt;
@@ -2389,8 +3173,39 @@
     }
   }
 
+  function finishCurrentStage() {
+    const st = getCurrentStage();
+    wavePhase = 'done';
+    const clearBonus = 1500 + stageIndex * 500;
+    const hpBonus = Math.round(player.hp * 15);
+    const challenges = [];
+    if (stageStats.hazardHits === 0) challenges.push({ label: 'NO HAZARD DAMAGE', bonus: 750 });
+    if (stageStats.stageMaxCombo >= 10) challenges.push({ label: '10+ HIT IDOL COMBO', bonus: 750 });
+    if (stageStats.propsSmashed >= 2) challenges.push({ label: 'PROP SMASHER', bonus: 500 });
+
+    const chalTotal = challenges.reduce((acc, c) => acc + c.bonus, 0);
+    stageStats.clearBonus = clearBonus;
+    stageStats.hpBonus = hpBonus;
+    stageStats.challenges = challenges;
+
+    score += clearBonus + hpBonus + chalTotal;
+    persistLocalHighScore();
+    sfx.stopBGM();
+
+    if (stageIndex < STAGES.length - 1) {
+      gameState = 'stageclear';
+      sfx.playStageClear();
+    } else {
+      gameState = 'victory';
+      sfx.playEncoreSpecial();
+      recordKpopDemonHuntersScore(score);
+    }
+  }
+
   function updateWaves(dt) {
-    const cfg = WAVE_CONFIG[waveIndex];
+    const st = getCurrentStage();
+    const zones = st.zones;
+    const cfg = zones[waveIndex];
     if (!cfg) return;
 
     if (wavePhase === 'spawn') {
@@ -2398,7 +3213,7 @@
       if (waveTimer <= 0) {
         const group = cfg.subWaves[waveSubIndex];
         for (const sp of group) {
-          spawnEnemy(sp.type, sp.x, sp.y);
+          spawnEnemy(sp.type, sp.x, sp.y, !!sp.skyDrop);
         }
         if (waveSubIndex === 0) {
           bannerText = cfg.name;
@@ -2414,41 +3229,33 @@
           wavePhase = 'spawn';
           waveTimer = 0.55;
         } else {
-          // Entire Wave cleared!
-          if (waveIndex < WAVE_CONFIG.length - 1) {
-            // Drop guaranteed Ramyeon before Mini-Boss!
-            if (waveIndex === 1) {
+          if (waveIndex < zones.length - 1) {
+            const nextZone = zones[waveIndex + 1];
+            if (nextZone.isBossZone && props.filter(p => p.kind === 'cart').length === 0) {
               items.push({ kind: 'ramyeon', x: camX + W * 0.65, y: 202, z: 24, vz: 100, life: 25 });
               addFloatText('RAMYEON DROP!', camX + W * 0.65, 160, '#ffe066', 1);
             }
             waveIndex++;
             waveSubIndex = 0;
             wavePhase = 'go';
-            targetCamX = WAVE_CONFIG[waveIndex].lockX;
+            targetCamX = zones[waveIndex].lockX;
             sfx.playConfirm();
           } else {
-            // MINI-BOSS DEFEATED -> VICTORY!
-            wavePhase = 'done';
-            score += 2000 + player.hp * 15;
-            persistLocalHighScore();
-            gameState = 'victory';
-            sfx.stopBGM();
-            sfx.playEncoreSpecial();
-            recordKpopDemonHuntersScore(score);
+            finishCurrentStage();
           }
         }
       }
     } else if (wavePhase === 'go') {
-      // Allow camera to advance smoothly as player walks right
       const desiredCam = Math.max(camX, Math.min(targetCamX, player.x - 160));
       camX += (desiredCam - camX) * Math.min(1, dt * 6);
       if (camX >= targetCamX - 6) {
         camX = targetCamX;
-        if (waveIndex === 2) {
+        const nextCfg = zones[waveIndex];
+        if (nextCfg && nextCfg.isBossZone) {
           wavePhase = 'warning';
           waveTimer = 1.9;
           bannerText = 'WARNING!!';
-          bannerSub = 'MINI-BOSS: SAJA OVERLORD';
+          bannerSub = nextCfg.warningSub || nextCfg.subtitle;
           bannerTimer = 2.0;
           sfx.playBossWarning();
           sfx.startBGM('boss');
@@ -2467,7 +3274,147 @@
   }
 
   function updateWorldObjects(dt) {
-    // Pickups
+    const st = getCurrentStage();
+    if (st.autoScrollSpeed > 0) {
+      stageScrollOffset += st.autoScrollSpeed * dt;
+    }
+
+    // Props flash decay
+    for (const pr of props) {
+      if (pr.flash > 0) pr.flash -= dt;
+    }
+
+    // Two-Way Environmental Hazards (Steam Vents / Rift Lasers & Snap Electric Grates)
+    for (const hz of hazards) {
+      if (hz.kind === 'steam') {
+        hz.timer = (hz.timer + dt) % 3.9; // 2.0s off -> 0.6s telegraph -> 1.3s active
+        if (hz.timer < 2.0) hz.state = 'idle';
+        else if (hz.timer < 2.6) hz.state = 'telegraph';
+        else hz.state = 'active';
+
+        if (hz.state === 'active') {
+          if (Math.random() < 0.45) {
+            spawnParticles(hz.x + (Math.random() - 0.5) * 14, hz.y, 10, st.theme === 'throne' ? '#ff42b3' : '#d6f5ff', 1, 70);
+          }
+          if (player && Math.abs(player.x - hz.x) < 18 && Math.abs(player.y - hz.y) < 15 && player.z < 20) {
+            damagePlayer(12, player.x >= hz.x ? 1 : -1, true);
+          }
+          // Two-way: also hurts enemies knocked into the vent/laser!
+          for (const e of enemies) {
+            if (e.state === 'ko' || e.state === 'spawn' || e.hazardCooldown > 0) continue;
+            if (Math.abs(e.x - hz.x) < 18 && Math.abs(e.y - hz.y) < 15 && e.z < 20) {
+              e.hazardCooldown = 0.85;
+              damageEnemy(e, 22, 95, 110, e.x >= hz.x ? 1 : -1, true, false);
+            }
+          }
+        }
+      } else if (hz.kind === 'plank') {
+        if (hz.state === 'idle') {
+          let triggered = false;
+          if (player && Math.abs(player.x - hz.x) < 16 && Math.abs(player.y - hz.y) < 12 && player.z < 6) triggered = true;
+          for (const e of enemies) {
+            if (e.state !== 'ko' && Math.abs(e.x - hz.x) < 16 && Math.abs(e.y - hz.y) < 12 && e.z < 6) triggered = true;
+          }
+          if (triggered) {
+            hz.state = 'armed';
+            hz.timer = 0.42;
+            sfx.playSelect();
+          }
+        } else if (hz.state === 'armed') {
+          hz.timer -= dt;
+          if (hz.timer <= 0) {
+            hz.state = 'snap';
+            hz.timer = 0.25;
+            sfx.playZap();
+            spawnParticles(hz.x, hz.y, 8, '#ffe066', 10, 100);
+            if (player && Math.abs(player.x - hz.x) < 20 && Math.abs(player.y - hz.y) < 15 && player.z < 16) {
+              player.vz = 155;
+              damagePlayer(14, player.x >= hz.x ? 1 : -1, true);
+            }
+            for (const e of enemies) {
+              if (e.state === 'ko' || e.state === 'spawn') continue;
+              if (Math.abs(e.x - hz.x) < 20 && Math.abs(e.y - hz.y) < 15 && e.z < 16) {
+                damageEnemy(e, 28, 110, 150, e.x >= hz.x ? 1 : -1, true, false);
+              }
+            }
+          }
+        } else if (hz.state === 'snap') {
+          hz.timer -= dt;
+          if (hz.timer <= 0) {
+            hz.state = 'cooldown';
+            hz.timer = 1.6;
+          }
+        } else if (hz.state === 'cooldown') {
+          hz.timer -= dt;
+          if (hz.timer <= 0) hz.state = 'idle';
+        }
+      }
+    }
+
+    // Stage 3 Sky-Express: Telegraphed High-Speed Hover-Drone Lane Hazards
+    if (st.hasLaneDrones && wavePhase === 'fight') {
+      laneDroneTimer -= dt;
+      if (laneDroneTimer <= 0) {
+        laneDroneTimer = 4.4;
+        const laneY = Math.max(FLOOR_MIN_Y + 10, Math.min(FLOOR_MAX_Y - 10, player ? player.y : 200));
+        laneDrones.push({
+          x: camX + W + 34,
+          y: laneY,
+          vx: -310,
+          warnTimer: 0.85,
+          active: false,
+          hitPlayer: false,
+          hitEnemyIds: new Set(),
+        });
+        sfx.playSelect();
+      }
+    }
+    for (let i = laneDrones.length - 1; i >= 0; i--) {
+      const dr = laneDrones[i];
+      if (!dr.active) {
+        dr.warnTimer -= dt;
+        dr.x = camX + W + 34;
+        if (dr.warnTimer <= 0) {
+          dr.active = true;
+          sfx.playSwing(3);
+        }
+      } else {
+        dr.x += dr.vx * dt;
+        if (Math.random() < 0.5) spawnParticles(dr.x + 12, dr.y, 16, '#ff45b5', 1, 45);
+        if (!dr.hitPlayer && player && Math.abs(player.x - dr.x) < 20 && Math.abs(player.y - dr.y) < 14 && player.z < 20) {
+          dr.hitPlayer = true;
+          damagePlayer(14, -1, true);
+        }
+        // Two-way: speeding drones also bowl over enemies!
+        for (const e of enemies) {
+          if (e.state === 'ko' || e.state === 'spawn' || dr.hitEnemyIds.has(e.id)) continue;
+          if (Math.abs(e.x - dr.x) < 22 && Math.abs(e.y - dr.y) < 15 && e.z < 22) {
+            dr.hitEnemyIds.add(e.id);
+            damageEnemy(e, 24, 130, 120, -1, true, false);
+          }
+        }
+        if (dr.x < camX - 48) laneDrones.splice(i, 1);
+      }
+    }
+
+    // Enemy Cursed Music Projectiles
+    for (let i = projectiles.length - 1; i >= 0; i--) {
+      const pj = projectiles[i];
+      pj.life -= dt;
+      pj.x += pj.vx * dt;
+      pj.y += pj.vy * dt;
+      if (player && Math.abs(player.x - pj.x) < 16 && Math.abs(player.y - pj.y) < 14 && Math.abs(player.z - (pj.z - 14)) < 22) {
+        damagePlayer(pj.dmg, pj.vx >= 0 ? 1 : -1);
+        spawnParticles(pj.x, pj.y, pj.z, pj.color, 8, 85);
+        projectiles.splice(i, 1);
+        continue;
+      }
+      if (pj.life <= 0 || pj.x < camX - 30 || pj.x > camX + W + 30) {
+        projectiles.splice(i, 1);
+      }
+    }
+
+    // Pickups (Gimbap, Ramyeon, Encore Lightstick Star)
     for (let i = items.length - 1; i >= 0; i--) {
       const it = items[i];
       it.life -= dt;
@@ -2477,11 +3424,19 @@
         if (it.z <= 0) { it.z = 0; it.vz = 0; }
       }
       if (Math.abs(player.x - it.x) < 24 && Math.abs(player.y - it.y) < 18 && player.z < 20) {
-        const heal = it.kind === 'ramyeon' ? 45 : 28;
-        player.hp = Math.min(player.maxHp, player.hp + heal);
-        score += 200;
-        sfx.playPickup();
-        addFloatText('+' + heal + ' HP!', it.x, it.y - 26, '#5eff8f', 1);
+        if (it.kind === 'star') {
+          addEncore(35);
+          score += 350;
+          sfx.playPickup();
+          addFloatText('+35 ENCORE!', it.x, it.y - 26, '#5ef6ff', 1);
+        } else {
+          const heal = it.kind === 'ramyeon' ? 50 : 28;
+          player.hp = Math.min(player.maxHp, player.hp + heal);
+          score += 200;
+          sfx.playPickup();
+          addFloatText('+' + heal + ' HP!', it.x, it.y - 26, '#5eff8f', 1);
+        }
+        persistLocalHighScore();
         spawnParticles(it.x, it.y, 12, '#ffe066', 10, 80);
         items.splice(i, 1);
         continue;
@@ -2567,6 +3522,7 @@
   }
 
   function drawWorld() {
+    const st = getCurrentStage();
     ctx.save();
     // Apply screen shake
     if (shakeTime > 0) {
@@ -2575,7 +3531,51 @@
       ctx.translate(sx, sy);
     }
 
-    drawBackground(camX, time, encoreTimer > 0 ? Math.min(1, encoreTimer * 1.4) : 0);
+    drawBackground(camX, time, encoreTimer > 0 ? Math.min(1, encoreTimer * 1.4) : 0, st.theme);
+
+    // Draw Floor Hazards (Steam Vents / Rift Lasers & Snap Electric Grates)
+    for (const hz of hazards) {
+      const sx = Math.round(hz.x - camX);
+      const sy = Math.round(hz.y);
+      if (sx < -40 || sx > W + 40) continue;
+      if (hz.kind === 'steam') {
+        ctx.fillStyle = '#180a2b';
+        ctx.fillRect(sx - 14, sy - 6, 28, 12);
+        ctx.strokeStyle = hz.state === 'active' ? '#ff3b6b' : hz.state === 'telegraph' ? '#ffe066' : '#5e4799';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(sx - 14, sy - 6, 28, 12);
+        // Vent bars
+        ctx.fillStyle = '#381e66';
+        for (let bx = -10; bx <= 10; bx += 5) ctx.fillRect(sx + bx, sy - 4, 2, 8);
+        if (hz.state === 'telegraph' && Math.floor(time * 16) % 2 === 0) {
+          drawText('!', sx, sy - 20, '#ffe066', 1, 'center');
+          ctx.fillStyle = 'rgba(255, 224, 102, 0.5)';
+          ctx.fillRect(sx - 12, sy - 10, 24, 10);
+        } else if (hz.state === 'active') {
+          const isThrone = st.theme === 'throne';
+          ctx.fillStyle = isThrone ? 'rgba(255, 51, 102, 0.72)' : 'rgba(210, 248, 255, 0.75)';
+          ctx.fillRect(sx - 10, sy - 38, 20, 38);
+          ctx.fillStyle = isThrone ? '#ffe066' : '#ffffff';
+          ctx.fillRect(sx - 4, sy - 36, 8, 36);
+        }
+      } else if (hz.kind === 'plank') {
+        ctx.fillStyle = hz.state === 'armed' ? '#ffe066' : hz.state === 'snap' ? '#ff3b6b' : '#4a2b78';
+        ctx.fillRect(sx - 15, sy - 6, 30, 12);
+        ctx.strokeStyle = '#5ef6ff';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(sx - 15, sy - 6, 30, 12);
+        // Cracked caution stripes
+        ctx.fillStyle = '#18082b';
+        ctx.fillRect(sx - 9, sy - 5, 4, 10);
+        ctx.fillRect(sx + 5, sy - 5, 4, 10);
+        if (hz.state === 'snap') {
+          ctx.fillStyle = '#5ef6ff';
+          ctx.fillRect(sx - 14, sy - 26, 28, 22);
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(sx - 6, sy - 24, 12, 18);
+        }
+      }
+    }
 
     // Draw floor Rifts
     for (const rf of rifts) {
@@ -2604,21 +3604,63 @@
       ctx.restore();
     }
 
-    // Depth-sorted renderables (items, enemies, summoned idols, player)
+    // Depth-sorted renderables (props, items, enemies, drones, projectiles, summoned idols, player)
     const drawList = [];
+    for (const pr of props) drawList.push({ y: pr.y, kind: 'prop', obj: pr });
     for (const it of items) drawList.push({ y: it.y, kind: 'item', obj: it });
     for (const e of enemies) drawList.push({ y: e.y, kind: 'enemy', obj: e });
+    for (const dr of laneDrones) if (dr.active) drawList.push({ y: dr.y, kind: 'drone', obj: dr });
+    for (const pj of projectiles) drawList.push({ y: pj.y, kind: 'proj', obj: pj });
     for (const m of encoreMembers) drawList.push({ y: m.y, kind: 'encoreMember', obj: m });
     if (player) drawList.push({ y: player.y, kind: 'player', obj: player });
     drawList.sort((a, b) => a.y - b.y);
 
     for (const entry of drawList) {
-      if (entry.kind === 'item') {
+      if (entry.kind === 'prop') {
+        const pr = entry.obj;
+        const sx = Math.round(pr.x - camX);
+        const sy = Math.round(pr.y);
+        if (sx < -40 || sx > W + 40) continue;
+        ctx.fillStyle = 'rgba(20, 6, 38, 0.5)';
+        ctx.fillRect(sx - 12, sy - 3, 24, 6);
+        const img = SPRITES.props[pr.kind];
+        if (img) {
+          drawSprite(img, sx + (pr.flash > 0 ? 1 : 0), sy + 2, 1, 0.5, 1);
+        }
+        if (pr.kind === 'hydrant') {
+          drawText('BOOM', sx, sy - 28, Math.floor(time * 6) % 2 === 0 ? '#ffe066' : '#ff45b5', 1, 'center');
+        }
+      } else if (entry.kind === 'drone') {
+        const dr = entry.obj;
+        const sx = Math.round(dr.x - camX);
+        const sy = Math.round(dr.y);
+        ctx.fillStyle = 'rgba(20, 6, 38, 0.45)';
+        ctx.fillRect(sx - 14, sy - 3, 28, 6);
+        // Speeding Neon Demon Hover-Drone
+        ctx.fillStyle = '#240b42';
+        ctx.fillRect(sx - 14, sy - 22, 28, 12);
+        ctx.fillStyle = '#ff3b6b';
+        ctx.fillRect(sx - 12, sy - 20, 24, 8);
+        ctx.fillStyle = '#ffe066';
+        ctx.fillRect(sx - 14, sy - 18, 6, 4);
+        ctx.fillStyle = '#5ef6ff';
+        ctx.fillRect(sx + 10, sy - 19, 10, 6);
+      } else if (entry.kind === 'proj') {
+        const pj = entry.obj;
+        const sx = Math.round(pj.x - camX);
+        const sy = Math.round(pj.y);
+        ctx.fillStyle = 'rgba(20, 6, 38, 0.4)';
+        ctx.fillRect(sx - 5, sy - 2, 10, 4);
+        // Glowing Cursed Music Orb
+        ctx.fillStyle = pj.color;
+        ctx.fillRect(sx - 6, sy - pj.z - 6, 12, 12);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(sx - 3, sy - pj.z - 3, 6, 6);
+      } else if (entry.kind === 'item') {
         const it = entry.obj;
         const sx = Math.round(it.x - camX);
         const sy = Math.round(it.y);
         const bob = Math.round(Math.sin(time * 7) * 2);
-        // Shadow
         ctx.fillStyle = 'rgba(25, 8, 44, 0.45)';
         ctx.fillRect(sx - 10, sy - 2, 20, 4);
         const img = SPRITES.items[it.kind];
@@ -2629,7 +3671,6 @@
         const sy = Math.round(m.y);
         ctx.save();
         ctx.globalAlpha = Math.min(1, m.life * 2);
-        // Neon floor spotlight ring
         ctx.fillStyle = 'rgba(94, 246, 255, 0.45)';
         ctx.fillRect(sx - 18, sy - 4, 36, 8);
         const img = SPRITES.hunters[m.def.id].special;
@@ -2639,56 +3680,46 @@
         const e = entry.obj;
         const sx = Math.round(e.x - camX);
         const sy = Math.round(e.y);
-        const isBoss = e.type === 'boss';
-        const sw = isBoss ? 24 : 14;
-        // Ground shadow
+        const sw = e.isBoss ? 24 : e.type === 'heavy' ? 18 : 14;
         ctx.fillStyle = 'rgba(26, 8, 48, 0.45)';
         ctx.fillRect(sx - sw, sy - 3, sw * 2, 6);
-        // Boss enraged magenta aura
-        if (isBoss && e.enraged) {
+        if (e.isBoss && e.enraged) {
           ctx.fillStyle = 'rgba(255, 46, 147, 0.32)';
           ctx.fillRect(sx - 24, sy - 64 - e.z, 48, 64);
         }
-        // Blink on KO
         if (e.state === 'ko' && Math.floor(time * 24) % 2 === 0) continue;
         const img = getEnemySprite(e);
-        drawSprite(img, sx, sy - e.z + 4, e.facing, 0.5, isBoss ? 69 / 76 : 50 / 56);
+        drawSprite(img, sx, sy - e.z + 4, e.facing, 0.5, e.isBoss ? 69 / 76 : 50 / 56);
 
-        // Telegraph "!" indicator during windup
         if (e.state === 'windup') {
-          drawText('!', sx, sy - e.z - (isBoss ? 78 : 54), '#ffe066', 2, 'center', '#d91656');
+          drawText('!', sx, sy - e.z - (e.isBoss ? 78 : 54), '#ffe066', 2, 'center', '#d91656');
         }
-        // Small enemy HP bar when damaged (non-boss)
-        if (!isBoss && e.hp < e.maxHp && e.hp > 0) {
-          const bw = 26;
+        if (!e.isBoss && e.hp < e.maxHp && e.hp > 0) {
+          const bw = e.type === 'heavy' ? 32 : 26;
           ctx.fillStyle = '#19082c';
-          ctx.fillRect(sx - bw / 2 - 1, sy - e.z - 50, bw + 2, 5);
-          ctx.fillStyle = '#ff3b6b';
-          ctx.fillRect(sx - bw / 2, sy - e.z - 49, Math.max(1, Math.round(bw * (e.hp / e.maxHp))), 3);
+          ctx.fillRect(sx - bw / 2 - 1, sy - e.z - 52, bw + 2, 5);
+          ctx.fillStyle = e.type === 'heavy' ? '#ff8833' : '#ff3b6b';
+          ctx.fillRect(sx - bw / 2, sy - e.z - 51, Math.max(1, Math.round(bw * (e.hp / e.maxHp))), 3);
         }
       } else if (entry.kind === 'player') {
         const p = entry.obj;
         const sx = Math.round(p.x - camX);
         const sy = Math.round(p.y);
-        // Shadow scales smaller when jumping high
         const shW = Math.max(8, Math.round(15 - p.z * 0.08));
         ctx.fillStyle = 'rgba(26, 8, 48, 0.48)';
         ctx.fillRect(sx - shW, sy - 3, shW * 2, 6);
 
-        // Encore Ready subtle cyan aura under feet
         if (p.encore >= 100 && Math.floor(time * 8) % 2 === 0) {
           ctx.strokeStyle = '#5ef6ff';
           ctx.lineWidth = 1;
           ctx.strokeRect(sx - 16, sy - 4, 32, 8);
         }
 
-        // Invulnerability blink
         if (p.invuln > 0 && p.state !== 'special' && Math.floor(time * 18) % 2 === 0) continue;
 
         const img = getHunterSprite(p);
         drawSprite(img, sx, sy - p.z + 4, p.facing, 32 / 72, 50 / 56);
 
-        // Comic speech bubble during Encore Special!
         if (encoreTimer > 0.25) {
           const bx = Math.max(86, Math.min(W - 86, sx));
           const by = Math.max(54, sy - p.z - 66);
@@ -2700,6 +3731,18 @@
           ctx.strokeRect(bx - bw / 2, by - 12, bw, 16);
           drawText(encoreBubbleText, bx, by - 7, '#a81c7e', 1, 'center', null);
         }
+      }
+    }
+
+    // Stage 3 Lane Drone Right-Edge Warning Markers
+    for (const dr of laneDrones) {
+      if (!dr.active && Math.floor(time * 14) % 2 === 0) {
+        ctx.fillStyle = 'rgba(217, 22, 86, 0.85)';
+        ctx.fillRect(W - 44, Math.round(dr.y) - 12, 38, 18);
+        ctx.strokeStyle = '#ffe066';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(W - 44, Math.round(dr.y) - 12, 38, 18);
+        drawText('<!>', W - 25, Math.round(dr.y) - 6, '#ffe066', 1, 'center');
       }
     }
 
@@ -2732,7 +3775,7 @@
       drawText(ft.text, ft.x - camX, ft.y, ft.color, ft.scale, 'center');
     }
 
-    drawForegroundParapet(camX);
+    drawForegroundParapet(camX, st.theme);
     ctx.restore();
   }
 
@@ -2801,15 +3844,17 @@
       drawText('PRESS [L/C] ENCORE!', 104, 42, readyPulse ? '#ffe066' : '#5ef6ff', 1, 'center');
     }
 
-    // 2) Top-Center Wave Indicator
-    const waveLabel = waveIndex === 2 ? 'MINI-BOSS' : `WAVE ${waveIndex + 1}/2`;
+    // 2) Top-Center Stage & Wave Indicator
+    const st = getCurrentStage();
+    const curZone = st.zones[waveIndex] || st.zones[0];
+    const waveLabel = `STG ${stageIndex + 1}/4 ${curZone.isBossZone ? 'BOSS' : 'W' + (waveIndex + 1)}`;
     ctx.fillStyle = '#200b3d';
-    ctx.fillRect(216, 5, 114, 22);
+    ctx.fillRect(212, 5, 126, 22);
     ctx.fillStyle = '#ff42b3';
-    ctx.fillRect(216, 5, 114, 2);
-    drawText(waveLabel, 273, 10, '#ffe066', 1, 'center');
+    ctx.fillRect(212, 5, 126, 2);
+    drawText(waveLabel, 275, 10, '#ffe066', 1, 'center');
     const rem = enemies.filter(e => e.state !== 'ko').length;
-    drawText('DEMONS:' + rem, 273, 19, '#d8c2ff', 1, 'center');
+    drawText('DEMONS:' + rem, 275, 19, '#d8c2ff', 1, 'center');
 
     // 3) Top-Right Dynamic COMBO METER
     if (comboCount > 0) {
@@ -2825,7 +3870,6 @@
       drawText(comboCount + ' HIT!', 413, 11 + bounce, '#ffe066', 2, 'center', '#6e1152');
       drawText(rank, 413, 27 + bounce, '#5ef6ff', 1, 'center');
 
-      // Combo decay bar
       const pct = Math.max(0, comboTimer / 2.6);
       ctx.fillStyle = '#ff42b3';
       ctx.fillRect(356, 34 + bounce, Math.round(114 * pct), 2);
@@ -2833,15 +3877,16 @@
       drawText('HI ' + String(highScore).padStart(7, '0'), 472, 10, '#bfa2db', 1, 'right');
     }
 
-    // 4) Mini-Boss Health Bar (Bottom Center)
-    const boss = enemies.find(e => e.type === 'boss' && e.state !== 'ko');
-    if (boss) {
+    // 4) Boss Health Bars (Supports Single Boss & Stage 2 Duo Boss!)
+    const activeBosses = enemies.filter(e => e.isBoss && e.state !== 'ko');
+    if (activeBosses.length === 1) {
+      const boss = activeBosses[0];
       const bx = 90, by = 248, bw = 300;
       ctx.fillStyle = '#18062b';
       ctx.fillRect(bx - 2, by - 11, bw + 4, 20);
       ctx.fillStyle = '#ff2e93';
       ctx.fillRect(bx - 2, by - 11, bw + 4, 2);
-      drawText('MINI-BOSS: ' + boss.name, bx + 4, by - 8, '#ff85d0', 1, 'left');
+      drawText('BOSS: ' + boss.name, bx + 4, by - 8, '#ff85d0', 1, 'left');
       ctx.fillStyle = '#381036';
       ctx.fillRect(bx, by + 1, bw, 6);
       const bFill = Math.round(bw * Math.max(0, boss.hp / boss.maxHp));
@@ -2849,6 +3894,22 @@
       ctx.fillRect(bx, by + 1, bFill, 6);
       ctx.fillStyle = '#ffb8e6';
       ctx.fillRect(bx, by + 1, bFill, 2);
+    } else if (activeBosses.length >= 2) {
+      activeBosses.slice(0, 2).forEach((boss, idx) => {
+        const bw = 204;
+        const bx = idx === 0 ? 28 : 248;
+        const by = 248;
+        ctx.fillStyle = '#18062b';
+        ctx.fillRect(bx - 2, by - 11, bw + 4, 20);
+        ctx.fillStyle = idx === 0 ? '#5ef6ff' : '#ff2e93';
+        ctx.fillRect(bx - 2, by - 11, bw + 4, 2);
+        drawText(boss.name, bx + 4, by - 8, idx === 0 ? '#5ef6ff' : '#ff85d0', 1, 'left');
+        ctx.fillStyle = '#381036';
+        ctx.fillRect(bx, by + 1, bw, 6);
+        const bFill = Math.round(bw * Math.max(0, boss.hp / boss.maxHp));
+        ctx.fillStyle = boss.enraged ? '#ff2468' : (idx === 0 ? '#38bdf8' : '#d946ef');
+        ctx.fillRect(bx, by + 1, bFill, 6);
+      });
     }
 
     // 5) Classic Arcade Blinking "GO ->" Prompt Between Waves
@@ -2875,22 +3936,24 @@
   }
 
   function drawTitleScreen() {
-    drawBackground(180 + Math.sin(time * 0.4) * 40, time, 0.25);
+    const previewStage = STAGES[selectedStageIdx] || STAGES[0];
+    if (previewStage.autoScrollSpeed > 0) stageScrollOffset += 85 * 0.016;
+    drawBackground(180 + Math.sin(time * 0.4) * 40, time, 0.25, previewStage.theme);
 
     // Title Banner
-    drawText('HUNTRIX', W / 2, 18, '#ff45b5', 4, 'center', '#1b0736');
-    drawText('HUNTRIX', W / 2, 16, '#ffe066', 4, 'center', null);
-    drawText('K-POP DEMON HUNTERS  16-BIT', W / 2, 50, '#5ef6ff', 1, 'center');
+    drawText('HUNTRIX', W / 2, 12, '#ff45b5', 4, 'center', '#1b0736');
+    drawText('HUNTRIX', W / 2, 10, '#ffe066', 4, 'center', null);
+    drawText('K-POP DEMON HUNTERS  -  4-STAGE ARCADE EDITION', W / 2, 43, '#5ef6ff', 1, 'center');
 
     // Character Select Cards
-    drawText('SELECT YOUR HUNTER  [A/D OR ARROWS]', W / 2, 68, '#ffffff', 1, 'center');
+    drawText('HUNTER [A/D]   |   START STAGE [W/S]', W / 2, 56, '#ffffff', 1, 'center');
 
     HUNTERS.forEach((h, idx) => {
       const sel = idx === selectedHunterIdx;
       const cx = 96 + idx * 144;
-      const cy = 84;
+      const cy = 69;
       const cw = 124;
-      const ch = 122;
+      const ch = 114;
 
       ctx.fillStyle = sel ? 'rgba(64, 22, 117, 0.92)' : 'rgba(24, 10, 48, 0.82)';
       ctx.fillRect(cx - cw / 2, cy, cw, ch);
@@ -2898,15 +3961,13 @@
       ctx.lineWidth = sel ? 2 : 1;
       ctx.strokeRect(cx - cw / 2, cy, cw, ch);
 
-      // Animated sprite preview!
       const pose = sel ? (Math.floor(time * 6) % 2 === 0 ? 'atk2' : 'walk0') : 'idle0';
       const img = SPRITES.hunters[h.id][pose];
-      drawSprite(img, cx, cy + 68, 1, 32 / 72, 50 / 56);
+      drawSprite(img, cx, cy + 62, 1, 32 / 72, 50 / 56);
 
-      drawText(h.name, cx, cy + 74, sel ? '#ffe066' : '#ffffff', 2, 'center');
-      drawText(h.title, cx, cy + 92, h.accent, 1, 'center');
+      drawText(h.name, cx, cy + 68, sel ? '#ffe066' : '#ffffff', 2, 'center');
+      drawText(h.title, cx, cy + 85, h.accent, 1, 'center');
 
-      // Mini stat bars
       const drawStat = (lbl, val, sy, col) => {
         drawText(lbl, cx - 54, sy, '#c9b5ea', 1, 'left');
         ctx.fillStyle = '#140626';
@@ -2914,25 +3975,77 @@
         ctx.fillStyle = col;
         ctx.fillRect(cx - 26, sy + 1, Math.round(76 * val), 4);
       };
-      drawStat('PWR', h.power / 1.2, cy + 102, '#ff59b8');
-      drawStat('SPD', h.speed / 145, cy + 111, '#5ef6ff');
+      drawStat('PWR', h.power / 1.2, cy + 95, '#ff59b8');
+      drawStat('SPD', h.speed / 145, cy + 104, '#5ef6ff');
+    });
+
+    // 4-Stage Selector Bar (Click or UP/DOWN)
+    STAGES.forEach((st, idx) => {
+      const sx = 34 + idx * 105;
+      const sy = 191;
+      const sw = 98;
+      const sh = 20;
+      const active = idx === selectedStageIdx;
+      ctx.fillStyle = active ? '#4a1b7a' : 'rgba(20, 8, 42, 0.88)';
+      ctx.fillRect(sx, sy, sw, sh);
+      ctx.strokeStyle = active ? '#ffe066' : '#5d3a96';
+      ctx.lineWidth = active ? 2 : 1;
+      ctx.strokeRect(sx, sy, sw, sh);
+      drawText(st.shortName, sx + sw / 2, sy + 7, active ? '#ffe066' : '#c9b5ea', 1, 'center');
     });
 
     // Blinking Press Start Prompt
     const blink = Math.floor(time * 3) % 2 === 0;
-    ctx.fillStyle = 'rgba(22, 7, 44, 0.9)';
-    ctx.fillRect(54, 218, 372, 38);
+    ctx.fillStyle = 'rgba(22, 7, 44, 0.92)';
+    ctx.fillRect(34, 218, 412, 38);
     ctx.fillStyle = '#5ef6ff';
-    ctx.fillRect(54, 218, 372, 2);
+    ctx.fillRect(34, 218, 412, 2);
     drawText(blink ? 'PRESS [ENTER] OR [J] TO START' : '>>> SHOWTIME! <<<', W / 2, 226, '#ffe066', 1, 'center');
-    drawText('2 WAVES + MINI-BOSS | 3-HIT COMBO | ENCORE SPECIAL', W / 2, 241, '#d8c2ff', 1, 'center');
+    drawText('ROOFTOP | HONGDAE | SKY-EXPRESS | HONMOON THRONE', W / 2, 241, '#d8c2ff', 1, 'center');
+  }
+
+  function drawStageClearScreen() {
+    ctx.fillStyle = 'rgba(14, 5, 30, 0.82)';
+    ctx.fillRect(0, 0, W, H);
+
+    const boxX = 64, boxY = 30, boxW = 352, boxH = 208;
+    ctx.fillStyle = '#230b42';
+    ctx.fillRect(boxX, boxY, boxW, boxH);
+    ctx.strokeStyle = '#5ef6ff';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(boxX, boxY, boxW, boxH);
+
+    const st = getCurrentStage();
+    const nextSt = STAGES[stageIndex + 1];
+    drawText('STAGE ' + (stageIndex + 1) + ' CLEAR!', W / 2, 42, '#ffe066', 3, 'center', '#991b6b');
+    drawText(st.name, W / 2, 70, '#5ef6ff', 1, 'center');
+
+    drawText('CLEAR BONUS: +' + stageStats.clearBonus, 94, 92, '#ffffff', 1, 'left');
+    drawText('HP BONUS:    +' + stageStats.hpBonus, 94, 105, '#5eff8f', 1, 'left');
+    drawText('TOTAL SCORE: ' + score, 94, 118, '#ffe066', 1, 'left');
+
+    // Stage Challenges Earned
+    drawText('STAGE CHALLENGES:', 94, 136, '#ff85d0', 1, 'left');
+    if (stageStats.challenges.length === 0) {
+      drawText('- NONE THIS STAGE', 102, 149, '#bfa2db', 1, 'left');
+    } else {
+      stageStats.challenges.forEach((ch, idx) => {
+        drawText('+ ' + ch.label + ' [+' + ch.bonus + ']', 102, 149 + idx * 12, '#5ef6ff', 1, 'left');
+      });
+    }
+
+    if (nextSt) {
+      drawText('NEXT: ' + nextSt.name, W / 2, 194, '#ff69c0', 1, 'center');
+    }
+    const blink = Math.floor(time * 3) % 2 === 0;
+    drawText(blink ? 'PRESS [ENTER] OR [J] FOR NEXT STAGE' : '>>> +50% HP RESTORED <<<', W / 2, 212, '#ffe066', 1, 'center');
   }
 
   function drawOverlayScreen(isVictory) {
     ctx.fillStyle = 'rgba(14, 5, 30, 0.8)';
     ctx.fillRect(0, 0, W, H);
 
-    const boxX = 76, boxY = 38, boxW = 328, boxH = 194;
+    const boxX = 72, boxY = 34, boxW = 336, boxH = 200;
     ctx.fillStyle = '#230b42';
     ctx.fillRect(boxX, boxY, boxW, boxH);
     ctx.strokeStyle = isVictory ? '#ffe066' : '#ff3b6b';
@@ -2940,34 +4053,34 @@
     ctx.strokeRect(boxX, boxY, boxW, boxH);
 
     if (isVictory) {
-      drawText('STAGE CLEAR!!', W / 2, 52, '#ffe066', 3, 'center', '#991b6b');
-      drawText('SEOUL IS SAFE — ENCORE COMPLETE!', W / 2, 82, '#5ef6ff', 1, 'center');
+      drawText('ALL STAGES CLEAR!', W / 2, 46, '#ffe066', 2, 'center', '#991b6b');
+      drawText('SEOUL IS SAFE - HONMOON SEAL RESTORED!', W / 2, 70, '#5ef6ff', 1, 'center');
 
       // Show all 3 HUNTRIX idols celebrating!
       ['mira', 'rumi', 'zoey'].forEach((id, idx) => {
         const pose = Math.floor(time * 5 + idx) % 2 === 0 ? 'special' : 'idle0';
-        drawSprite(SPRITES.hunters[id][pose], 168 + idx * 72, 144, 1, 32 / 72, 50 / 56);
+        drawSprite(SPRITES.hunters[id][pose], 168 + idx * 72, 136, 1, 32 / 72, 50 / 56);
       });
 
-      const rank = score >= 9500 ? 'S' : score >= 6500 ? 'A' : score >= 4000 ? 'B' : 'C';
-      drawText('SCORE: ' + score, 110, 158, '#ffffff', 1, 'left');
-      drawText('MAX COMBO: ' + maxCombo, 110, 170, '#ff85d0', 1, 'left');
-      drawText('DEMONS SLAIN: ' + enemiesDefeated, 110, 182, '#5ef6ff', 1, 'left');
-      drawText('RANK', 330, 155, '#c9b5ea', 1, 'center');
-      drawText(rank, 330, 168, '#ffe066', 3, 'center', '#b82575');
+      const rank = score >= 32000 ? 'S' : score >= 20000 ? 'A' : score >= 11000 ? 'B' : 'C';
+      drawText('SCORE: ' + score, 106, 152, '#ffffff', 1, 'left');
+      drawText('MAX COMBO: ' + maxCombo, 106, 164, '#ff85d0', 1, 'left');
+      drawText('DEMONS SLAIN: ' + enemiesDefeated, 106, 176, '#5ef6ff', 1, 'left');
+      drawText('RANK', 330, 150, '#c9b5ea', 1, 'center');
+      drawText(rank, 330, 164, '#ffe066', 3, 'center', '#b82575');
     } else {
-      drawText('GAME OVER', W / 2, 68, '#ff3b6b', 3, 'center', '#140524');
-      drawText('THE DEMONS CRASHED THE STAGE...', W / 2, 108, '#d8c2ff', 1, 'center');
-      drawText('FINAL SCORE: ' + score, W / 2, 134, '#ffe066', 2, 'center');
-      drawText('MAX COMBO: ' + maxCombo + '   DEMONS SLAIN: ' + enemiesDefeated, W / 2, 162, '#5ef6ff', 1, 'center');
+      drawText('GAME OVER', W / 2, 62, '#ff3b6b', 3, 'center', '#140524');
+      drawText('STOPPED ON ' + getCurrentStage().name, W / 2, 100, '#d8c2ff', 1, 'center');
+      drawText('FINAL SCORE: ' + score, W / 2, 126, '#ffe066', 2, 'center');
+      drawText('MAX COMBO: ' + maxCombo + '   DEMONS SLAIN: ' + enemiesDefeated, W / 2, 156, '#5ef6ff', 1, 'center');
     }
 
     if (scoreSyncStatus) {
-      drawText(scoreSyncStatus, W / 2, 193, '#5ef6ff', 1, 'center');
+      drawText(scoreSyncStatus, W / 2, 194, '#5ef6ff', 1, 'center');
     }
 
     const blink = Math.floor(time * 3) % 2 === 0;
-    drawText(blink ? 'PRESS [ENTER] OR [J] TO PLAY AGAIN' : 'PRESS [K] FOR CHARACTER SELECT', W / 2, 209, '#ffe066', 1, 'center');
+    drawText(blink ? 'PRESS [ENTER] OR [J] TO PLAY AGAIN' : 'PRESS [K] FOR CHARACTER SELECT', W / 2, 212, '#ffe066', 1, 'center');
   }
 
   function drawPauseOverlay() {
@@ -2994,6 +4107,14 @@
       }
       if (justPressed.right) {
         selectedHunterIdx = (selectedHunterIdx + 1) % HUNTERS.length;
+        sfx.playSelect();
+      }
+      if (justPressed.up) {
+        selectedStageIdx = (selectedStageIdx + STAGES.length - 1) % STAGES.length;
+        sfx.playSelect();
+      }
+      if (justPressed.down) {
+        selectedStageIdx = (selectedStageIdx + 1) % STAGES.length;
         sfx.playSelect();
       }
       if (justPressed.confirm || justPressed.attack || justPressed.jump) {
@@ -3029,6 +4150,14 @@
       drawWorld();
       drawHUD();
       drawPauseOverlay();
+    } else if (gameState === 'stageclear') {
+      if (justPressed.confirm || justPressed.attack || justPressed.jump) {
+        sfx.playConfirm();
+        loadStage(stageIndex + 1, false);
+      }
+      drawWorld();
+      drawHUD();
+      drawStageClearScreen();
     } else if (gameState === 'victory' || gameState === 'gameover') {
       if (justPressed.confirm || justPressed.attack) {
         sfx.playConfirm();
@@ -3046,14 +4175,14 @@
     requestAnimationFrame(step);
   }
 
-  // Allow clicking directly on canvas in title screen to select hunter or start
+  // Allow clicking directly on canvas in title / stageclear / end screens
   canvas.addEventListener('click', (e) => {
     sfx.init();
     const rect = canvas.getBoundingClientRect();
     const mx = ((e.clientX - rect.left) / rect.width) * W;
     const my = ((e.clientY - rect.top) / rect.height) * H;
     if (gameState === 'title') {
-      if (my >= 80 && my <= 208) {
+      if (my >= 68 && my <= 184) {
         const idx = Math.floor((mx - 24) / 144);
         if (idx >= 0 && idx < HUNTERS.length) {
           if (selectedHunterIdx === idx) {
@@ -3064,10 +4193,19 @@
             sfx.playSelect();
           }
         }
-      } else if (my > 210) {
+      } else if (my >= 188 && my <= 214) {
+        const sIdx = Math.floor((mx - 34) / 105);
+        if (sIdx >= 0 && sIdx < STAGES.length) {
+          selectedStageIdx = sIdx;
+          sfx.playSelect();
+        }
+      } else if (my > 215) {
         sfx.playConfirm();
         startNewGame();
       }
+    } else if (gameState === 'stageclear') {
+      sfx.playConfirm();
+      loadStage(stageIndex + 1, false);
     } else if (gameState === 'victory' || gameState === 'gameover') {
       sfx.playConfirm();
       startNewGame();
