@@ -36,7 +36,7 @@
     <!-- Custom Styles -->
     <link href="./css/styles.css" rel="stylesheet">
 </head>
-<body class="bg-neon-dark text-gray-100 font-sans min-h-screen relative overflow-x-hidden flex flex-col justify-between">
+<body class="bg-neon-dark text-gray-100 font-sans min-h-screen relative overflow-x-clip flex flex-col justify-between">
     <!-- Skip to main content -->
     <a href="#main-content" class="sr-only focus:not-sr-only">Skip to main content</a>
 
@@ -77,13 +77,28 @@
             </a>
 
             <!-- Desktop Nav Links -->
-            <nav class="hidden md:flex items-center gap-8 font-heading text-lg font-bold tracking-wider" aria-label="Primary">
-                <ul class="flex items-center gap-8">
+            <nav class="hidden md:flex items-center gap-6 lg:gap-8 font-heading text-lg font-bold tracking-wider" aria-label="Primary">
+                <ul class="flex items-center gap-6 lg:gap-8">
                     <li><a href="#hero" class="hover:text-neon-cyan transition-colors">HOME</a></li>
                     <li><a href="#arcade" class="hover:text-neon-pink transition-colors">ARCADE ROOM</a></li>
                     <li><a href="#catalog" class="hover:text-neon-cyan transition-colors">GAMES VAULT</a></li>
                     <li><a href="#leaderboard" class="hover:text-neon-pink transition-colors">LEADERBOARD</a></li>
                 </ul>
+                <!-- Option 1: Horizontal Top Navbar Genre Quick-Select Pills -->
+                <div class="hidden xl:flex items-center gap-1.5 pl-4 border-l border-neon-cyan/30 font-arcade text-[9px]" role="navigation" aria-label="Primary Genre Navigation">
+                    <a href="#catalog" data-genre-route="/games/shooter" onclick="selectGenreCategory('shooter', event)" class="genre-nav-pill px-2.5 py-1.5 rounded bg-neon-card/90 border border-neon-cyan/40 text-neon-cyan hover:bg-neon-cyan hover:text-neon-dark hover:shadow-[0_0_12px_rgba(0,243,255,0.6)] transition-all flex items-center gap-1.5" title="Shooter Games (/games/shooter)">
+                        <i class="fa-solid fa-crosshairs genre-icon-shooter" aria-hidden="true"></i>
+                        <span>SHOOTER</span>
+                    </a>
+                    <a href="#catalog" data-genre-route="/games/platformer" onclick="selectGenreCategory('platformer', event)" class="genre-nav-pill px-2.5 py-1.5 rounded bg-neon-card/90 border border-neon-pink/40 text-neon-pink hover:bg-neon-pink hover:text-white hover:shadow-[0_0_12px_rgba(255,0,127,0.6)] transition-all flex items-center gap-1.5" title="Platformer &amp; Action Games (/games/platformer)">
+                        <i class="fa-solid fa-person-running genre-icon-platformer" aria-hidden="true"></i>
+                        <span>PLATFORMER</span>
+                    </a>
+                    <a href="#catalog" data-genre-route="/games/strategy" onclick="selectGenreCategory('strategy', event)" class="genre-nav-pill px-2.5 py-1.5 rounded bg-neon-card/90 border border-neon-yellow/40 text-neon-yellow hover:bg-neon-yellow hover:text-neon-dark hover:shadow-[0_0_12px_rgba(255,230,0,0.6)] transition-all flex items-center gap-1.5" title="Strategy &amp; Logic Games (/games/strategy)">
+                        <i class="fa-solid fa-chess-rook genre-icon-strategy" aria-hidden="true"></i>
+                        <span>STRATEGY</span>
+                    </a>
+                </div>
             </nav>
 
             <!-- Sound & Play Action (Desktop) -->
@@ -153,6 +168,37 @@
                 </ul>
             </nav>
 
+            <!-- Mobile Genre Grid inside Drawer -->
+            <div class="pt-3 border-t border-neon-cyan/20">
+                <div class="font-arcade text-[9px] text-gray-400 mb-2 tracking-wider uppercase">EXPLORE BY GENRE</div>
+                <div class="grid grid-cols-3 gap-2 font-arcade text-[8px]">
+                    <a href="#catalog" data-genre-route="/games/shooter" onclick="selectGenreCategory('shooter', event)" class="mobile-nav-link p-2 rounded bg-neon-card border border-neon-cyan/40 text-neon-cyan hover:bg-neon-cyan hover:text-neon-dark transition-all flex flex-col items-center gap-1 text-center">
+                        <i class="fa-solid fa-crosshairs text-sm" aria-hidden="true"></i>
+                        <span>SHOOTER</span>
+                    </a>
+                    <a href="#catalog" data-genre-route="/games/platformer" onclick="selectGenreCategory('platformer', event)" class="mobile-nav-link p-2 rounded bg-neon-card border border-neon-pink/40 text-neon-pink hover:bg-neon-pink hover:text-white transition-all flex flex-col items-center gap-1 text-center">
+                        <i class="fa-solid fa-person-running text-sm" aria-hidden="true"></i>
+                        <span>PLATFORMER</span>
+                    </a>
+                    <a href="#catalog" data-genre-route="/games/strategy" onclick="selectGenreCategory('strategy', event)" class="mobile-nav-link p-2 rounded bg-neon-card border border-neon-yellow/40 text-neon-yellow hover:bg-neon-yellow hover:text-neon-dark transition-all flex flex-col items-center gap-1 text-center">
+                        <i class="fa-solid fa-chess-rook text-sm" aria-hidden="true"></i>
+                        <span>STRATEGY</span>
+                    </a>
+                    <a href="#catalog" data-genre-route="/games/brawler" onclick="selectGenreCategory('brawler', event)" class="mobile-nav-link p-2 rounded bg-neon-card border border-gray-700 text-gray-300 hover:border-neon-pink hover:text-neon-pink transition-all flex flex-col items-center gap-1 text-center">
+                        <i class="fa-solid fa-hand-fist text-sm" aria-hidden="true"></i>
+                        <span>BRAWLER</span>
+                    </a>
+                    <a href="#catalog" data-genre-route="/games/rpg" onclick="selectGenreCategory('rpg', event)" class="mobile-nav-link p-2 rounded bg-neon-card border border-gray-700 text-gray-300 hover:border-neon-cyan hover:text-neon-cyan transition-all flex flex-col items-center gap-1 text-center">
+                        <i class="fa-solid fa-shield-halved text-sm" aria-hidden="true"></i>
+                        <span>RPG</span>
+                    </a>
+                    <a href="#catalog" data-genre-route="/games/puzzler" onclick="selectGenreCategory('puzzler', event)" class="mobile-nav-link p-2 rounded bg-neon-card border border-gray-700 text-gray-300 hover:border-neon-yellow hover:text-neon-yellow transition-all flex flex-col items-center gap-1 text-center">
+                        <i class="fa-solid fa-cubes text-sm" aria-hidden="true"></i>
+                        <span>PUZZLER</span>
+                    </a>
+                </div>
+            </div>
+
             <div class="pt-2 border-t border-neon-cyan/20 space-y-3">
                 <!-- Mobile Auth Buttons -->
                 <div id="mobileAuthButtons" class="flex items-center gap-3 hidden">
@@ -186,8 +232,200 @@
         </div>
     </header>
 
-    <!-- Main content wrapper -->
-    <div id="main-content" class="flex-1">
+    <!-- Responsive Portal Shell: Collapsible Genre Sidebar + Main Content -->
+    <div class="portal-shell flex-1">
+        <!-- Responsive Genre Side Menu with Animated Dropdowns (Coding2GO Pattern) -->
+        <nav id="sidebar" aria-label="Game Genre Sidebar Navigation">
+            <ul>
+                <!-- Sidebar Brand Header & Collapse Toggle -->
+                <li class="sidebar-header-row">
+                    <div class="sidebar-brand">
+                        <span class="w-7 h-7 rounded-md bg-gradient-to-br from-neon-cyan/25 to-neon-pink/25 border border-neon-cyan/60 flex items-center justify-center text-neon-cyan text-xs shadow-[0_0_10px_rgba(0,243,255,0.3)]" aria-hidden="true">
+                            <i class="fa-solid fa-layer-group"></i>
+                        </span>
+                        <div class="leading-tight">
+                            <span class="block font-arcade text-[10px] text-neon-cyan text-glow-cyan tracking-wider">GENRE VAULT</span>
+                            <span class="block font-mono text-[10px] text-gray-400">12 Retro Categories</span>
+                        </div>
+                    </div>
+                    <button id="toggle-btn" type="button" onclick="toggleSidebar()" title="Collapse / Expand Genre Sidebar" aria-label="Toggle genre sidebar" aria-expanded="true">
+                        <i class="fa-solid fa-angles-left text-xs" aria-hidden="true"></i>
+                    </button>
+                </li>
+
+                <!-- Direct All Games Link -->
+                <li>
+                    <a href="#catalog" data-genre="all" data-genre-route="/games/all" onclick="selectGenreCategory('all', event)" class="sidebar-link active" title="All Retro Classics (/games/all)">
+                        <i class="fa-solid fa-border-all sidebar-icon text-neon-cyan" aria-hidden="true"></i>
+                        <span class="sidebar-label">All Games</span>
+                        <span class="genre-count-badge" data-genre-count="all">7</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-section-label" aria-hidden="true">Core Genres</li>
+
+                <!-- Core Genre 1: Shooter (/games/shooter) -->
+                <li>
+                    <a href="#catalog" data-genre="shooter" data-genre-route="/games/shooter" onclick="selectGenreCategory('shooter', event)" class="sidebar-link" title="Shooter Games (/games/shooter)">
+                        <i class="fa-solid fa-crosshairs sidebar-icon text-neon-cyan genre-icon-shooter" aria-hidden="true"></i>
+                        <span class="sidebar-label">Shooter</span>
+                        <span class="genre-count-badge" data-genre-count="shooter">2</span>
+                    </a>
+                </li>
+
+                <!-- Core Genre 2: Platformer (/games/platformer) -->
+                <li>
+                    <a href="#catalog" data-genre="platformer" data-genre-route="/games/platformer" onclick="selectGenreCategory('platformer', event)" class="sidebar-link" title="Platformer Games (/games/platformer)">
+                        <i class="fa-solid fa-person-running sidebar-icon text-neon-pink genre-icon-platformer" aria-hidden="true"></i>
+                        <span class="sidebar-label">Platformer</span>
+                        <span class="genre-count-badge" data-genre-count="platformer">3</span>
+                    </a>
+                </li>
+
+                <!-- Core Genre 3: Strategy (/games/strategy) -->
+                <li>
+                    <a href="#catalog" data-genre="strategy" data-genre-route="/games/strategy" onclick="selectGenreCategory('strategy', event)" class="sidebar-link" title="Strategy Games (/games/strategy)">
+                        <i class="fa-solid fa-chess-rook sidebar-icon text-neon-yellow genre-icon-strategy" aria-hidden="true"></i>
+                        <span class="sidebar-label">Strategy</span>
+                        <span class="genre-count-badge" data-genre-count="strategy">3</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-section-label" aria-hidden="true">More Genres</li>
+
+                <!-- Animated Dropdown 1: Action & Arcade -->
+                <li>
+                    <button type="button" onclick="toggleSubMenu(this)" class="dropdown-btn" title="Action &amp; Arcade Genres" aria-expanded="false" aria-controls="submenu-action-arcade">
+                        <i class="fa-solid fa-bolt sidebar-icon text-neon-pink" aria-hidden="true"></i>
+                        <span class="sidebar-label">Action</span>
+                        <i class="fa-solid fa-chevron-down sidebar-chevron" aria-hidden="true"></i>
+                    </button>
+                    <ul id="submenu-action-arcade" class="sub-menu" aria-label="Action and Arcade Subgenres">
+                        <div>
+                            <ul class="sub-menu-list">
+                                <li>
+                                    <a href="#catalog" data-genre="arcade" data-genre-route="/games/arcade" onclick="selectGenreCategory('arcade', event)" class="sidebar-link" title="Arcade Classics (/games/arcade)">
+                                        <i class="fa-solid fa-gamepad sidebar-icon text-neon-cyan" aria-hidden="true"></i>
+                                        <span class="sidebar-label">Arcade</span>
+                                        <span class="genre-count-badge" data-genre-count="arcade">7</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#catalog" data-genre="brawler" data-genre-route="/games/brawler" onclick="selectGenreCategory('brawler', event)" class="sidebar-link" title="Brawler / Beat 'Em Up (/games/brawler)">
+                                        <i class="fa-solid fa-hand-fist sidebar-icon text-neon-pink" aria-hidden="true"></i>
+                                        <span class="sidebar-label">Brawler</span>
+                                        <span class="genre-count-badge" data-genre-count="brawler">2</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#catalog" data-genre="action-adventure" data-genre-route="/games/action-adventure" onclick="selectGenreCategory('action-adventure', event)" class="sidebar-link" title="Action-Adventure (/games/action-adventure)">
+                                        <i class="fa-solid fa-fire-flame-curved sidebar-icon text-amber-400" aria-hidden="true"></i>
+                                        <span class="sidebar-label">Action-Adv</span>
+                                        <span class="genre-count-badge" data-genre-count="action-adventure">3</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </ul>
+                </li>
+
+                <!-- Animated Dropdown 2: Quests & Puzzles -->
+                <li>
+                    <button type="button" onclick="toggleSubMenu(this)" class="dropdown-btn" title="RPG, Adventure &amp; Puzzler Genres" aria-expanded="false" aria-controls="submenu-quests-puzzles">
+                        <i class="fa-solid fa-dragon sidebar-icon text-neon-purple" aria-hidden="true"></i>
+                        <span class="sidebar-label">Quests</span>
+                        <i class="fa-solid fa-chevron-down sidebar-chevron" aria-hidden="true"></i>
+                    </button>
+                    <ul id="submenu-quests-puzzles" class="sub-menu" aria-label="Quests and Puzzles Subgenres">
+                        <div>
+                            <ul class="sub-menu-list">
+                                <li>
+                                    <a href="#catalog" data-genre="rpg" data-genre-route="/games/rpg" onclick="selectGenreCategory('rpg', event)" class="sidebar-link" title="RPG Games (/games/rpg)">
+                                        <i class="fa-solid fa-shield-halved sidebar-icon text-neon-cyan" aria-hidden="true"></i>
+                                        <span class="sidebar-label">RPG</span>
+                                        <span class="genre-count-badge" data-genre-count="rpg">1</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#catalog" data-genre="adventure" data-genre-route="/games/adventure" onclick="selectGenreCategory('adventure', event)" class="sidebar-link" title="Adventure Games (/games/adventure)">
+                                        <i class="fa-solid fa-compass sidebar-icon text-emerald-400" aria-hidden="true"></i>
+                                        <span class="sidebar-label">Adventure</span>
+                                        <span class="genre-count-badge" data-genre-count="adventure">1</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#catalog" data-genre="puzzler" data-genre-route="/games/puzzler" onclick="selectGenreCategory('puzzler', event)" class="sidebar-link" title="Puzzler Games (/games/puzzler)">
+                                        <i class="fa-solid fa-puzzle-piece sidebar-icon text-neon-yellow" aria-hidden="true"></i>
+                                        <span class="sidebar-label">Puzzler</span>
+                                        <span class="genre-count-badge" data-genre-count="puzzler">3</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </ul>
+                </li>
+
+                <!-- Animated Dropdown 3: Speed & Sim -->
+                <li>
+                    <button type="button" onclick="toggleSubMenu(this)" class="dropdown-btn" title="Racing, Sports &amp; Simulation Genres" aria-expanded="false" aria-controls="submenu-speed-sim">
+                        <i class="fa-solid fa-flag-checkered sidebar-icon text-neon-yellow" aria-hidden="true"></i>
+                        <span class="sidebar-label">Sim &amp; Race</span>
+                        <i class="fa-solid fa-chevron-down sidebar-chevron" aria-hidden="true"></i>
+                    </button>
+                    <ul id="submenu-speed-sim" class="sub-menu" aria-label="Racing, Sports, and Simulation Subgenres">
+                        <div>
+                            <ul class="sub-menu-list">
+                                <li>
+                                    <a href="#catalog" data-genre="racing" data-genre-route="/games/racing" onclick="selectGenreCategory('racing', event)" class="sidebar-link" title="Racing Games (/games/racing)">
+                                        <i class="fa-solid fa-car-side sidebar-icon text-neon-pink" aria-hidden="true"></i>
+                                        <span class="sidebar-label">Racing</span>
+                                        <span class="genre-count-badge is-soon" data-genre-count="racing">SOON</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#catalog" data-genre="sports" data-genre-route="/games/sports" onclick="selectGenreCategory('sports', event)" class="sidebar-link" title="Sports Games (/games/sports)">
+                                        <i class="fa-solid fa-trophy sidebar-icon text-neon-yellow" aria-hidden="true"></i>
+                                        <span class="sidebar-label">Sports</span>
+                                        <span class="genre-count-badge is-soon" data-genre-count="sports">SOON</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#catalog" data-genre="simulation" data-genre-route="/games/simulation" onclick="selectGenreCategory('simulation', event)" class="sidebar-link" title="Simulation Games (/games/simulation)">
+                                        <i class="fa-solid fa-sliders sidebar-icon text-neon-cyan" aria-hidden="true"></i>
+                                        <span class="sidebar-label">Simulation</span>
+                                        <span class="genre-count-badge is-soon" data-genre-count="simulation">SOON</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </ul>
+                </li>
+
+                <!-- Featured Event Showcase Link -->
+                <li>
+                    <a href="#catalog" data-genre="featured" data-genre-route="/games/featured" onclick="selectGenreCategory('featured', event)" class="sidebar-link" title="November Cosmic Showcase (/games/featured)">
+                        <i class="fa-solid fa-meteor sidebar-icon text-neon-yellow" aria-hidden="true"></i>
+                        <span class="sidebar-label">Featured</span>
+                        <span class="genre-count-badge" data-genre-count="featured">5</span>
+                    </a>
+                </li>
+
+                <!-- Compact Arcade Tip Footer (Desktop Expanded Only) -->
+                <li class="sidebar-footer-tip">
+                    <div class="font-arcade text-[8px] text-neon-cyan mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-info text-neon-pink" aria-hidden="true"></i> QUICK NAV
+                    </div>
+                    <p class="text-[11px] text-gray-400 leading-snug font-sans">
+                        Pick any genre to filter the Games Vault instantly or collapse for icon mode.
+                    </p>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Portal Column (Content + Footer) -->
+        <div class="portal-main min-w-0 flex flex-col flex-1">
+            <!-- Main content wrapper -->
+            <div id="main-content" class="flex-1">
 
         <!-- Hero Banner -->
         <section id="hero" class="relative pt-12 pb-20 md:py-28 synth-grid overflow-hidden border-b border-neon-purple/20">
@@ -373,6 +611,106 @@
                             BROWSE VAULT
                         </a>
                     </div>
+
+                    <!-- Option 2: Visual Genre Category Card Grid for the Hero Section (GamesNostalgia Design) -->
+                    <div class="pt-8 max-w-4xl mx-auto text-left">
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-3 px-1">
+                            <span class="font-arcade text-[10px] text-neon-cyan tracking-wider uppercase flex items-center gap-2">
+                                <i class="fa-solid fa-layer-group text-neon-pink" aria-hidden="true"></i> BROWSE BY RETRO GENRE
+                            </span>
+                            <span class="font-mono text-xs text-gray-400">Select a category to filter the Games Vault &darr;</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" role="navigation" aria-label="Hero Visual Genre Category Grid">
+                            <!-- Genre Card 1: Shooter (/games/shooter) -->
+                            <a href="#catalog" data-genre-route="/games/shooter" onclick="selectGenreCategory('shooter', event)" class="genre-card group relative bg-neon-card/90 backdrop-blur-md rounded-xl p-4 border-2 border-neon-cyan/50 hover:border-neon-cyan shadow-[0_0_20px_rgba(0,243,255,0.15)] hover:shadow-[0_0_28px_rgba(0,243,255,0.45)] transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between overflow-hidden">
+                                <div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-neon-cyan/10 group-hover:bg-neon-cyan/25 blur-xl transition-all pointer-events-none"></div>
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="w-11 h-11 rounded-lg bg-neon-cyan/15 border border-neon-cyan/60 flex items-center justify-center text-neon-cyan text-xl shadow-[0_0_10px_rgba(0,243,255,0.3)]">
+                                        <i class="fa-solid fa-crosshairs genre-icon-shooter" aria-hidden="true"></i>
+                                    </div>
+                                    <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-neon-dark/90 border border-neon-cyan/40 text-neon-cyan">/games/shooter</span>
+                                </div>
+                                <div class="mt-3">
+                                    <h3 class="font-arcade text-xs sm:text-sm text-white group-hover:text-neon-cyan transition-colors flex items-center justify-between">
+                                        <span>SHOOTER</span>
+                                        <i class="fa-solid fa-arrow-right text-[10px] opacity-70 group-hover:translate-x-1 transition-transform" aria-hidden="true"></i>
+                                    </h3>
+                                    <p class="text-xs text-gray-400 mt-1 leading-snug">Vertical air-raid shmups, cosmic blasters &amp; bullet-hell bosses.</p>
+                                </div>
+                                <div class="mt-3 pt-2 border-t border-gray-800 flex items-center justify-between text-[10px] font-mono text-neon-yellow">
+                                    <span>Raiden &bull; Moon Rabbit</span>
+                                    <span class="font-arcade text-[8px] text-neon-cyan">2 PLAYABLE</span>
+                                </div>
+                            </a>
+
+                            <!-- Genre Card 2: Platformer (/games/platformer) -->
+                            <a href="#catalog" data-genre-route="/games/platformer" onclick="selectGenreCategory('platformer', event)" class="genre-card group relative bg-neon-card/90 backdrop-blur-md rounded-xl p-4 border-2 border-neon-pink/50 hover:border-neon-pink shadow-[0_0_20px_rgba(255,0,127,0.15)] hover:shadow-[0_0_28px_rgba(255,0,127,0.45)] transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between overflow-hidden">
+                                <div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-neon-pink/10 group-hover:bg-neon-pink/25 blur-xl transition-all pointer-events-none"></div>
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="w-11 h-11 rounded-lg bg-neon-pink/15 border border-neon-pink/60 flex items-center justify-center text-neon-pink text-xl shadow-[0_0_10px_rgba(255,0,127,0.3)]">
+                                        <i class="fa-solid fa-person-running genre-icon-platformer" aria-hidden="true"></i>
+                                    </div>
+                                    <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-neon-dark/90 border border-neon-pink/40 text-neon-pink">/games/platformer</span>
+                                </div>
+                                <div class="mt-3">
+                                    <h3 class="font-arcade text-xs sm:text-sm text-white group-hover:text-neon-pink transition-colors flex items-center justify-between">
+                                        <span>PLATFORMER</span>
+                                        <i class="fa-solid fa-arrow-right text-[10px] opacity-70 group-hover:translate-x-1 transition-transform" aria-hidden="true"></i>
+                                    </h3>
+                                    <p class="text-xs text-gray-400 mt-1 leading-snug">Side-scrolling street brawlers, jump-kick action &amp; arcade reflex runs.</p>
+                                </div>
+                                <div class="mt-3 pt-2 border-t border-gray-800 flex items-center justify-between text-[10px] font-mono text-neon-yellow">
+                                    <span>K-Pop Demon Hunters &bull; Streets of Neon</span>
+                                    <span class="font-arcade text-[8px] text-neon-pink">3 PLAYABLE</span>
+                                </div>
+                            </a>
+
+                            <!-- Genre Card 3: Strategy (/games/strategy) -->
+                            <a href="#catalog" data-genre-route="/games/strategy" onclick="selectGenreCategory('strategy', event)" class="genre-card group relative bg-neon-card/90 backdrop-blur-md rounded-xl p-4 border-2 border-neon-yellow/50 hover:border-neon-yellow shadow-[0_0_20px_rgba(255,230,0,0.15)] hover:shadow-[0_0_28px_rgba(255,230,0,0.45)] transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between overflow-hidden">
+                                <div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-neon-yellow/10 group-hover:bg-neon-yellow/25 blur-xl transition-all pointer-events-none"></div>
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="w-11 h-11 rounded-lg bg-neon-yellow/15 border border-neon-yellow/60 flex items-center justify-center text-neon-yellow text-xl shadow-[0_0_10px_rgba(255,230,0,0.3)]">
+                                        <i class="fa-solid fa-chess-rook genre-icon-strategy" aria-hidden="true"></i>
+                                    </div>
+                                    <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-neon-dark/90 border border-neon-yellow/40 text-neon-yellow">/games/strategy</span>
+                                </div>
+                                <div class="mt-3">
+                                    <h3 class="font-arcade text-xs sm:text-sm text-white group-hover:text-neon-yellow transition-colors flex items-center justify-between">
+                                        <span>STRATEGY</span>
+                                        <i class="fa-solid fa-arrow-right text-[10px] opacity-70 group-hover:translate-x-1 transition-transform" aria-hidden="true"></i>
+                                    </h3>
+                                    <p class="text-xs text-gray-400 mt-1 leading-snug">Turn-based math shield tactics, polyomino planning &amp; labyrinth puzzles.</p>
+                                </div>
+                                <div class="mt-3 pt-2 border-t border-gray-800 flex items-center justify-between text-[10px] font-mono text-neon-yellow">
+                                    <span>LCM Hero &bull; Block Stacker</span>
+                                    <span class="font-arcade text-[8px] text-neon-yellow">3 PLAYABLE</span>
+                                </div>
+                            </a>
+                        </div>
+
+                        <!-- Extended GamesNostalgia Genre Directory Pills -->
+                        <div class="mt-4 pt-3 border-t border-neon-purple/25 flex flex-wrap items-center justify-center gap-2 font-arcade text-[9px]">
+                            <span class="text-gray-400 mr-1">MORE GENRES:</span>
+                            <a href="#catalog" data-genre-route="/games/arcade" onclick="selectGenreCategory('arcade', event)" class="px-2.5 py-1 rounded bg-neon-card/80 border border-gray-700 text-gray-300 hover:border-neon-cyan hover:text-neon-cyan transition-all flex items-center gap-1" title="/games/arcade">
+                                <i class="fa-solid fa-gamepad text-neon-cyan" aria-hidden="true"></i> ARCADE
+                            </a>
+                            <a href="#catalog" data-genre-route="/games/brawler" onclick="selectGenreCategory('brawler', event)" class="px-2.5 py-1 rounded bg-neon-card/80 border border-gray-700 text-gray-300 hover:border-neon-pink hover:text-neon-pink transition-all flex items-center gap-1" title="/games/brawler">
+                                <i class="fa-solid fa-hand-fist text-neon-pink" aria-hidden="true"></i> BRAWLER
+                            </a>
+                            <a href="#catalog" data-genre-route="/games/rpg" onclick="selectGenreCategory('rpg', event)" class="px-2.5 py-1 rounded bg-neon-card/80 border border-gray-700 text-gray-300 hover:border-neon-yellow hover:text-neon-yellow transition-all flex items-center gap-1" title="/games/rpg">
+                                <i class="fa-solid fa-dragon text-neon-yellow" aria-hidden="true"></i> RPG
+                            </a>
+                            <a href="#catalog" data-genre-route="/games/adventure" onclick="selectGenreCategory('adventure', event)" class="px-2.5 py-1 rounded bg-neon-card/80 border border-gray-700 text-gray-300 hover:border-neon-cyan hover:text-neon-cyan transition-all flex items-center gap-1" title="/games/adventure">
+                                <i class="fa-solid fa-compass text-neon-cyan" aria-hidden="true"></i> ADVENTURE
+                            </a>
+                            <a href="#catalog" data-genre-route="/games/action-adventure" onclick="selectGenreCategory('action-adventure', event)" class="px-2.5 py-1 rounded bg-neon-card/80 border border-gray-700 text-gray-300 hover:border-neon-pink hover:text-neon-pink transition-all flex items-center gap-1" title="/games/action-adventure">
+                                <i class="fa-solid fa-bolt text-neon-pink" aria-hidden="true"></i> ACTION-ADVENTURE
+                            </a>
+                            <a href="#catalog" data-genre-route="/games/puzzler" onclick="selectGenreCategory('puzzler', event)" class="px-2.5 py-1 rounded bg-neon-card/80 border border-gray-700 text-gray-300 hover:border-neon-yellow hover:text-neon-yellow transition-all flex items-center gap-1" title="/games/puzzler">
+                                <i class="fa-solid fa-puzzle-piece text-neon-yellow" aria-hidden="true"></i> PUZZLER
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -460,30 +798,47 @@
                 </div>
 
                 <!-- Filter Buttons -->
-                <div class="flex flex-wrap justify-center gap-2 mb-10 font-arcade text-[10px]">
-                    <button onclick="filterVault('all', this)" class="vault-filter-btn px-4 py-2 rounded bg-neon-pink text-white font-bold" aria-label="Show all games">
+                <div class="flex flex-wrap justify-center gap-2 mb-4 font-arcade text-[10px]">
+                    <button id="vaultFilter-all" onclick="filterVault('all', this)" class="vault-filter-btn px-4 py-2 rounded bg-neon-pink text-white font-bold" aria-label="Show all games">
                         ALL
                     </button>
-                    <button onclick="filterVault('featured', this)" class="vault-filter-btn px-4 py-2 rounded bg-neon-card text-neon-yellow border border-amber-400/60 hover:border-neon-yellow flex items-center gap-1.5" aria-label="Show Featured Cosmic Event games">
-                        <span>☄️</span> EVENT / FEATURED
+                    <button id="vaultFilter-shooter" onclick="filterVault('shooter', this)" class="vault-filter-btn px-3.5 py-2 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-cyan flex items-center gap-1.5" aria-label="Show Shooter games (/games/shooter)">
+                        <i class="fa-solid fa-crosshairs text-neon-cyan" aria-hidden="true"></i> SHOOTER
                     </button>
-                    <button onclick="filterVault('arcade', this)" class="vault-filter-btn px-4 py-2 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-cyan" aria-label="Show arcade games">
+                    <button id="vaultFilter-platformer" onclick="filterVault('platformer', this)" class="vault-filter-btn px-3.5 py-2 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-pink flex items-center gap-1.5" aria-label="Show Platformer games (/games/platformer)">
+                        <i class="fa-solid fa-person-running text-neon-pink" aria-hidden="true"></i> PLATFORMER
+                    </button>
+                    <button id="vaultFilter-strategy" onclick="filterVault('strategy', this)" class="vault-filter-btn px-3.5 py-2 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-yellow flex items-center gap-1.5" aria-label="Show Strategy games (/games/strategy)">
+                        <i class="fa-solid fa-chess-rook text-neon-yellow" aria-hidden="true"></i> STRATEGY
+                    </button>
+                    <button id="vaultFilter-arcade" onclick="filterVault('arcade', this)" class="vault-filter-btn px-3.5 py-2 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-cyan" aria-label="Show Arcade games (/games/arcade)">
                         ARCADE
                     </button>
-                    <button onclick="filterVault('action', this)" class="vault-filter-btn px-4 py-2 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-cyan" aria-label="Show action games">
-                        ACTION
+                    <button id="vaultFilter-brawler" onclick="filterVault('brawler', this)" class="vault-filter-btn px-3.5 py-2 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-pink" aria-label="Show Brawler games (/games/brawler)">
+                        BRAWLER
                     </button>
-                    <button onclick="filterVault('puzzle', this)" class="vault-filter-btn px-4 py-2 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-cyan" aria-label="Show puzzle games">
-                        PUZZLE
+                    <button id="vaultFilter-rpg" onclick="filterVault('rpg', this)" class="vault-filter-btn px-3.5 py-2 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-cyan" aria-label="Show RPG games (/games/rpg)">
+                        RPG
                     </button>
+                    <button id="vaultFilter-puzzle" onclick="filterVault('puzzle', this)" class="vault-filter-btn px-3.5 py-2 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-yellow" aria-label="Show Puzzler games (/games/puzzler)">
+                        PUZZLER
+                    </button>
+                    <button id="vaultFilter-featured" onclick="filterVault('featured', this)" class="vault-filter-btn px-3.5 py-2 rounded bg-neon-card text-neon-yellow border border-amber-400/60 hover:border-neon-yellow flex items-center gap-1.5" aria-label="Show Featured Cosmic Event games">
+                        <span>☄️</span> FEATURED
+                    </button>
+                </div>
+
+                <!-- Active Genre Route Indicator -->
+                <div id="activeGenreBanner" class="text-center font-mono text-xs text-neon-cyan mb-8 min-h-[20px]">
+                    Showing: <span id="activeGenreLabel" class="font-bold text-white">ALL RETRO CLASSICS</span> <span id="activeGenrePath" class="text-gray-500">(/games/all)</span>
                 </div>
 
                 <!-- Games Grid -->
                 <div id="gamesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     <!-- Game Card 1: RAIDEN (November Showcase Feature) -->
-                    <article class="game-card arcade action featured moon-festival relative bg-neon-card rounded-xl border-2 border-neon-cyan shadow-[0_0_25px_rgba(0,243,255,0.28)] overflow-hidden hover:border-neon-pink transition-all duration-300 hover:-translate-y-2 group">
+                    <article class="game-card shooter arcade action featured moon-festival relative bg-neon-card rounded-xl border-2 border-neon-cyan shadow-[0_0_25px_rgba(0,243,255,0.28)] overflow-hidden hover:border-neon-pink transition-all duration-300 hover:-translate-y-2 group">
                         <div class="absolute -top-1 -right-1 z-30 font-arcade text-[8px] sm:text-[9px] px-3 py-1 rounded-bl-lg rounded-tr-xl bg-gradient-to-r from-neon-cyan via-neon-pink to-neon-yellow text-black font-extrabold shadow-[0_0_12px_rgba(0,243,255,0.8)] animate-pulse flex items-center gap-1">
-                            <span>☄️</span> NOV SHOWCASE
+                            <span>☄️</span> SHOOTER
                         </div>
                         <div class="h-48 bg-gray-800 relative overflow-hidden flex items-center justify-center">
                             <div class="absolute w-32 h-32 rounded-full bg-neon-cyan/20 blur-xl pointer-events-none"></div>
@@ -497,7 +852,7 @@
                             </h3>
                             <p class="text-gray-400 text-xs leading-relaxed">Scramble the supersonic Raiden fighter through 8 explosive vertical stages, upgrade plasma lasers, and obliterate alien bosses!</p>
                             <div class="flex items-center justify-between pt-2">
-                                <span class="text-xs text-neon-yellow font-mono"><i class="fa-solid fa-star" aria-hidden="true"></i> 5.0 / 5.0 (Featured)</span>
+                                <span class="text-xs text-neon-yellow font-mono"><i class="fa-solid fa-star" aria-hidden="true"></i> 5.0 / 5.0 (Shooter)</span>
                                 <button onclick="launchDemo('Raiden')" class="font-arcade text-[10px] px-3.5 py-1.5 rounded bg-gradient-to-r from-neon-cyan to-neon-pink text-neon-dark font-bold hover:from-cyan-300 hover:to-pink-400 transition-all shadow-[0_0_10px_rgba(0,243,255,0.6)] transform hover:scale-105 flex items-center gap-1" aria-label="Launch Raiden game">
                                     <span>SCRAMBLE</span> <span>🚀</span>
                                 </button>
@@ -506,7 +861,7 @@
                     </article>
 
                     <!-- Game Card 2: CYBER MAZE -->
-                    <article class="game-card arcade bg-neon-card rounded-xl border border-neon-purple/40 overflow-hidden hover:border-neon-pink transition-all duration-300 hover:-translate-y-2 group">
+                    <article class="game-card arcade platformer strategy puzzle puzzler action-adventure bg-neon-card rounded-xl border border-neon-purple/40 overflow-hidden hover:border-neon-pink transition-all duration-300 hover:-translate-y-2 group">
                         <div class="h-48 bg-gray-800 relative overflow-hidden flex items-center justify-center">
                             <div class="absolute inset-0 bg-gradient-to-t from-neon-card to-transparent z-10"></div>
                             <i class="fa-solid fa-ghost text-6xl text-neon-pink group-hover:scale-125 transition-transform duration-300" aria-hidden="true"></i>
@@ -526,12 +881,12 @@
                     </article>
 
                     <!-- Game Card 3: BLOCK STACKER -->
-                    <article class="game-card puzzle arcade bg-neon-card rounded-xl border border-neon-purple/40 overflow-hidden hover:border-neon-pink transition-all duration-300 hover:-translate-y-2 group">
+                    <article class="game-card puzzle puzzler strategy arcade bg-neon-card rounded-xl border border-neon-purple/40 overflow-hidden hover:border-neon-pink transition-all duration-300 hover:-translate-y-2 group">
                         <div class="h-48 bg-gray-800 relative overflow-hidden flex items-center justify-center">
                             <div class="absolute inset-0 bg-gradient-to-t from-neon-card to-transparent z-10"></div>
                             <i class="fa-solid fa-cubes text-6xl text-neon-yellow group-hover:scale-125 transition-transform duration-300" aria-hidden="true"></i>
                             <span class="absolute top-3 left-3 z-20 font-arcade text-[9px] px-2 py-1 rounded bg-neon-cyan/20 border border-neon-cyan text-neon-cyan font-bold">PLAYABLE</span>
-                            <span class="absolute top-3 right-3 z-20 font-arcade text-[9px] px-2 py-1 rounded bg-neon-yellow text-black font-bold">PUZZLE</span>
+                            <span class="absolute top-3 right-3 z-20 font-arcade text-[9px] px-2 py-1 rounded bg-neon-yellow text-black font-bold">STRATEGY / PUZZLE</span>
                         </div>
                         <div class="p-6 relative z-20 space-y-3">
                             <h3 class="font-heading text-2xl font-bold text-white group-hover:text-neon-yellow">BLOCK STACKER</h3>
@@ -546,9 +901,9 @@
                     </article>
 
                     <!-- Game Card 4: MOON FESTIVAL -->
-                    <article class="game-card arcade action featured moon-festival relative bg-neon-card rounded-xl border-2 border-amber-400/70 shadow-[0_0_20px_rgba(255,230,0,0.2)] overflow-hidden hover:border-neon-yellow transition-all duration-300 hover:-translate-y-2 group">
+                    <article class="game-card shooter arcade action featured moon-festival relative bg-neon-card rounded-xl border-2 border-amber-400/70 shadow-[0_0_20px_rgba(255,230,0,0.2)] overflow-hidden hover:border-neon-yellow transition-all duration-300 hover:-translate-y-2 group">
                         <div class="absolute -top-1 -right-1 z-30 font-arcade text-[8px] sm:text-[9px] px-3 py-1 rounded-bl-lg rounded-tr-xl bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-300 text-black font-extrabold shadow-[0_0_12px_rgba(255,230,0,0.8)] flex items-center gap-1">
-                            <span>🌕</span> COSMIC CLASSIC
+                            <span>🌕</span> SHOOTER
                         </div>
                         <div class="h-48 bg-gray-800 relative overflow-hidden flex items-center justify-center">
                             <div class="absolute w-28 h-28 rounded-full bg-amber-400/20 blur-xl pointer-events-none"></div>
@@ -562,7 +917,7 @@
                             </h3>
                             <p class="text-gray-400 text-xs leading-relaxed">Defend the Celestial Moon! Play as Jade Rabbit and blast incoming grapefruit monsters across planetary systems.</p>
                             <div class="flex items-center justify-between pt-2">
-                                <span class="text-xs text-neon-yellow font-mono"><i class="fa-solid fa-star" aria-hidden="true"></i> 5.0 / 5.0 (Event)</span>
+                                <span class="text-xs text-neon-yellow font-mono"><i class="fa-solid fa-star" aria-hidden="true"></i> 5.0 / 5.0 (Shooter)</span>
                                 <button onclick="launchDemo('Moon Festival')" class="font-arcade text-[10px] px-3.5 py-1.5 rounded bg-gradient-to-r from-yellow-400 to-amber-500 text-neon-dark font-bold hover:from-yellow-300 hover:to-amber-400 transition-all shadow-[0_0_8px_rgba(255,230,0,0.5)] transform hover:scale-105 flex items-center gap-1" aria-label="Launch Moon Festival game">
                                     <span>PLAY</span> <span>🌕</span>
                                 </button>
@@ -571,9 +926,9 @@
                     </article>
 
                     <!-- Game Card 5: STREETS OF NEON -->
-                    <article class="game-card arcade action featured relative bg-neon-card rounded-xl border-2 border-neon-pink/70 shadow-[0_0_20px_rgba(255,0,127,0.22)] overflow-hidden hover:border-neon-cyan transition-all duration-300 hover:-translate-y-2 group">
+                    <article class="game-card platformer brawler arcade action action-adventure featured relative bg-neon-card rounded-xl border-2 border-neon-pink/70 shadow-[0_0_20px_rgba(255,0,127,0.22)] overflow-hidden hover:border-neon-cyan transition-all duration-300 hover:-translate-y-2 group">
                         <div class="absolute -top-1 -right-1 z-30 font-arcade text-[8px] sm:text-[9px] px-3 py-1 rounded-bl-lg rounded-tr-xl bg-gradient-to-r from-neon-pink via-neon-purple to-neon-cyan text-white font-extrabold shadow-[0_0_12px_rgba(255,0,127,0.8)] flex items-center gap-1">
-                            <span>🥊</span> 2.5D BRAWLER
+                            <span>🥊</span> PLATFORMER / BRAWLER
                         </div>
                         <div class="h-48 bg-gray-800 relative overflow-hidden flex items-center justify-center">
                             <div class="absolute w-28 h-28 rounded-full bg-neon-pink/20 blur-xl pointer-events-none"></div>
@@ -587,7 +942,7 @@
                             </h3>
                             <p class="text-gray-400 text-xs leading-relaxed">2.5D belt-scrolling beat 'em up! Unleash 3-hit combos, jump-kicks, and spinning Hurricane Special shockwaves across syndicate alleyways.</p>
                             <div class="flex items-center justify-between pt-2">
-                                <span class="text-xs text-neon-yellow font-mono"><i class="fa-solid fa-star" aria-hidden="true"></i> 4.9 / 5.0 (Action)</span>
+                                <span class="text-xs text-neon-yellow font-mono"><i class="fa-solid fa-star" aria-hidden="true"></i> 4.9 / 5.0 (Platformer)</span>
                                 <button onclick="launchDemo('Streets of Neon')" class="font-arcade text-[10px] px-3.5 py-1.5 rounded bg-gradient-to-r from-neon-pink to-neon-purple text-white font-bold hover:from-pink-500 hover:to-purple-500 transition-all shadow-[0_0_10px_rgba(255,0,127,0.6)] transform hover:scale-105 flex items-center gap-1" aria-label="Launch Streets of Neon game">
                                     <span>BRAWL</span> <span>🥊</span>
                                 </button>
@@ -596,9 +951,9 @@
                     </article>
 
                     <!-- Game Card 6: LCM HERO ADVENTURE -->
-                    <article class="game-card puzzle arcade featured relative bg-neon-card rounded-xl border-2 border-neon-cyan/70 shadow-[0_0_20px_rgba(0,243,255,0.22)] overflow-hidden hover:border-neon-yellow transition-all duration-300 hover:-translate-y-2 group">
+                    <article class="game-card strategy rpg adventure puzzle puzzler arcade featured relative bg-neon-card rounded-xl border-2 border-neon-cyan/70 shadow-[0_0_20px_rgba(0,243,255,0.22)] overflow-hidden hover:border-neon-yellow transition-all duration-300 hover:-translate-y-2 group">
                         <div class="absolute -top-1 -right-1 z-30 font-arcade text-[8px] sm:text-[9px] px-3 py-1 rounded-bl-lg rounded-tr-xl bg-gradient-to-r from-neon-cyan to-emerald-400 text-neon-dark font-extrabold shadow-[0_0_12px_rgba(0,243,255,0.8)] flex items-center gap-1">
-                            <span>⚔️</span> MATH JRPG
+                            <span>⚔️</span> STRATEGY / RPG
                         </div>
                         <div class="h-48 bg-gray-800 relative overflow-hidden flex items-center justify-center">
                             <div class="absolute w-28 h-28 rounded-full bg-neon-cyan/20 blur-xl pointer-events-none"></div>
@@ -612,13 +967,53 @@
                             </h3>
                             <p class="text-gray-400 text-xs leading-relaxed">2D educational math JRPG! Shatter monster Mathematical Shields with Least Common Multiple spells, Short Division Fairy tutor &amp; Adaptive Edge AI.</p>
                             <div class="flex items-center justify-between pt-2">
-                                <span class="text-xs text-neon-yellow font-mono"><i class="fa-solid fa-star" aria-hidden="true"></i> 5.0 / 5.0 (JRPG)</span>
+                                <span class="text-xs text-neon-yellow font-mono"><i class="fa-solid fa-star" aria-hidden="true"></i> 5.0 / 5.0 (Strategy)</span>
                                 <button onclick="launchDemo('LCM Hero Adventure')" class="font-arcade text-[10px] px-3.5 py-1.5 rounded bg-gradient-to-r from-neon-cyan to-emerald-400 text-neon-dark font-bold hover:from-cyan-300 hover:to-emerald-300 transition-all shadow-[0_0_10px_rgba(0,243,255,0.6)] transform hover:scale-105 flex items-center gap-1" aria-label="Launch LCM Hero Adventure game">
                                     <span>QUEST</span> <span>⚔️</span>
                                 </button>
                             </div>
                         </div>
                     </article>
+
+                    <!-- Game Card 7: HUNTRIX: K-POP DEMON HUNTERS -->
+                    <article class="game-card platformer brawler arcade action action-adventure featured relative bg-neon-card rounded-xl border-2 border-neon-pink/80 shadow-[0_0_24px_rgba(255,0,127,0.28)] overflow-hidden hover:border-neon-cyan transition-all duration-300 hover:-translate-y-2 group">
+                        <div class="absolute -top-1 -right-1 z-30 font-arcade text-[8px] sm:text-[9px] px-3 py-1 rounded-bl-lg rounded-tr-xl bg-gradient-to-r from-neon-pink via-neon-purple to-neon-cyan text-white font-extrabold shadow-[0_0_12px_rgba(255,0,127,0.85)] animate-pulse flex items-center gap-1">
+                            <span>🎤</span> 16-BIT BRAWLER
+                        </div>
+                        <div class="h-48 bg-gray-800 relative overflow-hidden flex items-center justify-center">
+                            <div class="absolute w-32 h-32 rounded-full bg-neon-purple/25 blur-xl pointer-events-none"></div>
+                            <div class="absolute w-24 h-24 rounded-full bg-neon-pink/20 blur-xl pointer-events-none"></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-neon-card to-transparent z-10"></div>
+                            <i class="fa-solid fa-microphone-lines text-6xl text-neon-pink group-hover:scale-125 group-hover:rotate-6 transition-all duration-300 drop-shadow-[0_0_16px_rgba(255,0,127,0.9)]" aria-hidden="true"></i>
+                            <span class="absolute top-3 left-3 z-20 font-arcade text-[9px] px-2 py-1 rounded bg-neon-pink text-white font-bold shadow-[0_0_8px_rgba(255,0,127,0.8)]">NEW / PLAYABLE</span>
+                        </div>
+                        <div class="p-6 relative z-20 space-y-3">
+                            <h3 class="font-heading text-2xl font-bold text-white group-hover:text-neon-pink flex items-center gap-2">
+                                K-POP DEMON HUNTERS <span class="text-base">✨</span>
+                            </h3>
+                            <p class="text-gray-400 text-xs leading-relaxed">16-bit Seoul rooftop beat 'em up! Pick Rumi, Mira, or Zoey, chain 3-hit combos &amp; jump kicks, and unleash the full HUNTRIX Encore Special against the Saja Overlord.</p>
+                            <div class="flex items-center justify-between pt-2">
+                                <span class="text-xs text-neon-yellow font-mono"><i class="fa-solid fa-star" aria-hidden="true"></i> 5.0 / 5.0 (Brawler)</span>
+                                <button onclick="launchDemo('K-Pop Demon Hunters')" class="font-arcade text-[10px] px-3.5 py-1.5 rounded bg-gradient-to-r from-neon-pink via-neon-purple to-neon-cyan text-white font-bold hover:from-pink-500 hover:to-cyan-400 transition-all shadow-[0_0_12px_rgba(255,0,127,0.65)] transform hover:scale-105 flex items-center gap-1" aria-label="Launch HUNTRIX: K-Pop Demon Hunters game">
+                                    <span>SLAY</span> <span>🎤</span>
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Empty State for Upcoming Genres (Racing, Sports, Simulation) -->
+                <div id="emptyGenreState" class="hidden max-w-xl mx-auto mt-6 bg-neon-card/90 border-2 border-dashed border-neon-cyan/50 rounded-2xl p-8 text-center space-y-4 shadow-[0_0_25px_rgba(0,243,255,0.15)]">
+                    <div class="w-16 h-16 mx-auto rounded-2xl bg-neon-dark border border-neon-pink/60 flex items-center justify-center text-3xl text-neon-pink shadow-[0_0_15px_rgba(255,0,127,0.3)]">
+                        <i class="fa-solid fa-rocket" aria-hidden="true"></i>
+                    </div>
+                    <h3 id="emptyGenreTitle" class="font-arcade text-sm sm:text-base text-neon-cyan">COMING SOON TO THE VAULT</h3>
+                    <p id="emptyGenreDesc" class="text-sm text-gray-300 leading-relaxed">
+                        New retro cabinets in this genre are currently in development! Meanwhile, explore all playable classics in the vault.
+                    </p>
+                    <button type="button" onclick="selectGenreCategory('all')" class="font-arcade text-[10px] px-5 py-2.5 rounded bg-neon-pink hover:bg-neon-pink/80 text-white font-bold glow-pink transition-all">
+                        <i class="fa-solid fa-border-all mr-1.5" aria-hidden="true"></i> SHOW ALL GAMES
+                    </button>
                 </div>
             </div>
         </section>
@@ -656,6 +1051,9 @@
                         </button>
                         <button onclick="switchLeaderboardTab('lcm-hero')" id="leaderboardTab-lcm-hero" class="leaderboard-tab-btn px-3.5 py-1.5 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-cyan transition-all" aria-label="Show LCM Hero Adventure Leaderboard">
                             LCM HERO ⚔️
+                        </button>
+                        <button onclick="switchLeaderboardTab('kpop-demon-hunters')" id="leaderboardTab-kpop-demon-hunters" class="leaderboard-tab-btn px-3.5 py-1.5 rounded bg-neon-card text-gray-300 border border-gray-700 hover:border-neon-cyan transition-all" aria-label="Show K-Pop Demon Hunters Leaderboard">
+                            K-POP HUNTERS 🎤
                         </button>
                     </div>
                     <button onclick="refreshCurrentLeaderboard()" class="font-arcade text-[9px] px-3 py-1.5 rounded bg-neon-cyan/10 border border-neon-cyan/40 text-neon-cyan hover:bg-neon-cyan/20 transition-all flex items-center gap-1.5" title="Refresh leaderboard">
@@ -713,6 +1111,8 @@
             </p>
         </div>
     </footer>
+        </div> <!-- /.portal-main -->
+    </div> <!-- /.portal-shell -->
 
     <!-- Login Modal -->
     <div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/80">
@@ -834,7 +1234,7 @@
     </div>
 
     <!-- Floating Raiden Interceptor Quick Access Widget -->
-    <aside id="floatingMoonRabbitWidget" class="fixed bottom-6 right-6 z-40 group select-none hidden sm:block" aria-label="Raiden Quick Launch">
+    <aside id="floatingMoonRabbitWidget" class="fixed bottom-20 md:bottom-6 right-6 z-40 group select-none hidden sm:block" aria-label="Raiden Quick Launch">
         <a href="games/raiden/index.html" onclick="playRetroSound('click')" class="flex items-center gap-2.5 bg-neon-dark/95 backdrop-blur-md border-2 border-neon-cyan/80 rounded-full py-2 px-3.5 shadow-[0_0_20px_rgba(0,243,255,0.35)] hover:shadow-[0_0_30px_rgba(255,0,127,0.7)] hover:border-neon-pink transition-all transform hover:scale-105 group" title="Play Raiden: Cosmic Air-Raid">
             <div class="w-8 h-8 rounded-full bg-gradient-to-br from-neon-cyan to-neon-pink flex items-center justify-center text-lg animate-bounce shadow-inner">
                 ☄️

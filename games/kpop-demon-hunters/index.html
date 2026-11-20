@@ -1,0 +1,3083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>HUNTRIX: K-Pop Demon Hunters // 16-Bit Beat 'Em Up - RetroGames4.net</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+  html, body {
+    width: 100%;
+    min-height: 100%;
+    background: #0d0618;
+    color: #fff;
+    font-family: 'Courier New', Courier, monospace;
+    overflow-x: hidden;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .top-nav {
+    width: min(96vw, calc(82vh * 16 / 9));
+    max-width: 1040px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding: 6px 12px;
+    background: rgba(18, 12, 37, 0.92);
+    border: 2px solid rgba(94, 246, 255, 0.45);
+    border-radius: 8px;
+    box-shadow: 0 0 14px rgba(255, 63, 164, 0.22), 0 0 12px rgba(94, 246, 255, 0.18);
+    z-index: 20;
+  }
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: #5ef6ff;
+    background: rgba(94, 246, 255, 0.14);
+    border: 1px solid #5ef6ff;
+    padding: 7px 11px;
+    border-radius: 6px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 8px rgba(94, 246, 255, 0.22);
+    white-space: nowrap;
+  }
+  .back-btn:hover, .back-btn:active {
+    background: #5ef6ff;
+    color: #0c0517;
+    box-shadow: 0 0 14px #5ef6ff;
+    transform: scale(1.03);
+  }
+  .nav-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: #ffe066;
+    text-shadow: 0 0 8px rgba(255, 224, 102, 0.65), 2px 2px #ff3fa4;
+    letter-spacing: 0.8px;
+    text-align: center;
+  }
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  #cabinet {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 100vh;
+    padding: 10px 8px 18px;
+    background:
+      radial-gradient(circle at 50% 25%, rgba(162, 46, 196, 0.25), transparent 60%),
+      radial-gradient(circle at 50% 80%, rgba(45, 226, 230, 0.12), transparent 55%),
+      #0c0517;
+  }
+  #cabinet.is-fullscreen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    justify-content: center;
+    padding: 8px;
+    overflow: hidden;
+  }
+  #cabinet.is-fullscreen #screen-frame {
+    width: min(98vw, calc(88vh * 16 / 9));
+  }
+  #screen-frame {
+    position: relative;
+    width: min(96vw, calc(80vh * 16 / 9));
+    max-width: 1040px;
+    aspect-ratio: 16 / 9;
+    border: 3px solid #482078;
+    box-shadow:
+      0 0 0 2px #190930,
+      0 0 28px rgba(255, 63, 164, 0.35),
+      0 0 60px rgba(63, 245, 255, 0.16);
+    background: #140826;
+    overflow: hidden;
+    border-radius: 4px;
+  }
+  canvas#game {
+    display: block;
+    width: 100%;
+    height: 100%;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    background: #140826;
+  }
+  /* Subtle retro CRT scanline toggleable overlay */
+  #crt-overlay {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 0px,
+      rgba(0, 0, 0, 0) 2px,
+      rgba(10, 0, 24, 0.16) 3px,
+      rgba(10, 0, 24, 0.16) 4px
+    );
+    mix-blend-mode: multiply;
+  }
+  #controls-bar {
+    margin-top: 8px;
+    width: min(96vw, calc(82vh * 16 / 9));
+    max-width: 1040px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px 14px;
+    font-size: 12px;
+    color: #c9b5ea;
+    letter-spacing: 0.4px;
+    text-shadow: 0 1px 0 #090312;
+  }
+  .key {
+    display: inline-block;
+    padding: 1px 6px;
+    border: 1px solid #7f4fd1;
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    background: #241046;
+    color: #5ef6ff;
+    font-weight: bold;
+    font-size: 11px;
+  }
+  .key.pink { color: #ff69c0; border-color: #b83d8a; }
+  .key.gold { color: #ffe066; border-color: #c79a26; }
+  .bar-btn {
+    cursor: pointer;
+    background: #28124d;
+    color: #f4e8ff;
+    border: 1px solid #7f4fd1;
+    border-radius: 3px;
+    padding: 4px 9px;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: bold;
+    transition: all 0.15s ease;
+  }
+  .bar-btn:hover { background: #3b1c70; border-color: #5ef6ff; color: #5ef6ff; }
+  .mobile-controls {
+    width: min(96vw, calc(82vh * 16 / 9));
+    max-width: 1040px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .touch-group {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .touch-btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 8px 10px;
+    background: rgba(24, 10, 48, 0.95);
+    border: 2px solid #5ef6ff;
+    color: #5ef6ff;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 8px rgba(94, 246, 255, 0.25);
+  }
+  .touch-btn.action-atk { border-color: #ff45b5; color: #ff69c0; box-shadow: 0 0 8px rgba(255, 69, 181, 0.28); }
+  .touch-btn.action-jump { border-color: #5ef6ff; color: #5ef6ff; }
+  .touch-btn.action-encore { border-color: #ffe066; color: #ffe066; box-shadow: 0 0 8px rgba(255, 224, 102, 0.28); }
+  .touch-btn.action-pause { border-color: #9d6bff; color: #d8c2ff; }
+  .touch-btn:active, .touch-btn.pressed {
+    background: #ff45b5;
+    color: #ffffff;
+    border-color: #ffffff;
+  }
+  @media (max-width: 640px) {
+    .nav-title { font-size: 7px; }
+    .back-btn { font-size: 8px; padding: 6px 8px; }
+    #controls-bar { font-size: 10px; }
+  }
+</style>
+</head>
+<body>
+<div id="cabinet">
+  <header class="top-nav">
+    <a href="../../index.html#catalog" class="back-btn" id="backBtn">
+      <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> BACK TO VAULT
+    </a>
+    <div class="nav-title">🎤 HUNTRIX: K-POP DEMON HUNTERS</div>
+    <div class="nav-actions">
+      <button id="btn-fullscreen" class="bar-btn" title="Toggle Fullscreen" aria-label="Toggle Fullscreen">
+        <i class="fa-solid fa-expand" aria-hidden="true"></i>
+      </button>
+    </div>
+  </header>
+  <div id="screen-frame">
+    <canvas id="game" width="480" height="270"></canvas>
+    <div id="crt-overlay"></div>
+  </div>
+  <div id="controls-bar">
+    <span><span class="key">WASD</span> / <span class="key">ARROWS</span> Move</span>
+    <span><span class="key pink">J</span> / <span class="key pink">Z</span> 3-Hit Combo</span>
+    <span><span class="key">K</span> / <span class="key">X</span> / <span class="key">SPACE</span> Jump (+Atk = Jump Kick)</span>
+    <span><span class="key gold">L</span> / <span class="key gold">C</span> Encore Special</span>
+    <span><span class="key">P</span> Pause</span>
+    <button id="btn-mute" class="bar-btn">SFX: ON [M]</button>
+    <button id="btn-crt" class="bar-btn">CRT: ON</button>
+  </div>
+  <div class="mobile-controls" aria-label="Touch controls">
+    <div class="touch-group">
+      <button class="touch-btn" id="touchLeft" aria-label="Move Left"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i></button>
+      <button class="touch-btn" id="touchUp" aria-label="Move Up"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i></button>
+      <button class="touch-btn" id="touchDown" aria-label="Move Down"><i class="fa-solid fa-arrow-down" aria-hidden="true"></i></button>
+      <button class="touch-btn" id="touchRight" aria-label="Move Right"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+    </div>
+    <div class="touch-group">
+      <button class="touch-btn action-atk" id="touchAtk" aria-label="Attack">ATK</button>
+      <button class="touch-btn action-jump" id="touchJump" aria-label="Jump">JUMP</button>
+      <button class="touch-btn action-encore" id="touchEncore" aria-label="Encore Special">ENCORE</button>
+      <button class="touch-btn action-pause" id="touchPause" aria-label="Pause"><i class="fa-solid fa-pause" aria-hidden="true"></i></button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  // =========================================================================
+  // 1. CONSTANTS & CANVAS SETUP (16-Bit Native 480x270)
+  // =========================================================================
+  const W = 480;
+  const H = 270;
+  const FLOOR_MIN_Y = 152;
+  const FLOOR_MAX_Y = 248;
+  const WORLD_WIDTH = 1200;
+  const GRAVITY = 780;
+
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d', { alpha: false });
+  ctx.imageSmoothingEnabled = false;
+
+  // UI toggles & fullscreen handler
+  let crtEnabled = true;
+  const cabinetEl = document.getElementById('cabinet');
+  const crtEl = document.getElementById('crt-overlay');
+  const btnCrt = document.getElementById('btn-crt');
+  const btnMute = document.getElementById('btn-mute');
+  const btnFullscreen = document.getElementById('btn-fullscreen');
+  btnCrt.addEventListener('click', () => {
+    crtEnabled = !crtEnabled;
+    crtEl.style.display = crtEnabled ? 'block' : 'none';
+    btnCrt.textContent = crtEnabled ? 'CRT: ON' : 'CRT: OFF';
+  });
+
+  function updateFullscreenIcon() {
+    if (!btnFullscreen) return;
+    const isFs = Boolean(document.fullscreenElement || cabinetEl.classList.contains('is-fullscreen'));
+    btnFullscreen.innerHTML = isFs
+      ? '<i class="fa-solid fa-compress" aria-hidden="true"></i>'
+      : '<i class="fa-solid fa-expand" aria-hidden="true"></i>';
+  }
+  if (btnFullscreen) {
+    btnFullscreen.addEventListener('click', () => {
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {
+          cabinetEl.classList.remove('is-fullscreen');
+          updateFullscreenIcon();
+        });
+      } else if (cabinetEl.requestFullscreen) {
+        cabinetEl.requestFullscreen().catch(() => {
+          cabinetEl.classList.toggle('is-fullscreen');
+          updateFullscreenIcon();
+        });
+      } else {
+        cabinetEl.classList.toggle('is-fullscreen');
+        updateFullscreenIcon();
+      }
+    });
+    document.addEventListener('fullscreenchange', updateFullscreenIcon);
+  }
+
+  // =========================================================================
+  // 2. RETRO 16-BIT BITMAP PIXEL FONT (5x7 CRISP GLYPHS)
+  // =========================================================================
+  const FONT_5X7 = {
+    'A': ['01110','10001','10001','11111','10001','10001','10001'],
+    'B': ['11110','10001','10001','11110','10001','10001','11110'],
+    'C': ['01110','10001','10000','10000','10000','10001','01110'],
+    'D': ['11100','10010','10001','10001','10001','10010','11100'],
+    'E': ['11111','10000','10000','11110','10000','10000','11111'],
+    'F': ['11111','10000','10000','11110','10000','10000','10000'],
+    'G': ['01110','10001','10000','10111','10001','10001','01110'],
+    'H': ['10001','10001','10001','11111','10001','10001','10001'],
+    'I': ['01110','00100','00100','00100','00100','00100','01110'],
+    'J': ['00111','00010','00010','00010','10010','10010','01100'],
+    'K': ['10001','10010','10100','11000','10100','10010','10001'],
+    'L': ['10000','10000','10000','10000','10000','10000','11111'],
+    'M': ['10001','11011','10101','10101','10001','10001','10001'],
+    'N': ['10001','11001','10101','10011','10001','10001','10001'],
+    'O': ['01110','10001','10001','10001','10001','10001','01110'],
+    'P': ['11110','10001','10001','11110','10000','10000','10000'],
+    'Q': ['01110','10001','10001','10001','10101','10010','01101'],
+    'R': ['11110','10001','10001','11110','10100','10010','10001'],
+    'S': ['01111','10000','10000','01110','00001','00001','11110'],
+    'T': ['11111','00100','00100','00100','00100','00100','00100'],
+    'U': ['10001','10001','10001','10001','10001','10001','01110'],
+    'V': ['10001','10001','10001','10001','10001','01010','00100'],
+    'W': ['10001','10001','10001','10101','10101','11011','10001'],
+    'X': ['10001','10001','01010','00100','01010','10001','10001'],
+    'Y': ['10001','10001','01010','00100','00100','00100','00100'],
+    'Z': ['11111','00001','00010','00100','01000','10000','11111'],
+    '0': ['01110','10011','10101','10101','11001','10001','01110'],
+    '1': ['00100','01100','00100','00100','00100','00100','01110'],
+    '2': ['01110','10001','00001','00110','01000','10000','11111'],
+    '3': ['11110','00001','00001','01110','00001','00001','11110'],
+    '4': ['00010','00110','01010','10010','11111','00010','00010'],
+    '5': ['11111','10000','11110','00001','00001','10001','01110'],
+    '6': ['01110','10000','11110','10001','10001','10001','01110'],
+    '7': ['11111','00001','00010','00100','01000','01000','01000'],
+    '8': ['01110','10001','10001','01110','10001','10001','01110'],
+    '9': ['01110','10001','10001','01111','00001','00001','01110'],
+    '!': ['00100','00100','00100','00100','00100','00000','00100'],
+    '?': ['01110','10001','00010','00100','00100','00000','00100'],
+    ':': ['00000','00100','00100','00000','00100','00100','00000'],
+    '.': ['00000','00000','00000','00000','00000','01100','01100'],
+    ',': ['00000','00000','00000','00000','00100','00100','01000'],
+    '-': ['00000','00000','00000','11111','00000','00000','00000'],
+    '+': ['00000','00100','00100','11111','00100','00100','00000'],
+    '/': ['00001','00010','00010','00100','01000','01000','10000'],
+    '\'': ['00100','00100','01000','00000','00000','00000','00000'],
+    '[': ['01110','01000','01000','01000','01000','01000','01110'],
+    ']': ['01110','00010','00010','00010','00010','00010','01110'],
+    '>': ['10000','01000','00100','00010','00100','01000','10000'],
+    '<': ['00001','00010','00100','01000','00100','00010','00001'],
+    '%': ['11001','11010','00010','00100','01000','01011','10011'],
+    '|': ['00100','00100','00100','00100','00100','00100','00100'],
+    ' ': ['00000','00000','00000','00000','00000','00000','00000'],
+  };
+
+  function drawText(text, x, y, color = '#ffffff', scale = 1, align = 'left', shadow = '#18082a') {
+    const str = String(text).toUpperCase();
+    const charW = 6 * scale;
+    const totalW = str.length * charW - scale;
+    let startX = Math.round(x);
+    if (align === 'center') startX = Math.round(x - totalW / 2);
+    else if (align === 'right') startX = Math.round(x - totalW);
+    const startY = Math.round(y);
+
+    const drawPass = (ox, oy, col) => {
+      ctx.fillStyle = col;
+      for (let i = 0; i < str.length; i++) {
+        const glyph = FONT_5X7[str[i]] || FONT_5X7[' '];
+        const gx = startX + i * charW + ox;
+        for (let r = 0; r < 7; r++) {
+          const row = glyph[r];
+          for (let c = 0; c < 5; c++) {
+            if (row[c] === '1') {
+              ctx.fillRect(gx + c * scale, startY + r * scale + oy, scale, scale);
+            }
+          }
+        }
+      }
+    };
+    if (shadow) drawPass(scale, scale, shadow);
+    drawPass(0, 0, color);
+  }
+
+  // =========================================================================
+  // 3. 16-BIT WEB AUDIO CHIPTUNE SYNTH & SFX ENGINE
+  // =========================================================================
+  class RetroAudio {
+    constructor() {
+      this.ctx = null;
+      this.muted = false;
+      this.bgmTimer = null;
+      this.bgmStep = 0;
+      this.mode = 'none'; // 'stage', 'boss', 'victory'
+    }
+    init() {
+      try {
+        if (!this.ctx) {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (AC) this.ctx = new AC();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume().catch(() => {});
+        }
+      } catch (e) {}
+    }
+    toggleMute() {
+      this.muted = !this.muted;
+      btnMute.textContent = this.muted ? 'SFX: OFF [M]' : 'SFX: ON [M]';
+    }
+    tone(freq, dur, type = 'square', vol = 0.08, slideTo = null, delay = 0) {
+      if (this.muted || !this.ctx) return;
+      try {
+        const t0 = this.ctx.currentTime + delay;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, t0);
+        if (slideTo) osc.frequency.exponentialRampToValueAtTime(Math.max(20, slideTo), t0 + dur);
+        gain.gain.setValueAtTime(vol, t0);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(t0);
+        osc.stop(t0 + dur + 0.01);
+      } catch (e) {}
+    }
+    noise(dur, vol = 0.09, delay = 0, hp = 500) {
+      if (this.muted || !this.ctx) return;
+      try {
+        const t0 = this.ctx.currentTime + delay;
+        const bufSize = Math.floor(this.ctx.sampleRate * dur);
+        const buf = this.ctx.createBuffer(1, bufSize, this.ctx.sampleRate);
+        const data = buf.getChannelData(0);
+        for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+        const src = this.ctx.createBufferSource();
+        src.buffer = buf;
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'highpass';
+        filter.frequency.value = hp;
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(vol, t0);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+        src.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+        src.start(t0);
+      } catch (e) {}
+    }
+    playSwing(step) {
+      const f = step === 3 ? 520 : step === 2 ? 440 : 360;
+      this.tone(f, 0.09, 'triangle', 0.09, 130);
+      this.noise(0.06, 0.05, 0, 1400);
+    }
+    playHit(heavy = false) {
+      this.noise(heavy ? 0.14 : 0.08, heavy ? 0.14 : 0.09, 0, heavy ? 220 : 600);
+      this.tone(heavy ? 180 : 250, heavy ? 0.14 : 0.07, 'square', heavy ? 0.11 : 0.07, 55);
+      if (heavy) this.tone(420, 0.11, 'sawtooth', 0.07, 110, 0.02);
+    }
+    playJump() {
+      this.tone(240, 0.12, 'square', 0.06, 560);
+    }
+    playHurt() {
+      this.tone(190, 0.16, 'sawtooth', 0.1, 70);
+      this.noise(0.12, 0.1, 0, 300);
+    }
+    playPickup() {
+      this.tone(523, 0.07, 'square', 0.08, null, 0);
+      this.tone(659, 0.07, 'square', 0.08, null, 0.07);
+      this.tone(784, 0.09, 'square', 0.08, null, 0.14);
+      this.tone(1046, 0.14, 'square', 0.09, null, 0.21);
+    }
+    playEncoreReady() {
+      const notes = [523, 659, 784, 1046];
+      notes.forEach((n, i) => this.tone(n, 0.1, 'triangle', 0.08, null, i * 0.05));
+    }
+    playEncoreSpecial() {
+      // K-pop synth fanfare + massive Honmoon blast
+      const arp = [523, 659, 784, 987, 1046, 1318, 1568];
+      arp.forEach((n, i) => this.tone(n, 0.14, 'square', 0.08, null, i * 0.045));
+      this.noise(0.45, 0.15, 0.3, 180);
+      this.tone(160, 0.5, 'sawtooth', 0.12, 42, 0.3);
+      this.tone(880, 0.3, 'triangle', 0.09, 220, 0.65);
+      this.noise(0.35, 0.13, 0.72, 240);
+    }
+    playBossWarning() {
+      for (let i = 0; i < 3; i++) {
+        this.tone(620, 0.16, 'sawtooth', 0.08, 360, i * 0.28);
+      }
+    }
+    playSelect() {
+      this.tone(660, 0.06, 'square', 0.07);
+    }
+    playConfirm() {
+      this.tone(523, 0.07, 'square', 0.08);
+      this.tone(784, 0.12, 'square', 0.09, null, 0.07);
+    }
+    playKo() {
+      this.noise(0.2, 0.12, 0, 200);
+      this.tone(300, 0.22, 'sawtooth', 0.09, 55);
+    }
+    startBGM(mode) {
+      if (this.mode === mode && this.bgmTimer) return;
+      this.stopBGM();
+      this.mode = mode;
+      this.bgmStep = 0;
+      const bpm = mode === 'boss' ? 148 : 132;
+      const stepMs = (60 / bpm / 2) * 1000;
+
+      // Upbeat K-pop electro-arcade synth lines (Hz)
+      const stageBass = [110, 110, 220, 110, 130.8, 130.8, 146.8, 164.8, 110, 110, 220, 110, 174.6, 164.8, 146.8, 130.8];
+      const stageLead = [440, 0, 523, 587, 659, 0, 587, 523, 440, 0, 659, 784, 880, 784, 659, 587];
+      const bossBass  = [98, 98, 196, 98, 116.5, 98, 130.8, 146.8, 98, 98, 196, 146.8, 130.8, 116.5, 110, 98];
+      const bossLead  = [392, 466, 587, 466, 622, 587, 466, 392, 784, 0, 698, 622, 587, 466, 523, 466];
+
+      this.bgmTimer = setInterval(() => {
+        if (this.muted || !this.ctx || this.ctx.state !== 'running') return;
+        const s = this.bgmStep % 16;
+        const bass = mode === 'boss' ? bossBass[s] : stageBass[s];
+        const lead = mode === 'boss' ? bossLead[s] : stageLead[s];
+        this.tone(bass, 0.11, 'triangle', 0.055);
+        if (lead > 0) this.tone(lead, 0.09, 'square', 0.028);
+        if (s % 4 === 0) this.tone(95, 0.07, 'sine', 0.07, 36); // Kick
+        if (s % 4 === 2) this.noise(0.05, 0.032, 0, 2200);       // Snare/hat
+        this.bgmStep++;
+      }, stepMs);
+    }
+    stopBGM() {
+      if (this.bgmTimer) {
+        clearInterval(this.bgmTimer);
+        this.bgmTimer = null;
+      }
+      this.mode = 'none';
+    }
+  }
+  const sfx = new RetroAudio();
+  btnMute.addEventListener('click', () => { sfx.init(); sfx.toggleMute(); });
+
+  // =========================================================================
+  // 4. PROCEDURAL 16-BIT PIXEL ART SPRITE ENGINE (WITH 1PX OUTLINE BAKER)
+  // =========================================================================
+  function createOffscreen(w, h) {
+    const c = document.createElement('canvas');
+    c.width = w;
+    c.height = h;
+    const g = c.getContext('2d');
+    g.imageSmoothingEnabled = false;
+    return { c, g };
+  }
+
+  // Adds authentic 1px dark 16-bit outline around non-transparent pixels
+  function applyOutline(srcCanvas, outlineColor = '#1a0a2e') {
+    const w = srcCanvas.width;
+    const h = srcCanvas.height;
+    const { c, g } = createOffscreen(w, h);
+    const sctx = srcCanvas.getContext('2d');
+    const img = sctx.getImageData(0, 0, w, h).data;
+    g.fillStyle = outlineColor;
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const a = img[(y * w + x) * 4 + 3];
+        if (a > 20) continue;
+        // Check 4 cardinal neighbors
+        const n1 = y > 0     && img[((y - 1) * w + x) * 4 + 3] > 20;
+        const n2 = y < h - 1 && img[((y + 1) * w + x) * 4 + 3] > 20;
+        const n3 = x > 0     && img[(y * w + (x - 1)) * 4 + 3] > 20;
+        const n4 = x < w - 1 && img[(y * w + (x + 1)) * 4 + 3] > 20;
+        if (n1 || n2 || n3 || n4) g.fillRect(x, y, 1, 1);
+      }
+    }
+    g.drawImage(srcCanvas, 0, 0);
+    return c;
+  }
+
+  function makeFlashVersion(srcCanvas, tint = '#ffffff') {
+    const { c, g } = createOffscreen(srcCanvas.width, srcCanvas.height);
+    g.drawImage(srcCanvas, 0, 0);
+    g.globalCompositeOperation = 'source-in';
+    g.fillStyle = tint;
+    g.fillRect(0, 0, c.width, c.height);
+    return c;
+  }
+
+  function bakePixelGrid(rows, palette, scale = 1, outline = null) {
+    const h = rows.length * scale;
+    const w = rows[0].length * scale;
+    const { c, g } = createOffscreen(w + (outline ? 2 : 0), h + (outline ? 2 : 0));
+    const pad = outline ? 1 : 0;
+    for (let y = 0; y < rows.length; y++) {
+      for (let x = 0; x < rows[y].length; x++) {
+        const ch = rows[y][x];
+        if (ch !== '.' && palette[ch]) {
+          g.fillStyle = palette[ch];
+          g.fillRect(pad + x * scale, pad + y * scale, scale, scale);
+        }
+      }
+    }
+    return outline ? applyOutline(c, outline) : c;
+  }
+
+  // Draw crisp pixel line on offscreen sprite context
+  function pxLine(g, x0, y0, x1, y1, color, thick = 1) {
+    g.fillStyle = color;
+    x0 = Math.round(x0); y0 = Math.round(y0);
+    x1 = Math.round(x1); y1 = Math.round(y1);
+    const dx = Math.abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+    const dy = -Math.abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+    let err = dx + dy;
+    while (true) {
+      g.fillRect(x0, y0, thick, thick);
+      if (x0 === x1 && y0 === y1) break;
+      const e2 = 2 * err;
+      if (e2 >= dy) { err += dy; x0 += sx; }
+      if (e2 <= dx) { err += dx; y0 += sy; }
+    }
+  }
+
+  // Character Roster Definitions (Inspired by HUNTRIX)
+  const HUNTERS = [
+    {
+      id: 'rumi',
+      name: 'RUMI',
+      title: 'VOCAL / BLADE',
+      hp: 120,
+      speed: 122,
+      power: 1.0,
+      reach: 36,
+      atkSpeed: 1.0,
+      hair: '#a83ef5',
+      hairHi: '#e08bff',
+      hairDark: '#5b1b99',
+      jacket: '#ff9d2e',
+      jacketDark: '#c95c16',
+      top: '#ffffff',
+      shorts: '#2b2459',
+      boots: '#241a47',
+      accent: '#3ff5ff',
+      weaponType: 'katana',
+      weaponGlow: '#5ef6ff',
+      weaponEdge: '#ffffff',
+      skin: '#ffcaa3',
+      skinShade: '#df9c76',
+    },
+    {
+      id: 'mira',
+      name: 'MIRA',
+      title: 'DANCER / GLAIVE',
+      hp: 132,
+      speed: 110,
+      power: 1.15,
+      reach: 44,
+      atkSpeed: 0.94,
+      hair: '#e62e6b',
+      hairHi: '#ff85b3',
+      hairDark: '#8c1240',
+      jacket: '#2a3799',
+      jacketDark: '#191f63',
+      top: '#ffdb58',
+      shorts: '#ffb02e',
+      boots: '#471854',
+      accent: '#ff4da6',
+      weaponType: 'glaive',
+      weaponGlow: '#4df5ff',
+      weaponEdge: '#ffe478',
+      skin: '#ffd0ac',
+      skinShade: '#e09d78',
+    },
+    {
+      id: 'zoey',
+      name: 'ZOEY',
+      title: 'RAPPER / DAGGERS',
+      hp: 112,
+      speed: 138,
+      power: 0.92,
+      reach: 30,
+      atkSpeed: 1.16,
+      hair: '#2b224a',
+      hairHi: '#62569e',
+      hairDark: '#151029',
+      jacket: '#1cc4b8',
+      jacketDark: '#0e7878',
+      top: '#281d4d',
+      shorts: '#352666',
+      boots: '#ff5c93',
+      accent: '#ffe066',
+      weaponType: 'daggers',
+      weaponGlow: '#c77dff',
+      weaponEdge: '#ffffff',
+      skin: '#f5be95',
+      skinShade: '#cf9069',
+    }
+  ];
+
+  // Sprite Cache Storage
+  const SPRITES = {
+    hunters: {},
+    portraits: {},
+    enemies: {},
+    items: {},
+  };
+
+  function bakeHunterPose(h, pose) {
+    // 72x56 sprite canvas; feet anchor at (32, 50), facing RIGHT
+    const { c, g } = createOffscreen(72, 56);
+    const r = (x, y, w, h2, col) => { g.fillStyle = col; g.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h2)); };
+
+    let bobY = 0;
+    let bodyX = 28;
+    let lean = 0;
+    let legL = { x: 28, y: 37, fx: 26, fy: 48 };
+    let legR = { x: 33, y: 37, fx: 35, fy: 48 };
+    let armB = { x: 27, y: 24, hx: 22, hy: 30 };
+    let armF = { x: 35, y: 24, hx: 41, hy: 28 };
+    let weaponAngle = -0.3;
+    let showWeapon = true;
+    let slashArc = 0; // 0 none, 1..3 combo, 4 special
+
+    if (pose === 'idle0') {
+      bobY = 0;
+    } else if (pose === 'idle1') {
+      bobY = 1;
+      armF.hy = 29;
+    } else if (pose === 'walk0') {
+      bobY = -1; lean = 1;
+      legL = { x: 29, y: 37, fx: 21, fy: 47 };
+      legR = { x: 33, y: 37, fx: 40, fy: 48 };
+      armB = { x: 27, y: 24, hx: 34, hy: 31 };
+      armF = { x: 35, y: 24, hx: 27, hy: 30 };
+    } else if (pose === 'walk1') {
+      bobY = 0; lean = 1;
+      legL = { x: 29, y: 37, fx: 29, fy: 48 };
+      legR = { x: 33, y: 37, fx: 33, fy: 46 };
+    } else if (pose === 'walk2') {
+      bobY = -1; lean = 1;
+      legL = { x: 29, y: 37, fx: 39, fy: 47 };
+      legR = { x: 33, y: 37, fx: 22, fy: 48 };
+      armB = { x: 27, y: 24, hx: 21, hy: 29 };
+      armF = { x: 35, y: 24, hx: 42, hy: 27 };
+    } else if (pose === 'walk3') {
+      bobY = 0; lean = 1;
+      legL = { x: 29, y: 37, fx: 31, fy: 46 };
+      legR = { x: 33, y: 37, fx: 30, fy: 48 };
+    } else if (pose === 'jump') {
+      bobY = -3; lean = 1;
+      legL = { x: 28, y: 35, fx: 24, fy: 42 };
+      legR = { x: 33, y: 35, fx: 37, fy: 44 };
+      armB = { x: 26, y: 22, hx: 20, hy: 18 };
+      armF = { x: 35, y: 22, hx: 43, hy: 20 };
+    } else if (pose === 'jumpkick') {
+      bobY = -2; lean = -2;
+      bodyX = 25;
+      legL = { x: 26, y: 35, fx: 19, fy: 41 }; // Tucked knee
+      legR = { x: 31, y: 33, fx: 49, fy: 31 }; // Extended flying kick!
+      armB = { x: 24, y: 22, hx: 16, hy: 25 };
+      armF = { x: 32, y: 22, hx: 40, hy: 20 };
+      weaponAngle = -2.7;
+    } else if (pose === 'atk1') {
+      bobY = 1; lean = 3; bodyX = 31;
+      legL = { x: 28, y: 37, fx: 21, fy: 48 };
+      legR = { x: 34, y: 37, fx: 42, fy: 48 };
+      armB = { x: 28, y: 24, hx: 22, hy: 28 };
+      armF = { x: 37, y: 24, hx: 48, hy: 24 };
+      weaponAngle = 0.08;
+      slashArc = 1;
+    } else if (pose === 'atk2') {
+      bobY = 0; lean = 4; bodyX = 32;
+      legL = { x: 29, y: 37, fx: 23, fy: 48 };
+      legR = { x: 35, y: 37, fx: 44, fy: 47 };
+      armB = { x: 29, y: 23, hx: 24, hy: 19 };
+      armF = { x: 38, y: 23, hx: 49, hy: 18 };
+      weaponAngle = -0.45;
+      slashArc = 2;
+    } else if (pose === 'atk3') {
+      bobY = 2; lean = 5; bodyX = 34;
+      legL = { x: 29, y: 37, fx: 19, fy: 48 };
+      legR = { x: 37, y: 37, fx: 47, fy: 48 };
+      armB = { x: 30, y: 24, hx: 21, hy: 26 };
+      armF = { x: 39, y: 24, hx: 51, hy: 26 };
+      weaponAngle = 0.22;
+      slashArc = 3;
+    } else if (pose === 'special') {
+      bobY = -2; lean = 0; bodyX = 29;
+      legL = { x: 28, y: 36, fx: 21, fy: 48 };
+      legR = { x: 35, y: 36, fx: 42, fy: 48 };
+      armB = { x: 27, y: 22, hx: 17, hy: 14 };
+      armF = { x: 37, y: 22, hx: 47, hy: 14 };
+      weaponAngle = -1.2;
+      slashArc = 4;
+    } else if (pose === 'hurt') {
+      bobY = 1; lean = -3; bodyX = 25;
+      legL = { x: 26, y: 37, fx: 22, fy: 48 };
+      legR = { x: 32, y: 37, fx: 36, fy: 48 };
+      armB = { x: 24, y: 24, hx: 18, hy: 20 };
+      armF = { x: 32, y: 24, hx: 36, hy: 19 };
+      showWeapon = false;
+    }
+
+    const hx = bodyX + lean;
+    const hy = 12 + bobY;
+
+    // 1) Flowing Back Hair / Braid (signature silhouettes!)
+    if (h.id === 'rumi') {
+      // Iconic long purple braid streaming behind
+      const swing = (pose.startsWith('atk') || pose === 'jumpkick') ? -6 : (pose === 'walk0' || pose === 'walk2' ? -3 : 0);
+      pxLine(g, hx + 1, hy + 5, hx - 9 + swing, hy + 12, h.hairDark, 4);
+      pxLine(g, hx + 1, hy + 4, hx - 9 + swing, hy + 11, h.hair, 3);
+      pxLine(g, hx - 8 + swing, hy + 11, hx - 15 + swing, hy + 18, h.hair, 3);
+      pxLine(g, hx - 14 + swing, hy + 17, hx - 18 + swing, hy + 21, h.hairHi, 2);
+      // Braid highlight beads
+      r(hx - 4 + swing / 2, hy + 7, 2, 1, h.hairHi);
+      r(hx - 10 + swing, hy + 12, 2, 1, h.hairHi);
+    } else if (h.id === 'mira') {
+      // Long flowing crimson/magenta idol hair cape
+      const sway = (pose === 'jumpkick' || pose.startsWith('atk')) ? -5 : 0;
+      r(hx - 9 + sway, hy + 2, 11, 14, h.hairDark);
+      r(hx - 11 + sway, hy + 5, 11, 13, h.hair);
+      r(hx - 13 + sway, hy + 9, 8, 10, h.hair);
+      r(hx - 8 + sway, hy + 5, 4, 8, h.hairHi);
+    } else if (h.id === 'zoey') {
+      // Space buns!
+      r(hx - 2, hy - 2, 4, 4, h.hair);
+      r(hx - 1, hy - 2, 2, 2, h.hairHi);
+      r(hx + 7, hy - 2, 4, 4, h.hair);
+      r(hx + 8, hy - 2, 2, 2, h.hairHi);
+    }
+
+    // 2) Back Arm
+    pxLine(g, armB.x, armB.y + bobY, armB.hx, armB.hy + bobY, h.skinShade, 3);
+    pxLine(g, armB.x, armB.y + bobY, (armB.x + armB.hx) / 2, (armB.y + armB.hy) / 2 + bobY, h.jacketDark, 3);
+
+    // 3) Back Leg
+    pxLine(g, legL.x, legL.y + bobY, legL.fx, legL.fy, h.skinShade, 3);
+    r(legL.fx - 2, legL.fy - 3, 5, 5, h.boots);
+    r(legL.fx - 1, legL.fy + 1, 5, 2, h.accent);
+
+    // 4) Torso / K-Pop Stage Outfit
+    r(bodyX + lean - 1, 22 + bobY, 10, 12, h.top);
+    r(bodyX + lean - 2, 22 + bobY, 4, 10, h.jacket);
+    r(bodyX + lean + 6, 22 + bobY, 4, 10, h.jacket);
+    r(bodyX + lean - 1, 22 + bobY, 10, 3, h.jacket);
+    // Belt & Shorts/Skirt
+    r(bodyX + lean - 1, 33 + bobY, 10, 2, h.accent);
+    r(bodyX + lean - 2, 35 + bobY, 12, 5, h.shorts);
+    r(bodyX + lean, 35 + bobY, 8, 2, h.jacketDark);
+
+    // 5) Front Leg (with neon kick trail on jumpkick!)
+    if (pose === 'jumpkick') {
+      pxLine(g, legR.x + 2, legR.y + bobY, legR.fx, legR.fy, '#ff59b8', 5);
+      pxLine(g, legR.x, legR.y + bobY, legR.fx, legR.fy, h.skin, 3);
+      r(legR.fx - 4, legR.fy - 2, 7, 5, h.boots);
+      r(legR.fx, legR.fy - 1, 4, 3, '#5ef6ff');
+    } else {
+      pxLine(g, legR.x, legR.y + bobY, legR.fx, legR.fy, h.skin, 3);
+      r(legR.fx - 2, legR.fy - 4, 5, 6, h.boots);
+      r(legR.fx - 1, legR.fy + 1, 6, 2, h.accent);
+    }
+
+    // 6) Head & Expressive 16-Bit Anime Face
+    r(hx, hy, 9, 10, h.skin);
+    r(hx, hy + 8, 9, 2, h.skinShade);
+    // Hair top & bangs
+    r(hx - 1, hy - 1, 11, 4, h.hair);
+    r(hx - 1, hy + 2, 3, 5, h.hair);
+    r(hx + 2, hy - 1, 5, 2, h.hairHi);
+    r(hx + 6, hy + 1, 4, 2, h.hair);
+    // Eyes (facing right)
+    if (pose === 'hurt') {
+      r(hx + 4, hy + 4, 2, 1, '#1a0a2e');
+      r(hx + 7, hy + 4, 2, 1, '#1a0a2e');
+      r(hx + 5, hy + 7, 2, 2, '#992244');
+    } else {
+      r(hx + 4, hy + 4, 2, 3, '#1a0a2e');
+      r(hx + 4, hy + 4, 1, 1, '#ffffff');
+      r(hx + 7, hy + 4, 2, 3, '#1a0a2e');
+      r(hx + 7, hy + 4, 1, 1, '#ffffff');
+      // Confident idol smirk or battle shout
+      if (pose.startsWith('atk') || pose === 'special' || pose === 'jumpkick') {
+        r(hx + 5, hy + 8, 3, 1, '#d9487b');
+      } else {
+        r(hx + 6, hy + 8, 2, 1, '#d9487b');
+      }
+    }
+
+    // 7) Front Arm & Glowing Spirit Weapon
+    pxLine(g, armF.x, armF.y + bobY, armF.hx, armF.hy + bobY, h.skin, 3);
+    pxLine(g, armF.x, armF.y + bobY, (armF.x + armF.hx) / 2, (armF.y + armF.hy) / 2 + bobY, h.jacket, 3);
+
+    if (showWeapon) {
+      const wx = armF.hx;
+      const wy = armF.hy + bobY;
+      const len = h.weaponType === 'glaive' ? 23 : h.weaponType === 'katana' ? 19 : 11;
+      const ex = wx + Math.cos(weaponAngle) * len;
+      const ey = wy + Math.sin(weaponAngle) * len;
+      if (h.weaponType === 'glaive') {
+        // Long golden pole + glowing cyan blade
+        const bx = wx - Math.cos(weaponAngle) * 10;
+        const by = wy - Math.sin(weaponAngle) * 10;
+        pxLine(g, bx, by, ex - Math.cos(weaponAngle) * 6, ey - Math.sin(weaponAngle) * 6, '#e6a832', 2);
+        pxLine(g, ex - Math.cos(weaponAngle) * 8, ey - Math.sin(weaponAngle) * 8, ex, ey, h.weaponGlow, 4);
+        pxLine(g, ex - Math.cos(weaponAngle) * 7, ey - Math.sin(weaponAngle) * 7, ex, ey, '#ffffff', 2);
+      } else if (h.weaponType === 'katana') {
+        pxLine(g, wx, wy, ex, ey, h.weaponGlow, 3);
+        pxLine(g, wx + 1, wy, ex, ey - 1, h.weaponEdge, 1);
+        r(wx - 1, wy - 1, 3, 3, '#ffe066'); // Hilt guard
+      } else {
+        // Dual spirit daggers (both hands!)
+        pxLine(g, wx, wy, ex, ey, h.weaponGlow, 3);
+        pxLine(g, wx, wy, ex, ey, '#ffffff', 1);
+        const bx2 = armB.hx, by2 = armB.hy + bobY;
+        pxLine(g, bx2, by2, bx2 + 8, by2 - 4, h.weaponGlow, 2);
+        pxLine(g, bx2, by2, bx2 + 8, by2 - 4, '#ffffff', 1);
+      }
+    }
+
+    // 8) Baked Attack Motion Slash Arcs
+    if (slashArc === 1) {
+      pxLine(g, 42, 16, 65, 22, h.weaponGlow, 3);
+      pxLine(g, 44, 18, 63, 22, '#ffffff', 1);
+    } else if (slashArc === 2) {
+      pxLine(g, 40, 32, 64, 12, '#ff61c3', 3);
+      pxLine(g, 43, 30, 65, 14, h.weaponGlow, 2);
+      pxLine(g, 45, 28, 63, 15, '#ffffff', 1);
+    } else if (slashArc === 3) {
+      // Big glowing crescent finisher!
+      pxLine(g, 44, 8, 68, 22, '#ff45b5', 4);
+      pxLine(g, 68, 22, 46, 40, '#ff45b5', 4);
+      pxLine(g, 46, 10, 66, 22, h.weaponGlow, 3);
+      pxLine(g, 66, 22, 48, 38, h.weaponGlow, 3);
+      pxLine(g, 49, 13, 64, 22, '#ffffff', 1);
+      pxLine(g, 64, 22, 50, 35, '#ffffff', 1);
+    }
+
+    return applyOutline(c, '#19082c');
+  }
+
+  function bakePortrait(h) {
+    // 22x22 16-bit arcade portrait with background
+    const { c, g } = createOffscreen(22, 22);
+    // Gradient backdrop
+    g.fillStyle = '#3b1566'; g.fillRect(0, 0, 22, 22);
+    g.fillStyle = '#5c1e8c'; g.fillRect(0, 0, 22, 11);
+    g.fillStyle = h.accent;  g.fillRect(1, 1, 20, 1);
+
+    // Back hair
+    g.fillStyle = h.hairDark;
+    g.fillRect(3, 5, 16, 16);
+    g.fillStyle = h.hair;
+    g.fillRect(4, 4, 14, 15);
+    if (h.id === 'zoey') {
+      g.fillRect(2, 2, 5, 5);
+      g.fillRect(15, 2, 5, 5);
+      g.fillStyle = h.hairHi;
+      g.fillRect(3, 3, 2, 2);
+      g.fillRect(16, 3, 2, 2);
+    }
+    // Shoulders
+    g.fillStyle = h.jacket;
+    g.fillRect(3, 18, 16, 4);
+    g.fillStyle = h.top;
+    g.fillRect(8, 18, 6, 4);
+    // Face
+    g.fillStyle = h.skin;
+    g.fillRect(6, 7, 10, 10);
+    g.fillStyle = h.skinShade;
+    g.fillRect(6, 15, 10, 2);
+    g.fillRect(9, 17, 4, 2);
+    // Hair bangs
+    g.fillStyle = h.hair;
+    g.fillRect(5, 4, 12, 4);
+    g.fillRect(5, 7, 2, 5);
+    g.fillRect(15, 7, 2, 5);
+    g.fillStyle = h.hairHi;
+    g.fillRect(7, 5, 5, 2);
+    // Fierce eyes
+    g.fillStyle = '#1b092e';
+    g.fillRect(7, 10, 3, 3);
+    g.fillRect(12, 10, 3, 3);
+    g.fillStyle = '#ffffff';
+    g.fillRect(8, 10, 1, 1);
+    g.fillRect(13, 10, 1, 1);
+    // Lips
+    g.fillStyle = '#e0487f';
+    g.fillRect(9, 14, 4, 1);
+    return c;
+  }
+
+  function bakeEnemyPose(type, pose) {
+    // 64x56 for normal demons, 84x76 for mini-boss
+    const isBoss = type === 'boss';
+    const cw = isBoss ? 84 : 64;
+    const ch = isBoss ? 76 : 56;
+    const { c, g } = createOffscreen(cw, ch);
+    const r = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h)); };
+
+    const palettes = {
+      imp:     { skin: '#74a852', shade: '#436e33', cloth: '#542573', cloth2: '#33124a', eye: '#ffe64d', accent: '#ff3b8d', horn: '#d9386b' },
+      banshee: { skin: '#449be8', shade: '#22599e', cloth: '#25174a', cloth2: '#140b2e', eye: '#70ffff', accent: '#ff4da6', horn: '#3bf0ff' },
+      gat:     { skin: '#7d52b8', shade: '#4c2b7a', cloth: '#201336', cloth2: '#421d6b', eye: '#ffea54', accent: '#ff2e93', horn: '#160a24' },
+      boss:    { skin: '#8a52c9', shade: '#52288a', cloth: '#1f0e38', cloth2: '#8c1655', eye: '#ff3366', accent: '#ff42b3', horn: '#140821' },
+    };
+    const p = palettes[type];
+    const bob = pose === 'walk0' ? -1 : pose === 'walk1' ? 1 : pose === 'atk' ? 1 : 0;
+
+    if (isBoss) {
+      // Towering Jeoseung Saja Demon Captain! Anchor feet at (42, 69)
+      const bx = pose === 'atk' ? 44 : pose === 'hurt' ? 35 : 38;
+      const by = 18 + bob;
+      // Flowing demon hanbok cape
+      r(bx - 13, by + 16, 26, 26, p.cloth);
+      r(bx - 16, by + 26, 32, 16, p.cloth);
+      r(bx - 11, by + 20, 22, 20, p.cloth2);
+      // Glowing magenta spirit trim
+      r(bx - 15, by + 39, 30, 3, p.accent);
+      // Legs / boots
+      const sOff = pose === 'walk0' ? 5 : pose === 'walk1' ? -4 : 0;
+      r(bx - 8 + sOff, by + 40, 6, 11, '#180a2b');
+      r(bx + 3 - sOff, by + 40, 6, 11, '#180a2b');
+      // Broad shoulders & rib chest armor
+      r(bx - 10, by + 13, 21, 14, p.cloth);
+      r(bx - 6, by + 15, 13, 10, p.skin);
+      r(bx - 4, by + 17, 9, 2, p.accent);
+      r(bx - 3, by + 21, 7, 2, p.accent);
+      // Head
+      r(bx - 5, by + 2, 11, 11, p.skin);
+      r(bx - 5, by + 10, 11, 3, p.shade);
+      // Glowing crimson eyes + fanged grin
+      r(bx + 0, by + 6, 2, 2, p.eye);
+      r(bx + 4, by + 6, 2, 2, p.eye);
+      r(bx + 0, by + 10, 5, 2, '#1a0624');
+      r(bx + 1, by + 10, 1, 1, '#ffffff');
+      r(bx + 4, by + 10, 1, 1, '#ffffff');
+      // Iconic Traditional Korean Wide-Brimmed GAT Hat (with glowing trim!)
+      r(bx - 15, by + 1, 31, 3, p.horn);
+      r(bx - 14, by + 2, 29, 1, p.accent);
+      r(bx - 6, by - 9, 13, 11, p.horn);
+      r(bx - 5, by - 7, 11, 2, p.cloth2);
+      // Demon horns poking through hat
+      pxLine(g, bx - 4, by - 7, bx - 9, by - 14, '#ff4588', 2);
+      pxLine(g, bx + 5, by - 7, bx + 10, by - 14, '#ff4588', 2);
+
+      // Arms & Attack Claw/Spirit Blade
+      if (pose === 'windup') {
+        pxLine(g, bx - 6, by + 16, bx - 18, by + 8, p.skin, 4);
+        pxLine(g, bx + 6, by + 16, bx - 2, by + 6, p.skin, 4);
+        r(bx - 20, by + 4, 6, 6, '#ff42b3');
+      } else if (pose === 'atk') {
+        pxLine(g, bx + 7, by + 17, bx + 28, by + 20, p.skin, 4);
+        pxLine(g, bx + 20, by + 8, bx + 36, by + 22, '#ff2e93', 4);
+        pxLine(g, bx + 36, by + 22, bx + 22, by + 36, '#ff2e93', 4);
+        pxLine(g, bx + 23, by + 11, bx + 33, by + 22, '#ffe066', 2);
+      } else if (pose === 'slam') {
+        pxLine(g, bx - 8, by + 16, bx - 16, by + 32, p.skin, 4);
+        pxLine(g, bx + 8, by + 16, bx + 18, by + 32, p.skin, 4);
+        r(bx - 18, by + 32, 38, 4, '#ff3399');
+      } else {
+        pxLine(g, bx - 8, by + 17, bx - 14, by + 29, p.skin, 3);
+        pxLine(g, bx + 8, by + 17, bx + 18, by + 25, p.skin, 4);
+        r(bx + 17, by + 24, 5, 4, p.accent);
+      }
+      return applyOutline(c, '#120521');
+    }
+
+    // Standard Demons (Anchor feet at 32, 50)
+    const bx = pose === 'atk' ? 35 : pose === 'hurt' ? 27 : 31;
+    const by = 18 + bob;
+    const stride = pose === 'walk0' ? 5 : pose === 'walk1' ? -5 : 0;
+
+    // Legs
+    pxLine(g, bx - 3, by + 21, bx - 6 + stride, 49, p.shade, 3);
+    pxLine(g, bx + 3, by + 21, bx + 5 - stride, 49, p.skin, 3);
+
+    // Torso
+    r(bx - 5, by + 10, 11, 13, p.cloth);
+    r(bx - 4, by + 12, 9, 8, p.cloth2);
+    // Glowing demonic sigil on chest
+    r(bx - 1, by + 14, 4, 3, p.accent);
+
+    // Head
+    r(bx - 4, by, 10, 10, p.skin);
+    r(bx - 4, by + 7, 10, 3, p.shade);
+    // Glowing eyes
+    r(bx + 1, by + 3, 2, 2, p.eye);
+    r(bx + 4, by + 3, 2, 2, p.eye);
+    // Open fanged mouth
+    r(bx + 1, by + 7, 5, 2, '#1f072e');
+    r(bx + 2, by + 7, 1, 1, '#ffffff');
+    r(bx + 5, by + 7, 1, 1, '#ffffff');
+
+    // Type-specific headgear / features
+    if (type === 'imp') {
+      pxLine(g, bx - 2, by, bx - 5, by - 5, p.horn, 2);
+      pxLine(g, bx + 3, by, bx + 6, by - 5, p.horn, 2);
+    } else if (type === 'banshee') {
+      // Wild electric-blue hair
+      r(bx - 8, by - 1, 6, 12, '#1a2f7a');
+      r(bx - 10, by + 3, 6, 10, '#2a56ba');
+      r(bx - 5, by - 2, 9, 3, '#3875e0');
+    } else if (type === 'gat') {
+      // Traditional Korean Gat hat!
+      r(bx - 10, by - 1, 22, 2, '#190b2e');
+      r(bx - 9, by, 20, 1, p.accent);
+      r(bx - 4, by - 7, 10, 6, '#190b2e');
+    }
+
+    // Arms & Claws
+    if (pose === 'windup') {
+      pxLine(g, bx - 2, by + 12, bx - 11, by + 5, p.skin, 3);
+      r(bx - 13, by + 3, 4, 4, p.eye);
+    } else if (pose === 'atk') {
+      pxLine(g, bx + 4, by + 12, bx + 20, by + 12, p.skin, 3);
+      pxLine(g, bx + 16, by + 6, bx + 25, by + 14, p.accent, 3);
+      pxLine(g, bx + 18, by + 8, bx + 24, by + 14, '#ffffff', 1);
+    } else if (pose === 'hurt') {
+      pxLine(g, bx - 4, by + 12, bx - 10, by + 7, p.skin, 3);
+      pxLine(g, bx + 4, by + 12, bx + 10, by + 8, p.skin, 3);
+    } else {
+      pxLine(g, bx - 4, by + 12, bx - 8, by + 20, p.shade, 3);
+      pxLine(g, bx + 4, by + 12, bx + 13, by + 15, p.skin, 3);
+      r(bx + 12, by + 14, 3, 3, p.accent);
+    }
+
+    return applyOutline(c, '#160726');
+  }
+
+  function initSprites() {
+    const hunterPoses = ['idle0','idle1','walk0','walk1','walk2','walk3','jump','jumpkick','atk1','atk2','atk3','special','hurt'];
+    for (const h of HUNTERS) {
+      SPRITES.hunters[h.id] = {};
+      for (const pose of hunterPoses) {
+        const sp = bakeHunterPose(h, pose);
+        SPRITES.hunters[h.id][pose] = sp;
+        SPRITES.hunters[h.id][pose + '_flash'] = makeFlashVersion(sp, '#ffffff');
+      }
+      SPRITES.portraits[h.id] = bakePortrait(h);
+    }
+
+    const enemyTypes = ['imp', 'banshee', 'gat', 'boss'];
+    for (const t of enemyTypes) {
+      SPRITES.enemies[t] = {};
+      const poses = t === 'boss' ? ['idle','walk0','walk1','windup','atk','slam','hurt'] : ['idle','walk0','walk1','windup','atk','hurt'];
+      for (const p of poses) {
+        const sp = bakeEnemyPose(t, p);
+        SPRITES.enemies[t][p] = sp;
+        SPRITES.enemies[t][p + '_flash'] = makeFlashVersion(sp, '#ffffff');
+      }
+    }
+
+    // Health Pickups: Gimbap Plate & Spicy Cup Ramyeon!
+    SPRITES.items.gimbap = bakePixelGrid([
+      '....kkkk....',
+      '..kkwwwwkk..',
+      '.kwworrgwwk.',
+      '.kwwgyrgwwk.',
+      'kwwwwwwwwwwk',
+      'kpyyyyyyyypk',
+      '.pppppppppp.',
+      '..pppppppp..',
+    ], { k: '#1e1633', w: '#ffffff', o: '#ff8a3d', r: '#ff3b6b', g: '#4ee674', y: '#ffe066', p: '#ffd24c' }, 2, '#18082b');
+
+    SPRITES.items.ramyeon = bakePixelGrid([
+      '..w..w..w...',
+      '...w..w.....',
+      '.yyyyyyyyyy.',
+      '.rrrrrrrrrr.',
+      '..rrwwwwrr..',
+      '..rrryyrrr..',
+      '..rrrrrrrr..',
+      '...rwwwwr...',
+      '...rrrrrr...',
+    ], { w: '#ffffff', y: '#ffe066', r: '#ff3b4e' }, 2, '#18082b');
+  }
+
+  function drawSprite(img, x, y, facing = 1, anchorX = 0.5, anchorY = 1) {
+    const drawX = Math.round(x);
+    const drawY = Math.round(y);
+    ctx.save();
+    ctx.translate(drawX, drawY);
+    if (facing < 0) ctx.scale(-1, 1);
+    ctx.drawImage(img, -Math.round(img.width * anchorX), -Math.round(img.height * anchorY));
+    ctx.restore();
+  }
+
+  // =========================================================================
+  // 5. BACKGROUND RENDERER (SUNSET SEOUL ROOFTOP + HUNTRIX BILLBOARD)
+  // =========================================================================
+  // Pre-generate deterministic stars & skyline buildings
+  const STARS = Array.from({ length: 42 }, (_, i) => ({
+    x: (i * 73 + 17) % W,
+    y: (i * 29 + 11) % 72,
+    phase: i * 0.7,
+    big: i % 7 === 0,
+  }));
+  const SKYLINE_FAR = Array.from({ length: 28 }, (_, i) => ({
+    x: i * 32,
+    w: 22 + (i * 13) % 18,
+    h: 22 + (i * 19) % 42,
+    neon: i % 5 === 0 ? '#ff59b8' : i % 4 === 0 ? '#5ef6ff' : null,
+  }));
+  const SKYLINE_NEAR = Array.from({ length: 24 }, (_, i) => ({
+    x: i * 48,
+    w: 32 + (i * 11) % 22,
+    h: 28 + (i * 23) % 40,
+    winColor: i % 3 === 0 ? '#ffe066' : i % 3 === 1 ? '#5ef6ff' : '#ff7acc',
+  }));
+
+  function drawBackground(camX, time, encoreIntensity) {
+    // 1) 16-bit Banded Sunset Sky
+    const bands = [
+      { y: 0,   h: 26, c: '#23124d' },
+      { y: 26,  h: 22, c: '#3f1c73' },
+      { y: 48,  h: 20, c: '#6e288c' },
+      { y: 68,  h: 18, c: '#ad3a91' },
+      { y: 86,  h: 16, c: '#e35b8e' },
+      { y: 102, h: 16, c: '#ff9075' },
+      { y: 118, h: 16, c: '#ffd180' },
+    ];
+    for (const b of bands) {
+      ctx.fillStyle = b.c;
+      ctx.fillRect(0, b.y, W, b.h);
+      // 16-bit checkerboard dither seam
+      ctx.fillStyle = b.c;
+      for (let x = 0; x < W; x += 4) {
+        ctx.fillRect(x, b.y - 2, 2, 2);
+      }
+    }
+
+    // 2) Twinkling Stars & Crescent Moon
+    for (const s of STARS) {
+      const blink = Math.sin(time * 3 + s.phase) > 0.2;
+      ctx.fillStyle = blink ? '#fff5c2' : '#d6a8ff';
+      ctx.fillRect(s.x, s.y, s.big ? 2 : 1, s.big ? 2 : 1);
+      if (s.big && blink) {
+        ctx.fillRect(s.x - 1, s.y, 4, 1);
+        ctx.fillRect(s.x, s.y - 1, 1, 4);
+      }
+    }
+    // Crescent moon (crisp pixel crescent, top right)
+    const moonRows = [
+      '....1111..',
+      '..11111...',
+      '.1111.....',
+      '1111......',
+      '1111......',
+      '1111......',
+      '.1111.....',
+      '..11111...',
+      '....1111..',
+    ];
+    ctx.fillStyle = '#fff1b8';
+    for (let mr = 0; mr < moonRows.length; mr++) {
+      for (let mc = 0; mc < moonRows[mr].length; mc++) {
+        if (moonRows[mr][mc] === '1') ctx.fillRect(432 + mc * 2, 46 + mr * 2, 2, 2);
+      }
+    }
+
+    // 3) Far Parallax: Namsan Mountain + Seoul Tower
+    const farX = Math.round(camX * 0.16);
+    ctx.fillStyle = '#572275';
+    for (let x = -40; x < W + 40; x += 4) {
+      const ridge = Math.sin((x + farX) * 0.015) * 12 + Math.cos((x + farX) * 0.032) * 5;
+      ctx.fillRect(x, Math.round(112 + ridge), 4, 30);
+    }
+    // Namsan Seoul Tower silhouette
+    const tx = Math.round(410 - camX * 0.14);
+    ctx.fillStyle = '#471b6b';
+    ctx.fillRect(tx - 2, 74, 4, 48);
+    ctx.fillRect(tx - 7, 82, 14, 7);
+    ctx.fillRect(tx - 5, 80, 10, 2);
+    ctx.fillRect(tx - 1, 58, 2, 18);
+    // Tower neon beacon
+    ctx.fillStyle = Math.sin(time * 6) > 0 ? '#ff3b8d' : '#ff99cc';
+    ctx.fillRect(tx - 1, 56, 2, 2);
+    ctx.fillStyle = '#5ef6ff';
+    ctx.fillRect(tx - 6, 85, 12, 1);
+
+    // 4) Mid Parallax: Seoul Neon Skyline
+    const midX = Math.round(camX * 0.35);
+    for (const b of SKYLINE_FAR) {
+      const sx = Math.round(b.x - midX);
+      if (sx + b.w < 0 || sx > W) continue;
+      const sy = 132 - b.h;
+      ctx.fillStyle = '#36185e';
+      ctx.fillRect(sx, sy, b.w, b.h);
+      ctx.fillStyle = '#4a237d';
+      ctx.fillRect(sx, sy, b.w, 2);
+      if (b.neon) {
+        ctx.fillStyle = b.neon;
+        ctx.fillRect(sx + 3, sy + 4, b.w - 6, 2);
+      }
+    }
+    const nearX = Math.round(camX * 0.55);
+    for (const b of SKYLINE_NEAR) {
+      const sx = Math.round(b.x - nearX);
+      if (sx + b.w < 0 || sx > W) continue;
+      const sy = 136 - b.h;
+      ctx.fillStyle = '#241145';
+      ctx.fillRect(sx, sy, b.w, b.h);
+      ctx.fillStyle = b.winColor;
+      for (let wy = sy + 5; wy < 128; wy += 6) {
+        for (let wx = sx + 4; wx < sx + b.w - 4; wx += 6) {
+          if (((wx + wy) % 3) !== 0) ctx.fillRect(wx, wy, 3, 3);
+        }
+      }
+    }
+
+    // 5) World-Space Rooftop Setpieces (1:1 Scroll)
+    const wx = (worldX) => Math.round(worldX - camX);
+
+    // Zone 1 Prop: Neon "K-BEAT" Rooftop Sign
+    const s1 = wx(140);
+    if (s1 > -120 && s1 < W + 40) {
+      ctx.fillStyle = '#1b0b33';
+      ctx.fillRect(s1 + 8, 96, 4, 38);
+      ctx.fillRect(s1 + 78, 96, 4, 38);
+      ctx.fillStyle = '#2b1252';
+      ctx.fillRect(s1, 66, 90, 34);
+      ctx.fillStyle = '#5ef6ff';
+      ctx.fillRect(s1, 66, 90, 2);
+      ctx.fillRect(s1, 98, 90, 2);
+      ctx.fillRect(s1, 66, 2, 34);
+      ctx.fillRect(s1 + 88, 66, 2, 34);
+      drawText('SEOUL', s1 + 45, 73, '#ff61c3', 1, 'center');
+      drawText('LIVE STAGE', s1 + 45, 85, '#ffe066', 1, 'center');
+    }
+
+    // Zone 2 Prop: Giant Concert Speaker Stacks & Light Rig
+    const s2 = wx(520);
+    if (s2 > -140 && s2 < W + 40) {
+      // Left & right speaker towers
+      for (const ox of [0, 128]) {
+        const px = s2 + ox;
+        ctx.fillStyle = '#1c0d36';
+        ctx.fillRect(px, 76, 30, 58);
+        ctx.fillStyle = '#381e66';
+        ctx.fillRect(px + 2, 78, 26, 54);
+        // Woofer cones pulsing to beat!
+        const pulse = Math.sin(time * 14) > 0.3 ? 1 : 0;
+        for (const cy of [92, 114]) {
+          ctx.fillStyle = '#120724';
+          ctx.fillRect(px + 6 - pulse, cy - 8 - pulse, 18 + pulse * 2, 16 + pulse * 2);
+          ctx.fillStyle = '#ff4da6';
+          ctx.fillRect(px + 10, cy - 4, 10, 8);
+          ctx.fillStyle = '#5ef6ff';
+          ctx.fillRect(px + 13, cy - 1, 4, 2);
+        }
+      }
+      // Overhead light truss
+      ctx.fillStyle = '#3b2466';
+      ctx.fillRect(s2 + 24, 72, 110, 6);
+      for (let i = 0; i < 5; i++) {
+        const lx = s2 + 34 + i * 22;
+        const col = (Math.floor(time * 4) + i) % 2 === 0 ? '#5ef6ff' : '#ff4da6';
+        ctx.fillStyle = col;
+        ctx.fillRect(lx, 78, 6, 4);
+      }
+    }
+
+    // Zone 3 Prop (Mini-Boss Stage): GIANT HUNTRIX BILLBOARD!
+    const sb = wx(890);
+    if (sb > -170 && sb < W + 40) {
+      // Support struts
+      ctx.fillStyle = '#1d0d36';
+      ctx.fillRect(sb + 14, 114, 6, 22);
+      ctx.fillRect(sb + 124, 114, 6, 22);
+      // Billboard frame
+      ctx.fillStyle = '#32145c';
+      ctx.fillRect(sb, 48, 144, 70);
+      ctx.fillStyle = '#e8c4ff';
+      ctx.fillRect(sb + 4, 52, 136, 62);
+      ctx.fillStyle = '#ffd9f5';
+      ctx.fillRect(sb + 4, 52, 136, 24);
+      // Animated marquee bulbs
+      for (let i = 0; i < 18; i++) {
+        const on = (i + Math.floor(time * 8)) % 2 === 0;
+        ctx.fillStyle = on ? '#5ef6ff' : '#ff45b5';
+        ctx.fillRect(sb + 2 + i * 8, 49, 4, 2);
+        ctx.fillRect(sb + 2 + i * 8, 115, 4, 2);
+      }
+      drawText('HUNTRIX', sb + 72, 56, '#7a1fa2', 2, 'center', '#ffffff');
+      // Mini portraits of all 3 HUNTRIX idols on the billboard!
+      const order = ['mira', 'rumi', 'zoey'];
+      order.forEach((id, idx) => {
+        const pImg = SPRITES.portraits[id];
+        if (pImg) {
+          ctx.drawImage(pImg, sb + 18 + idx * 42, 78, 28, 28);
+          ctx.strokeStyle = '#ff4da6';
+          ctx.strokeRect(sb + 17.5 + idx * 42, 77.5, 29, 29);
+        }
+      });
+    }
+
+    // 6) Rooftop Parapet & Safety Railing (y = 126..148)
+    ctx.fillStyle = '#392866';
+    ctx.fillRect(0, 134, W, 14);
+    ctx.fillStyle = '#5a4396';
+    ctx.fillRect(0, 134, W, 2);
+    ctx.fillStyle = '#241747';
+    ctx.fillRect(0, 145, W, 3);
+    // Railing posts & top bar
+    ctx.fillStyle = '#6f59ad';
+    ctx.fillRect(0, 126, W, 2);
+    ctx.fillStyle = '#4c3880';
+    ctx.fillRect(0, 130, W, 1);
+    const railOffset = -(Math.round(camX) % 32);
+    for (let rx = railOffset; rx < W + 32; rx += 32) {
+      ctx.fillStyle = '#5e4799';
+      ctx.fillRect(rx, 126, 3, 18);
+      ctx.fillStyle = '#8b75c9';
+      ctx.fillRect(rx, 126, 1, 18);
+    }
+
+    // 7) Playable 2.5D Rooftop Concrete Floor (y = 148..258)
+    ctx.fillStyle = '#cbb2e3';
+    ctx.fillRect(0, 148, W, 110);
+    // Subtle 16-bit depth gradient bands on floor
+    ctx.fillStyle = '#bfa2db';
+    ctx.fillRect(0, 148, W, 18);
+    ctx.fillStyle = '#d4bfe8';
+    ctx.fillRect(0, 186, W, 36);
+    ctx.fillStyle = '#b99cd4';
+    ctx.fillRect(0, 222, W, 36);
+
+    // Concrete tile seam lines (scrolling perspective)
+    ctx.fillStyle = '#a483c4';
+    ctx.fillRect(0, 174, W, 1);
+    ctx.fillRect(0, 206, W, 1);
+    ctx.fillRect(0, 238, W, 1);
+    const tileOff = -(Math.round(camX) % 64);
+    for (let tx2 = tileOff; tx2 < W + 64; tx2 += 64) {
+      ctx.fillStyle = '#a483c4';
+      ctx.fillRect(tx2, 148, 1, 110);
+      // Decorative neon stage tape chevron every 128px
+      if (Math.floor((tx2 + Math.round(camX)) / 64) % 2 === 0) {
+        ctx.fillStyle = '#ff85c8';
+        ctx.fillRect(tx2 + 24, 198, 12, 2);
+        ctx.fillStyle = '#5ef6ff';
+        ctx.fillRect(tx2 + 26, 201, 12, 2);
+      }
+    }
+
+    // Glowing Honmoon protective seal waves during high combo or Encore!
+    if (encoreIntensity > 0.01) {
+      ctx.save();
+      ctx.globalAlpha = Math.min(0.65, encoreIntensity);
+      ctx.fillStyle = '#180533';
+      ctx.fillRect(0, 0, W, H);
+      // Concert spotlight beams!
+      for (let i = 0; i < 4; i++) {
+        const bx = 60 + i * 120 + Math.sin(time * 5 + i) * 30;
+        ctx.fillStyle = i % 2 === 0 ? 'rgba(94,246,255,0.22)' : 'rgba(255,69,181,0.22)';
+        ctx.beginPath();
+        ctx.moveTo(bx, 0);
+        ctx.lineTo(bx - 55, H);
+        ctx.lineTo(bx + 55, H);
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+  }
+
+  function drawForegroundParapet(camX) {
+    // Bottom rooftop ledge & AC unit silhouette for 2.5D depth
+    ctx.fillStyle = '#251345';
+    ctx.fillRect(0, 256, W, 14);
+    ctx.fillStyle = '#472878';
+    ctx.fillRect(0, 256, W, 2);
+    const fgOff = -(Math.round(camX * 1.15) % 160);
+    for (let fx = fgOff; fx < W + 160; fx += 160) {
+      ctx.fillStyle = '#1a0c33';
+      ctx.fillRect(fx + 20, 248, 52, 22);
+      ctx.fillStyle = '#331d59';
+      ctx.fillRect(fx + 22, 250, 48, 2);
+      ctx.fillStyle = '#110621';
+      ctx.fillRect(fx + 28, 254, 18, 12);
+      ctx.fillRect(fx + 52, 254, 12, 12);
+    }
+  }
+
+  // =========================================================================
+  // 6. INPUT MANAGER
+  // =========================================================================
+  const keys = {};
+  const justPressed = {};
+
+  function mapKey(code) {
+    switch (code) {
+      case 'ArrowLeft':  case 'KeyA': return 'left';
+      case 'ArrowRight': case 'KeyD': return 'right';
+      case 'ArrowUp':    case 'KeyW': return 'up';
+      case 'ArrowDown':  case 'KeyS': return 'down';
+      case 'KeyJ':       case 'KeyZ': return 'attack';
+      case 'KeyK':       case 'KeyX': case 'Space': return 'jump';
+      case 'KeyL':       case 'KeyC': case 'KeyE': case 'ShiftLeft': case 'ShiftRight': return 'special';
+      case 'Enter': return 'confirm';
+      case 'KeyP':  case 'Escape': return 'pause';
+      case 'KeyM':  return 'mute';
+      default: return null;
+    }
+  }
+
+  window.addEventListener('keydown', (e) => {
+    const act = mapKey(e.code);
+    if (!act) return;
+    e.preventDefault();
+    sfx.init();
+    if (act === 'mute') { sfx.toggleMute(); return; }
+    if (!keys[act]) justPressed[act] = true;
+    keys[act] = true;
+  });
+  window.addEventListener('keyup', (e) => {
+    const act = mapKey(e.code);
+    if (!act) return;
+    keys[act] = false;
+  });
+  window.addEventListener('blur', () => {
+    for (const k in keys) keys[k] = false;
+  });
+
+  // Bind mobile/touch arcade buttons directly to action inputs
+  function bindTouchAction(btnId, act) {
+    const el = document.getElementById(btnId);
+    if (!el) return;
+    const press = (e) => {
+      e.preventDefault();
+      sfx.init();
+      el.classList.add('pressed');
+      if (!keys[act]) justPressed[act] = true;
+      keys[act] = true;
+    };
+    const release = (e) => {
+      if (e) e.preventDefault();
+      el.classList.remove('pressed');
+      keys[act] = false;
+    };
+    el.addEventListener('touchstart', press, { passive: false });
+    el.addEventListener('touchend', release, { passive: false });
+    el.addEventListener('touchcancel', release);
+    el.addEventListener('mousedown', press);
+    el.addEventListener('mouseup', release);
+    el.addEventListener('mouseleave', release);
+  }
+  bindTouchAction('touchLeft', 'left');
+  bindTouchAction('touchRight', 'right');
+  bindTouchAction('touchUp', 'up');
+  bindTouchAction('touchDown', 'down');
+  bindTouchAction('touchAtk', 'attack');
+  bindTouchAction('touchJump', 'jump');
+  bindTouchAction('touchEncore', 'special');
+  bindTouchAction('touchPause', 'pause');
+
+  function clearJustPressed() {
+    for (const k in justPressed) justPressed[k] = false;
+  }
+
+  // =========================================================================
+  // 7. GAME STATE, ENTITIES, PARTICLES, WAVES & COMBAT ENGINE
+  // =========================================================================
+  let gameState = 'title'; // 'title', 'playing', 'paused', 'victory', 'gameover'
+  let selectedHunterIdx = 0;
+  let time = 0;
+
+  let player = null;
+  let enemies = [];
+  let items = [];
+  let particles = [];
+  let shockwaves = [];
+  let rifts = [];
+  let floatingTexts = [];
+  let encoreMembers = []; // Summoned Rumi/Mira/Zoey ghosts during Encore Special!
+
+  let camX = 0;
+  let targetCamX = 0;
+  let hitstop = 0;
+  let shakeTime = 0;
+  let shakeMag = 0;
+
+  // Score, Combo & Wave Progression
+  const GAME_ID = 'kpop-demon-hunters';
+  const HI_SCORE_KEY = 'retrogames4_kpop_demon_hunters_hi';
+  let score = 0;
+  let highScore = 0;
+  try {
+    highScore = Math.max(0, Number(localStorage.getItem(HI_SCORE_KEY)) || 0);
+  } catch (e) {}
+  let scoreSubmittedThisRun = false;
+  let scoreSyncStatus = '';
+  let comboCount = 0;
+  let maxCombo = 0;
+  let comboTimer = 0;
+  let enemiesDefeated = 0;
+
+  function persistLocalHighScore() {
+    if (score > highScore) {
+      highScore = score;
+      try { localStorage.setItem(HI_SCORE_KEY, String(highScore)); } catch (e) {}
+    }
+  }
+
+  function recordKpopDemonHuntersScore(finalScore) {
+    if (scoreSubmittedThisRun || !finalScore || finalScore <= 0) return;
+    scoreSubmittedThisRun = true;
+    persistLocalHighScore();
+    try {
+      const storedUser = localStorage.getItem('retrogames4User');
+      if (!storedUser) {
+        scoreSyncStatus = 'LOGIN AT VAULT TO POST SCORE';
+        return;
+      }
+      const user = JSON.parse(storedUser);
+      const userId = user.id || user.userId || user._id;
+      if (!userId) {
+        scoreSyncStatus = 'LOGIN AT VAULT TO POST SCORE';
+        return;
+      }
+
+      scoreSyncStatus = 'SYNCING SCORE...';
+      const API_BASE_URL = window.API_BASE_URL || 'https://retrogames-service.onrender.com';
+      const cacheLocal = (recordId) => {
+        try {
+          const cachedKey = `retrogames4_scores_${userId}`;
+          let cached = [];
+          try { cached = JSON.parse(localStorage.getItem(cachedKey) || '[]'); } catch (e) { cached = []; }
+          cached.unshift({
+            id: recordId || Date.now(),
+            user_id: userId,
+            userId: userId,
+            game_id: GAME_ID,
+            gameId: GAME_ID,
+            score: Number(finalScore),
+            created_at: new Date().toISOString()
+          });
+          localStorage.setItem(cachedKey, JSON.stringify(cached));
+        } catch (e) {}
+      };
+
+      fetch(`${API_BASE_URL}/scores`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: userId,
+          userId: userId,
+          game_id: GAME_ID,
+          gameId: GAME_ID,
+          score: Number(finalScore),
+          email: user.email || ''
+        })
+      }).then(res => {
+        if (!res.ok) throw new Error('Score submit failed');
+        return res.json();
+      }).then(data => {
+        cacheLocal(data && data.id);
+        scoreSyncStatus = 'SCORE RECORDED TO HALL OF FAME!';
+      }).catch(err => {
+        console.warn('Could not record K-Pop Demon Hunters score online:', err);
+        cacheLocal(Date.now());
+        scoreSyncStatus = 'SCORE CACHED OFFLINE!';
+      });
+    } catch (e) {
+      console.warn('Error in recordKpopDemonHuntersScore:', e);
+    }
+  }
+
+  let waveIndex = 0;        // 0 = Wave 1, 1 = Wave 2, 2 = Mini-Boss
+  let wavePhase = 'spawn';  // 'spawn', 'fight', 'go', 'warning', 'done'
+  let waveSubIndex = 0;
+  let waveTimer = 0;
+  let bannerText = '';
+  let bannerSub = '';
+  let bannerTimer = 0;
+
+  let encoreTimer = 0;
+  let encoreBubbleText = '';
+
+  const WAVE_CONFIG = [
+    {
+      name: 'WAVE 1 / 2',
+      subtitle: 'DEMON AMBUSH!',
+      lockX: 0,
+      subWaves: [
+        [
+          { type: 'imp', x: 350, y: 175 },
+          { type: 'imp', x: 405, y: 222 },
+          { type: 'banshee', x: 430, y: 196 },
+        ],
+        [
+          { type: 'imp', x: 95, y: 215 },
+          { type: 'banshee', x: 420, y: 176 },
+        ],
+      ],
+    },
+    {
+      name: 'WAVE 2 / 2',
+      subtitle: 'SAJA TRICKSTERS!',
+      lockX: 360,
+      subWaves: [
+        [
+          { type: 'gat', x: 740, y: 185 },
+          { type: 'imp', x: 785, y: 226 },
+          { type: 'banshee', x: 710, y: 232 },
+        ],
+        [
+          { type: 'gat', x: 445, y: 182 },
+          { type: 'gat', x: 780, y: 205 },
+          { type: 'banshee', x: 755, y: 170 },
+          { type: 'imp', x: 470, y: 230 },
+        ],
+      ],
+    },
+    {
+      name: 'MINI-BOSS',
+      subtitle: 'SAJA OVERLORD!',
+      lockX: 720,
+      subWaves: [
+        [
+          { type: 'boss', x: 1090, y: 202 },
+        ],
+      ],
+    },
+  ];
+
+  function createPlayer(hunterDef) {
+    return {
+      def: hunterDef,
+      x: 110,
+      y: 202,
+      z: 0,
+      vx: 0,
+      vy: 0,
+      vz: 0,
+      facing: 1,
+      hp: hunterDef.hp,
+      maxHp: hunterDef.hp,
+      lives: 3,
+      encore: 20, // Start with 20% hype!
+      encoreReadyNotified: false,
+      state: 'idle', // 'idle','walk','jump','jumpkick','atk1','atk2','atk3','special','hurt'
+      stateTimer: 0,
+      animTimer: 0,
+      comboStep: 0,
+      comboQueued: false,
+      comboWindow: 0,
+      hitIds: new Set(),
+      invuln: 0,
+      flash: 0,
+    };
+  }
+
+  function spawnEnemy(type, x, y) {
+    // Open a magenta dimensional rift first!
+    rifts.push({ x, y, life: 0.7, maxLife: 0.7, radius: type === 'boss' ? 30 : 18 });
+    const stats = {
+      imp:     { name: 'DOKKAEBI IMP',   hp: 46,  speed: 62,  dmg: 9,  reach: 30, score: 250, encoreGain: 22, w: 22 },
+      banshee: { name: 'ABYSS BANSHEE',  hp: 38,  speed: 82,  dmg: 10, reach: 28, score: 300, encoreGain: 22, w: 20 },
+      gat:     { name: 'SAJA TRICKSTER', hp: 64,  speed: 74,  dmg: 13, reach: 34, score: 450, encoreGain: 25, w: 22 },
+      boss:    { name: 'SAJA OVERLORD',  hp: 340, speed: 68,  dmg: 18, reach: 44, score: 3000, encoreGain: 35, w: 32 },
+    }[type];
+
+    enemies.push({
+      id: Math.random(),
+      type,
+      name: stats.name,
+      x, y, z: 0,
+      vx: 0, vy: 0, vz: 0,
+      facing: x > (player ? player.x : 120) ? -1 : 1,
+      hp: stats.hp,
+      maxHp: stats.hp,
+      speed: stats.speed,
+      dmg: stats.dmg,
+      reach: stats.reach,
+      score: stats.score,
+      encoreGain: stats.encoreGain,
+      state: 'spawn', // 'spawn','chase','windup','atk','slam','hurt','ko'
+      stateTimer: 0.45,
+      animTimer: 0,
+      atkCooldown: 0.5 + Math.random() * 0.6,
+      hitApplied: false,
+      flash: 0,
+      enraged: false,
+      slamCooldown: 4.0,
+      flankSide: Math.random() < 0.5 ? -1 : 1,
+      flankYOff: (Math.random() - 0.5) * 18,
+    });
+  }
+
+  function spawnParticles(x, y, z, color, count = 8, speed = 90) {
+    for (let i = 0; i < count; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const sp = speed * (0.4 + Math.random() * 0.8);
+      particles.push({
+        x, y, z,
+        vx: Math.cos(a) * sp,
+        vy: Math.sin(a) * sp * 0.35,
+        vz: 40 + Math.random() * 90,
+        size: Math.random() < 0.4 ? 3 : 2,
+        color,
+        life: 0.28 + Math.random() * 0.24,
+        maxLife: 0.52,
+        type: 'pixel',
+      });
+    }
+  }
+
+  function spawnHitStar(x, y, z, heavy = false) {
+    particles.push({
+      x, y, z,
+      vx: 0, vy: 0, vz: 0,
+      size: heavy ? 16 : 10,
+      color: heavy ? '#ffe066' : '#5ef6ff',
+      color2: heavy ? '#ff3b9a' : '#ffffff',
+      life: heavy ? 0.2 : 0.14,
+      maxLife: heavy ? 0.2 : 0.14,
+      type: 'star',
+    });
+  }
+
+  function spawnNote(x, y, z, color) {
+    particles.push({
+      x, y, z,
+      vx: (Math.random() - 0.5) * 45,
+      vy: 0,
+      vz: 45 + Math.random() * 45,
+      size: 4,
+      color,
+      life: 0.9,
+      maxLife: 0.9,
+      type: 'note',
+    });
+  }
+
+  function addFloatText(text, x, y, color = '#ffe066', scale = 1) {
+    floatingTexts.push({ text, x, y, vy: -28, color, scale, life: 0.75, maxLife: 0.75 });
+  }
+
+  function addCombo(hits = 1) {
+    comboCount += hits;
+    if (comboCount > maxCombo) maxCombo = comboCount;
+    comboTimer = 2.6;
+  }
+
+  function addEncore(amount) {
+    const wasReady = player.encore >= 100;
+    player.encore = Math.min(100, player.encore + amount);
+    if (!wasReady && player.encore >= 100) {
+      sfx.playEncoreReady();
+      addFloatText('ENCORE READY!', player.x, player.y - player.z - 52, '#5ef6ff', 1);
+    }
+  }
+
+  function triggerShake(dur = 0.14, mag = 3) {
+    shakeTime = Math.max(shakeTime, dur);
+    shakeMag = Math.max(shakeMag, mag);
+  }
+
+  function startNewGame() {
+    sfx.init();
+    const def = HUNTERS[selectedHunterIdx];
+    player = createPlayer(def);
+    enemies = [];
+    items = [];
+    particles = [];
+    shockwaves = [];
+    rifts = [];
+    floatingTexts = [];
+    encoreMembers = [];
+
+    camX = 0;
+    targetCamX = 0;
+    hitstop = 0;
+    shakeTime = 0;
+    score = 0;
+    scoreSubmittedThisRun = false;
+    scoreSyncStatus = '';
+    comboCount = 0;
+    maxCombo = 0;
+    comboTimer = 0;
+    enemiesDefeated = 0;
+
+    waveIndex = 0;
+    waveSubIndex = 0;
+    wavePhase = 'spawn';
+    waveTimer = 0.4;
+    encoreTimer = 0;
+
+    bannerText = 'STAGE 1: SEOUL ROOFTOP';
+    bannerSub = 'HUNTRIX SHOWTIME!';
+    bannerTimer = 2.2;
+
+    gameState = 'playing';
+    sfx.startBGM('stage');
+  }
+
+  // =========================================================================
+  // 8. ENCORE SPECIAL (SCREEN-CLEARING HUNTRIX CONCERT ATTACK)
+  // =========================================================================
+  function triggerEncoreSpecial() {
+    player.encore = 0;
+    player.state = 'special';
+    player.stateTimer = 1.45;
+    player.invuln = 2.0;
+    player.vx = 0;
+    player.vy = 0;
+    encoreTimer = 1.55;
+    const lines = [
+      "HOW IT'S DONE! DONE! DONE!",
+      "HUNTRIX DON'T MISS!",
+      "ENCORE FINALE!!",
+    ];
+    encoreBubbleText = lines[Math.floor(Math.random() * lines.length)];
+
+    sfx.playEncoreSpecial();
+    triggerShake(0.6, 5);
+    hitstop = 0.06;
+
+    // Summon the full HUNTRIX trio in V-formation around the player!
+    encoreMembers = [];
+    const others = HUNTERS.filter(h => h.id !== player.def.id);
+    encoreMembers.push({ def: others[0], x: Math.max(camX + 36, player.x - 54), y: Math.max(FLOOR_MIN_Y + 8, player.y - 18), life: 1.45 });
+    encoreMembers.push({ def: others[1], x: Math.min(camX + W - 36, player.x + 54), y: Math.min(FLOOR_MAX_Y - 8, player.y + 16), life: 1.45 });
+
+    // Expanding Honmoon concert shockwaves!
+    shockwaves.push({ x: player.x, y: player.y, r: 8, maxR: 340, color: '#5ef6ff', life: 0.75, maxLife: 0.75, friendly: true, hitWave: 1 });
+    shockwaves.push({ x: player.x, y: player.y, r: 2, maxR: 340, color: '#ff42b3', life: 1.05, maxLife: 1.05, friendly: true, hitWave: 2 });
+    shockwaves.push({ x: player.x, y: player.y, r: 0, maxR: 360, color: '#ffe066', life: 1.35, maxLife: 1.35, friendly: true, hitWave: 3 });
+
+    // Music notes & sparkles across stage
+    for (let i = 0; i < 24; i++) {
+      spawnNote(camX + 20 + Math.random() * (W - 40), FLOOR_MIN_Y + Math.random() * 90, 10 + Math.random() * 40, i % 3 === 0 ? '#5ef6ff' : i % 3 === 1 ? '#ff42b3' : '#ffe066');
+    }
+
+    // Immediate & staggered screen-wide damage pulses!
+    applyEncorePulse(46, false);
+    setTimeout(() => { if (gameState === 'playing') applyEncorePulse(42, false); }, 340);
+    setTimeout(() => { if (gameState === 'playing') applyEncorePulse(52, true); }, 700);
+  }
+
+  function applyEncorePulse(dmg, launch) {
+    if (!player) return;
+    triggerShake(0.2, 4);
+    for (const e of enemies) {
+      if (e.state === 'ko') continue;
+      if (e.x < camX - 30 || e.x > camX + W + 30) continue;
+      damageEnemy(e, dmg, launch ? 160 : 50, launch ? 165 : 60, player.x < e.x ? 1 : -1, true, false);
+    }
+  }
+
+  // =========================================================================
+  // 9. COMBAT RESOLUTION
+  // =========================================================================
+  function damageEnemy(e, dmg, kbX, kbZ, dir, heavy = false, grantEncore = true) {
+    e.hp -= dmg;
+    e.flash = 0.14;
+    addCombo(1);
+    const mult = 1 + Math.min(3, Math.floor(comboCount / 5) * 0.25);
+    score += Math.round(dmg * 3 * mult);
+    if (grantEncore) addEncore(heavy ? 3 : 1.5);
+
+    spawnHitStar(e.x, e.y, e.z + 24, heavy);
+    spawnParticles(e.x, e.y, e.z + 22, heavy ? '#ff45b5' : '#5ef6ff', heavy ? 12 : 6, heavy ? 125 : 85);
+    addFloatText('-' + Math.round(dmg), e.x + (Math.random() - 0.5) * 10, e.y - e.z - 42, heavy ? '#ffe066' : '#ffffff', 1);
+
+    if (e.hp <= 0) {
+      e.hp = 0;
+      e.state = 'ko';
+      e.stateTimer = 0.65;
+      e.vx = dir * Math.max(130, kbX);
+      e.vz = Math.max(145, kbZ);
+      enemiesDefeated++;
+      score += Math.round(e.score * mult);
+      persistLocalHighScore();
+      if (grantEncore) addEncore(e.encoreGain);
+      sfx.playKo();
+      hitstop = e.type === 'boss' ? 0.16 : 0.06;
+      triggerShake(e.type === 'boss' ? 0.55 : 0.18, e.type === 'boss' ? 6 : 3);
+      addFloatText('+' + Math.round(e.score * mult), e.x, e.y - 52, '#5ef6ff', 1);
+
+      // Chance to drop Gimbap or Cup Ramyeon
+      if (e.type !== 'boss' && Math.random() < 0.26) {
+        items.push({
+          kind: Math.random() < 0.65 ? 'gimbap' : 'ramyeon',
+          x: e.x, y: e.y, z: 18, vz: 110, life: 16,
+        });
+      }
+    } else {
+      // Boss has partial super-armor during slam, otherwise recoils!
+      if (!(e.type === 'boss' && e.state === 'slam' && !heavy)) {
+        e.state = 'hurt';
+        e.stateTimer = heavy ? 0.42 : 0.25;
+        e.vx = dir * (e.type === 'boss' ? kbX * 0.45 : kbX);
+        if (kbZ > 0 && e.type !== 'boss') e.vz = kbZ;
+      }
+      sfx.playHit(heavy);
+      hitstop = heavy ? 0.055 : 0.025;
+      triggerShake(heavy ? 0.15 : 0.08, heavy ? 3 : 1.5);
+
+      // Boss Phase 2 Enrage at <= 50% HP
+      if (e.type === 'boss' && !e.enraged && e.hp <= e.maxHp * 0.5) {
+        e.enraged = true;
+        e.speed *= 1.18;
+        addFloatText('ENRAGED!!', e.x, e.y - 68, '#ff3b8d', 1);
+        shockwaves.push({ x: e.x, y: e.y, r: 10, maxR: 130, color: '#ff2e93', life: 0.45, maxLife: 0.45, friendly: false, dmg: 0 });
+        spawnEnemy('imp', Math.max(camX + 45, e.x - 120), 174);
+        spawnEnemy('imp', Math.min(camX + W - 45, e.x + 90), 232);
+      }
+    }
+  }
+
+  function damagePlayer(dmg, dir) {
+    if (player.invuln > 0 || player.state === 'special') return;
+    player.hp = Math.max(0, player.hp - dmg);
+    player.flash = 0.2;
+    player.invuln = 0.85;
+    player.state = 'hurt';
+    player.stateTimer = 0.3;
+    player.vx = dir * 110;
+    comboCount = 0;
+    comboTimer = 0;
+    sfx.playHurt();
+    triggerShake(0.2, 4);
+    spawnHitStar(player.x, player.y, player.z + 24, true);
+    addFloatText('-' + dmg, player.x, player.y - player.z - 46, '#ff4d6d', 1);
+
+    if (player.hp <= 0) {
+      player.lives--;
+      if (player.lives > 0) {
+        player.hp = player.maxHp;
+        player.invuln = 2.0;
+        player.vz = 150;
+        addFloatText('SECOND WIND!', player.x, player.y - 54, '#5ef6ff', 1);
+        sfx.playPickup();
+      } else {
+        gameState = 'gameover';
+        sfx.stopBGM();
+        recordKpopDemonHuntersScore(score);
+      }
+    }
+  }
+
+  // =========================================================================
+  // 10. UPDATE LOOP
+  // =========================================================================
+  function updatePlayer(dt) {
+    const p = player;
+    const def = p.def;
+    p.animTimer += dt;
+    if (p.invuln > 0) p.invuln -= dt;
+    if (p.flash > 0) p.flash -= dt;
+    if (p.comboWindow > 0) {
+      p.comboWindow -= dt;
+      if (p.comboWindow <= 0) p.comboStep = 0;
+    }
+
+    // Encore Special trigger (highest priority when ready & not already in special)
+    if (justPressed.special && p.encore >= 100 && p.state !== 'special' && p.state !== 'hurt') {
+      triggerEncoreSpecial();
+      return;
+    }
+
+    // Handle active states
+    if (p.state === 'special') {
+      p.stateTimer -= dt;
+      if (p.stateTimer <= 0) {
+        p.state = 'idle';
+      }
+      return;
+    }
+
+    if (p.state === 'hurt') {
+      p.stateTimer -= dt;
+      p.x += p.vx * dt;
+      p.vx *= 0.86;
+      if (p.z > 0 || p.vz !== 0) {
+        p.z += p.vz * dt;
+        p.vz -= GRAVITY * dt;
+        if (p.z <= 0) { p.z = 0; p.vz = 0; }
+      }
+      if (p.stateTimer <= 0) p.state = 'idle';
+      clampPlayerBounds();
+      return;
+    }
+
+    // Melee 3-hit Combo Attack execution
+    if (p.state === 'atk1' || p.state === 'atk2' || p.state === 'atk3') {
+      p.stateTimer -= dt;
+      if (justPressed.attack && p.state !== 'atk3') {
+        p.comboQueued = true;
+      }
+
+      const step = p.state === 'atk1' ? 1 : p.state === 'atk2' ? 2 : 3;
+      const dur = (step === 1 ? 0.19 : step === 2 ? 0.22 : 0.34) / def.atkSpeed;
+      const elapsed = dur - p.stateTimer;
+      const activeStart = dur * 0.22;
+      const activeEnd = dur * 0.72;
+
+      // Slight forward step on finisher
+      if (step === 3 && elapsed < dur * 0.4) {
+        p.x += p.facing * 52 * dt;
+      }
+
+      if (elapsed >= activeStart && elapsed <= activeEnd) {
+        const reach = def.reach + (step === 3 ? 16 : step === 2 ? 6 : 0);
+        const baseDmg = (step === 1 ? 15 : step === 2 ? 20 : 32) * def.power;
+        for (const e of enemies) {
+          if (e.state === 'ko' || e.state === 'spawn' || p.hitIds.has(e.id)) continue;
+          const dx = (e.x - p.x) * p.facing;
+          const dy = Math.abs(e.y - p.y);
+          if (dx >= -8 && dx <= reach + 12 && dy <= 22 && e.z < 34) {
+            p.hitIds.add(e.id);
+            const kbX = step === 3 ? 165 : step === 2 ? 55 : 35;
+            const kbZ = step === 3 ? 150 : 0;
+            damageEnemy(e, Math.round(baseDmg), kbX, kbZ, p.facing, step === 3);
+          }
+        }
+      }
+
+      if (p.stateTimer <= 0) {
+        if (p.comboQueued && step < 3) {
+          startPlayerAttack(step + 1);
+        } else {
+          p.state = 'idle';
+          p.comboStep = step < 3 ? step : 0;
+          p.comboWindow = step < 3 ? 0.26 : 0;
+        }
+      }
+      clampPlayerBounds();
+      return;
+    }
+
+    // Free movement (Ground or Airborne)
+    let ix = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
+    let iy = (keys.down ? 1 : 0) - (keys.up ? 1 : 0);
+    if (ix !== 0 && iy !== 0) { ix *= 0.707; iy *= 0.707; }
+
+    const airMult = p.z > 0 ? 0.92 : 1.0;
+    p.vx = ix * def.speed * airMult;
+    p.vy = iy * def.speed * 0.68 * airMult;
+    if (ix !== 0 && p.state !== 'jumpkick') p.facing = ix > 0 ? 1 : -1;
+
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+
+    // Jump & Jump Kick physics
+    if (p.z > 0 || p.vz > 0) {
+      p.z += p.vz * dt;
+      p.vz -= GRAVITY * dt;
+
+      if (justPressed.attack && p.state !== 'jumpkick') {
+        p.state = 'jumpkick';
+        p.hitIds.clear();
+        p.vx = p.facing * def.speed * 1.15;
+        sfx.playSwing(2);
+      }
+
+      if (p.state === 'jumpkick') {
+        // Active flying kick hitbox
+        for (const e of enemies) {
+          if (e.state === 'ko' || e.state === 'spawn' || p.hitIds.has(e.id)) continue;
+          const dx = (e.x - p.x) * p.facing;
+          const dy = Math.abs(e.y - p.y);
+          if (dx >= -6 && dx <= 38 && dy <= 22 && Math.abs(e.z - p.z) <= 36) {
+            p.hitIds.add(e.id);
+            damageEnemy(e, Math.round(24 * def.power), 135, 115, p.facing, true);
+          }
+        }
+        // Motion sparkle trail
+        if (Math.random() < 0.5) {
+          spawnParticles(p.x - p.facing * 8, p.y, p.z + 18, '#ff59b8', 1, 30);
+        }
+      }
+
+      if (p.z <= 0) {
+        p.z = 0;
+        p.vz = 0;
+        p.state = 'idle';
+        spawnParticles(p.x, p.y, 0, '#d8c4f0', 4, 40);
+      }
+    } else {
+      // Ground actions
+      if (justPressed.jump) {
+        p.vz = 248;
+        p.z = 1;
+        p.state = 'jump';
+        sfx.playJump();
+        spawnParticles(p.x, p.y, 0, '#ffffff', 5, 50);
+      } else if (justPressed.attack) {
+        const nextStep = p.comboWindow > 0 ? Math.min(3, p.comboStep + 1) : 1;
+        startPlayerAttack(nextStep);
+      } else {
+        p.state = (Math.abs(ix) > 0.05 || Math.abs(iy) > 0.05) ? 'walk' : 'idle';
+      }
+    }
+
+    clampPlayerBounds();
+  }
+
+  function startPlayerAttack(step) {
+    const p = player;
+    p.state = 'atk' + step;
+    p.comboStep = step;
+    p.comboQueued = false;
+    p.hitIds.clear();
+    const baseDur = step === 1 ? 0.19 : step === 2 ? 0.22 : 0.34;
+    p.stateTimer = baseDur / p.def.atkSpeed;
+    sfx.playSwing(step);
+  }
+
+  function clampPlayerBounds() {
+    const minX = camX + 20;
+    const maxX = Math.min(WORLD_WIDTH - 24, camX + W - 20);
+    player.x = Math.max(minX, Math.min(maxX, player.x));
+    player.y = Math.max(FLOOR_MIN_Y, Math.min(FLOOR_MAX_Y, player.y));
+  }
+
+  function updateEnemies(dt) {
+    // Limit simultaneous active attackers to 2 for fair beat'em up pacing
+    let activeAttackers = enemies.filter(e => e.state === 'windup' || e.state === 'atk' || e.state === 'slam').length;
+
+    for (let i = enemies.length - 1; i >= 0; i--) {
+      const e = enemies[i];
+      e.animTimer += dt;
+      if (e.flash > 0) e.flash -= dt;
+      if (e.atkCooldown > 0) e.atkCooldown -= dt;
+      if (e.type === 'boss' && e.slamCooldown > 0) e.slamCooldown -= dt;
+
+      // Airborne physics
+      if (e.z > 0 || e.vz > 0) {
+        e.z += e.vz * dt;
+        e.vz -= GRAVITY * dt;
+        e.x += e.vx * dt;
+        if (e.z <= 0) {
+          e.z = 0;
+          e.vz = 0;
+          e.vx *= 0.4;
+          spawnParticles(e.x, e.y, 0, '#bfa2db', 5, 45);
+        }
+      }
+
+      if (e.state === 'spawn') {
+        e.stateTimer -= dt;
+        if (e.stateTimer <= 0) e.state = 'chase';
+        continue;
+      }
+
+      if (e.state === 'ko') {
+        e.stateTimer -= dt;
+        e.x += e.vx * dt;
+        e.vx *= 0.92;
+        if (e.type === 'boss' && Math.random() < 0.35) {
+          spawnHitStar(e.x + (Math.random() - 0.5) * 32, e.y, e.z + 20 + Math.random() * 24, true);
+        }
+        if (e.stateTimer <= 0) {
+          spawnParticles(e.x, e.y, 16, '#ff45b5', 14, 110);
+          enemies.splice(i, 1);
+        }
+        continue;
+      }
+
+      if (e.state === 'hurt') {
+        e.stateTimer -= dt;
+        if (e.z === 0) {
+          e.x += e.vx * dt;
+          e.vx *= 0.85;
+        }
+        e.x = Math.max(camX + 14, Math.min(camX + W - 14, e.x));
+        if (e.stateTimer <= 0 && e.z === 0) {
+          e.state = 'chase';
+        }
+        continue;
+      }
+
+      if (e.state === 'windup') {
+        e.stateTimer -= dt;
+        e.facing = player.x >= e.x ? 1 : -1;
+        if (e.stateTimer <= 0) {
+          e.state = 'atk';
+          e.stateTimer = e.type === 'boss' ? 0.34 : 0.24;
+          e.hitApplied = false;
+          // Lunge forward slightly!
+          e.vx = e.facing * (e.type === 'gat' || e.type === 'boss' ? 130 : 55);
+          sfx.playSwing(1);
+        }
+        continue;
+      }
+
+      if (e.state === 'atk') {
+        e.stateTimer -= dt;
+        e.x += e.vx * dt;
+        e.vx *= 0.88;
+        if (!e.hitApplied && e.stateTimer < (e.type === 'boss' ? 0.24 : 0.16)) {
+          const dx = (player.x - e.x) * e.facing;
+          const dy = Math.abs(player.y - e.y);
+          if (dx >= -6 && dx <= e.reach + 8 && dy <= 18 && player.z < 26) {
+            e.hitApplied = true;
+            damagePlayer(e.dmg, e.facing);
+          }
+        }
+        if (e.stateTimer <= 0) {
+          e.state = 'chase';
+          e.atkCooldown = e.type === 'boss' ? (e.enraged ? 0.85 : 1.15) : (0.95 + Math.random() * 0.65);
+        }
+        continue;
+      }
+
+      if (e.state === 'slam') {
+        e.stateTimer -= dt;
+        if (!e.hitApplied && e.stateTimer <= 0.32) {
+          e.hitApplied = true;
+          sfx.playHit(true);
+          triggerShake(0.28, 4.5);
+          // Ground shockwave ring (player can jump over it!)
+          shockwaves.push({
+            x: e.x, y: e.y, r: 12, maxR: 155, color: '#ff2e93',
+            life: 0.68, maxLife: 0.68, friendly: false, dmg: 15, hitPlayer: false,
+          });
+          spawnParticles(e.x, e.y, 4, '#ff45b5', 14, 120);
+        }
+        if (e.stateTimer <= 0) {
+          e.state = 'chase';
+          e.slamCooldown = e.enraged ? 3.2 : 4.6;
+          e.atkCooldown = 0.8;
+        }
+        continue;
+      }
+
+      // CHASE & POSITION AI
+      const desiredX = player.x + e.flankSide * (e.reach - 4);
+      const desiredY = Math.max(FLOOR_MIN_Y + 4, Math.min(FLOOR_MAX_Y - 4, player.y + e.flankYOff * 0.25));
+      const dx = desiredX - e.x;
+      const dy = desiredY - e.y;
+      const distPlayerX = Math.abs(player.x - e.x);
+      const distPlayerY = Math.abs(player.y - e.y);
+
+      e.facing = player.x >= e.x ? 1 : -1;
+
+      // Boss special Rift Shockwave check
+      if (e.type === 'boss' && e.slamCooldown <= 0 && distPlayerX < 135 && distPlayerY < 48) {
+        e.state = 'slam';
+        e.stateTimer = 0.72;
+        e.hitApplied = false;
+        addFloatText('RIFT SLAM!', e.x, e.y - 68, '#ff45b5', 1);
+        continue;
+      }
+
+      // Melee Attack check
+      if (distPlayerX <= e.reach && distPlayerY <= 16 && e.atkCooldown <= 0 && activeAttackers < 2) {
+        e.state = 'windup';
+        e.stateTimer = e.type === 'boss' ? 0.36 : 0.34;
+        activeAttackers++;
+        continue;
+      }
+
+      // Move toward flanking slot
+      const len = Math.hypot(dx, dy) || 1;
+      if (len > 4) {
+        e.x += (dx / len) * e.speed * dt;
+        e.y += (dy / len) * e.speed * 0.72 * dt;
+      }
+      e.x = Math.max(camX + 16, Math.min(camX + W - 16, e.x));
+      e.y = Math.max(FLOOR_MIN_Y, Math.min(FLOOR_MAX_Y, e.y));
+    }
+  }
+
+  function updateWaves(dt) {
+    const cfg = WAVE_CONFIG[waveIndex];
+    if (!cfg) return;
+
+    if (wavePhase === 'spawn') {
+      waveTimer -= dt;
+      if (waveTimer <= 0) {
+        const group = cfg.subWaves[waveSubIndex];
+        for (const sp of group) {
+          spawnEnemy(sp.type, sp.x, sp.y);
+        }
+        if (waveSubIndex === 0) {
+          bannerText = cfg.name;
+          bannerSub = cfg.subtitle;
+          bannerTimer = 1.9;
+        }
+        wavePhase = 'fight';
+      }
+    } else if (wavePhase === 'fight') {
+      if (enemies.length === 0) {
+        waveSubIndex++;
+        if (waveSubIndex < cfg.subWaves.length) {
+          wavePhase = 'spawn';
+          waveTimer = 0.55;
+        } else {
+          // Entire Wave cleared!
+          if (waveIndex < WAVE_CONFIG.length - 1) {
+            // Drop guaranteed Ramyeon before Mini-Boss!
+            if (waveIndex === 1) {
+              items.push({ kind: 'ramyeon', x: camX + W * 0.65, y: 202, z: 24, vz: 100, life: 25 });
+              addFloatText('RAMYEON DROP!', camX + W * 0.65, 160, '#ffe066', 1);
+            }
+            waveIndex++;
+            waveSubIndex = 0;
+            wavePhase = 'go';
+            targetCamX = WAVE_CONFIG[waveIndex].lockX;
+            sfx.playConfirm();
+          } else {
+            // MINI-BOSS DEFEATED -> VICTORY!
+            wavePhase = 'done';
+            score += 2000 + player.hp * 15;
+            persistLocalHighScore();
+            gameState = 'victory';
+            sfx.stopBGM();
+            sfx.playEncoreSpecial();
+            recordKpopDemonHuntersScore(score);
+          }
+        }
+      }
+    } else if (wavePhase === 'go') {
+      // Allow camera to advance smoothly as player walks right
+      const desiredCam = Math.max(camX, Math.min(targetCamX, player.x - 160));
+      camX += (desiredCam - camX) * Math.min(1, dt * 6);
+      if (camX >= targetCamX - 6) {
+        camX = targetCamX;
+        if (waveIndex === 2) {
+          wavePhase = 'warning';
+          waveTimer = 1.9;
+          bannerText = 'WARNING!!';
+          bannerSub = 'MINI-BOSS: SAJA OVERLORD';
+          bannerTimer = 2.0;
+          sfx.playBossWarning();
+          sfx.startBGM('boss');
+        } else {
+          wavePhase = 'spawn';
+          waveTimer = 0.35;
+        }
+      }
+    } else if (wavePhase === 'warning') {
+      waveTimer -= dt;
+      if (waveTimer <= 0) {
+        wavePhase = 'spawn';
+        waveTimer = 0.1;
+      }
+    }
+  }
+
+  function updateWorldObjects(dt) {
+    // Pickups
+    for (let i = items.length - 1; i >= 0; i--) {
+      const it = items[i];
+      it.life -= dt;
+      if (it.z > 0 || it.vz > 0) {
+        it.z += it.vz * dt;
+        it.vz -= GRAVITY * dt;
+        if (it.z <= 0) { it.z = 0; it.vz = 0; }
+      }
+      if (Math.abs(player.x - it.x) < 24 && Math.abs(player.y - it.y) < 18 && player.z < 20) {
+        const heal = it.kind === 'ramyeon' ? 45 : 28;
+        player.hp = Math.min(player.maxHp, player.hp + heal);
+        score += 200;
+        sfx.playPickup();
+        addFloatText('+' + heal + ' HP!', it.x, it.y - 26, '#5eff8f', 1);
+        spawnParticles(it.x, it.y, 12, '#ffe066', 10, 80);
+        items.splice(i, 1);
+        continue;
+      }
+      if (it.life <= 0) items.splice(i, 1);
+    }
+
+    // Shockwaves (both friendly Encore rings & boss floor shockwaves)
+    for (let i = shockwaves.length - 1; i >= 0; i--) {
+      const sw = shockwaves[i];
+      sw.life -= dt;
+      const t = 1 - sw.life / sw.maxLife;
+      sw.r = sw.maxR * t;
+      if (!sw.friendly && sw.dmg > 0 && !sw.hitPlayer && player) {
+        const dx = player.x - sw.x;
+        const dy = (player.y - sw.y) * 1.9;
+        const dist = Math.hypot(dx, dy);
+        if (Math.abs(dist - sw.r) < 14 && player.z < 16) {
+          sw.hitPlayer = true;
+          damagePlayer(sw.dmg, dx >= 0 ? 1 : -1);
+        }
+      }
+      if (sw.life <= 0) shockwaves.splice(i, 1);
+    }
+
+    // Dimensional Rifts
+    for (let i = rifts.length - 1; i >= 0; i--) {
+      rifts[i].life -= dt;
+      if (rifts[i].life <= 0) rifts.splice(i, 1);
+    }
+
+    // Encore Member Summons
+    for (let i = encoreMembers.length - 1; i >= 0; i--) {
+      encoreMembers[i].life -= dt;
+      if (encoreMembers[i].life <= 0) encoreMembers.splice(i, 1);
+    }
+
+    // Particles
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const pt = particles[i];
+      pt.life -= dt;
+      pt.x += pt.vx * dt;
+      pt.y += pt.vy * dt;
+      pt.z = Math.max(0, pt.z + pt.vz * dt);
+      if (pt.type === 'pixel') pt.vz -= 260 * dt;
+      if (pt.life <= 0) particles.splice(i, 1);
+    }
+
+    // Floating Texts
+    for (let i = floatingTexts.length - 1; i >= 0; i--) {
+      const ft = floatingTexts[i];
+      ft.life -= dt;
+      ft.y += ft.vy * dt;
+      if (ft.life <= 0) floatingTexts.splice(i, 1);
+    }
+  }
+
+  // =========================================================================
+  // 11. RENDERING (ENTITIES, DEPTH SORTING, HUD, SCREENS)
+  // =========================================================================
+  function getHunterSprite(p) {
+    const set = SPRITES.hunters[p.def.id];
+    let pose = 'idle0';
+    if (p.state === 'idle') pose = Math.floor(p.animTimer * 4) % 2 === 0 ? 'idle0' : 'idle1';
+    else if (p.state === 'walk') pose = 'walk' + (Math.floor(p.animTimer * 10) % 4);
+    else if (p.state === 'jump') pose = 'jump';
+    else if (p.state === 'jumpkick') pose = 'jumpkick';
+    else if (p.state === 'atk1' || p.state === 'atk2' || p.state === 'atk3') pose = p.state;
+    else if (p.state === 'special') pose = 'special';
+    else if (p.state === 'hurt') pose = 'hurt';
+    return p.flash > 0 ? set[pose + '_flash'] : set[pose];
+  }
+
+  function getEnemySprite(e) {
+    const set = SPRITES.enemies[e.type];
+    let pose = 'idle';
+    if (e.state === 'hurt' || e.state === 'ko') pose = 'hurt';
+    else if (e.state === 'windup') pose = 'windup';
+    else if (e.state === 'atk') pose = 'atk';
+    else if (e.state === 'slam') pose = 'slam';
+    else if (e.state === 'chase') pose = Math.floor(e.animTimer * 7) % 2 === 0 ? 'walk0' : 'walk1';
+    return e.flash > 0 ? set[pose + '_flash'] : set[pose];
+  }
+
+  function drawWorld() {
+    ctx.save();
+    // Apply screen shake
+    if (shakeTime > 0) {
+      const sx = Math.round((Math.random() - 0.5) * 2 * shakeMag);
+      const sy = Math.round((Math.random() - 0.5) * 2 * shakeMag);
+      ctx.translate(sx, sy);
+    }
+
+    drawBackground(camX, time, encoreTimer > 0 ? Math.min(1, encoreTimer * 1.4) : 0);
+
+    // Draw floor Rifts
+    for (const rf of rifts) {
+      const sx = Math.round(rf.x - camX);
+      const sy = Math.round(rf.y);
+      const prog = Math.sin((rf.life / rf.maxLife) * Math.PI);
+      const rad = Math.max(2, Math.round(rf.radius * prog));
+      ctx.fillStyle = '#24073b';
+      ctx.fillRect(sx - rad, sy - Math.round(rad * 0.35), rad * 2, Math.round(rad * 0.7));
+      ctx.strokeStyle = '#ff38a8';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(sx - rad, sy - Math.round(rad * 0.35), rad * 2, Math.round(rad * 0.7));
+    }
+
+    // Draw floor Shockwaves (elliptical 2.5D perspective rings!)
+    for (const sw of shockwaves) {
+      const sx = Math.round(sw.x - camX);
+      const sy = Math.round(sw.y);
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, sw.life / sw.maxLife);
+      ctx.strokeStyle = sw.color;
+      ctx.lineWidth = sw.friendly ? 4 : 3;
+      ctx.beginPath();
+      ctx.ellipse(sx, sy, Math.max(1, sw.r), Math.max(1, sw.r * 0.44), 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Depth-sorted renderables (items, enemies, summoned idols, player)
+    const drawList = [];
+    for (const it of items) drawList.push({ y: it.y, kind: 'item', obj: it });
+    for (const e of enemies) drawList.push({ y: e.y, kind: 'enemy', obj: e });
+    for (const m of encoreMembers) drawList.push({ y: m.y, kind: 'encoreMember', obj: m });
+    if (player) drawList.push({ y: player.y, kind: 'player', obj: player });
+    drawList.sort((a, b) => a.y - b.y);
+
+    for (const entry of drawList) {
+      if (entry.kind === 'item') {
+        const it = entry.obj;
+        const sx = Math.round(it.x - camX);
+        const sy = Math.round(it.y);
+        const bob = Math.round(Math.sin(time * 7) * 2);
+        // Shadow
+        ctx.fillStyle = 'rgba(25, 8, 44, 0.45)';
+        ctx.fillRect(sx - 10, sy - 2, 20, 4);
+        const img = SPRITES.items[it.kind];
+        drawSprite(img, sx, sy - it.z + bob, 1, 0.5, 1);
+      } else if (entry.kind === 'encoreMember') {
+        const m = entry.obj;
+        const sx = Math.round(m.x - camX);
+        const sy = Math.round(m.y);
+        ctx.save();
+        ctx.globalAlpha = Math.min(1, m.life * 2);
+        // Neon floor spotlight ring
+        ctx.fillStyle = 'rgba(94, 246, 255, 0.45)';
+        ctx.fillRect(sx - 18, sy - 4, 36, 8);
+        const img = SPRITES.hunters[m.def.id].special;
+        drawSprite(img, sx, sy + 5, player.facing, 32 / 72, 50 / 56);
+        ctx.restore();
+      } else if (entry.kind === 'enemy') {
+        const e = entry.obj;
+        const sx = Math.round(e.x - camX);
+        const sy = Math.round(e.y);
+        const isBoss = e.type === 'boss';
+        const sw = isBoss ? 24 : 14;
+        // Ground shadow
+        ctx.fillStyle = 'rgba(26, 8, 48, 0.45)';
+        ctx.fillRect(sx - sw, sy - 3, sw * 2, 6);
+        // Boss enraged magenta aura
+        if (isBoss && e.enraged) {
+          ctx.fillStyle = 'rgba(255, 46, 147, 0.32)';
+          ctx.fillRect(sx - 24, sy - 64 - e.z, 48, 64);
+        }
+        // Blink on KO
+        if (e.state === 'ko' && Math.floor(time * 24) % 2 === 0) continue;
+        const img = getEnemySprite(e);
+        drawSprite(img, sx, sy - e.z + 4, e.facing, 0.5, isBoss ? 69 / 76 : 50 / 56);
+
+        // Telegraph "!" indicator during windup
+        if (e.state === 'windup') {
+          drawText('!', sx, sy - e.z - (isBoss ? 78 : 54), '#ffe066', 2, 'center', '#d91656');
+        }
+        // Small enemy HP bar when damaged (non-boss)
+        if (!isBoss && e.hp < e.maxHp && e.hp > 0) {
+          const bw = 26;
+          ctx.fillStyle = '#19082c';
+          ctx.fillRect(sx - bw / 2 - 1, sy - e.z - 50, bw + 2, 5);
+          ctx.fillStyle = '#ff3b6b';
+          ctx.fillRect(sx - bw / 2, sy - e.z - 49, Math.max(1, Math.round(bw * (e.hp / e.maxHp))), 3);
+        }
+      } else if (entry.kind === 'player') {
+        const p = entry.obj;
+        const sx = Math.round(p.x - camX);
+        const sy = Math.round(p.y);
+        // Shadow scales smaller when jumping high
+        const shW = Math.max(8, Math.round(15 - p.z * 0.08));
+        ctx.fillStyle = 'rgba(26, 8, 48, 0.48)';
+        ctx.fillRect(sx - shW, sy - 3, shW * 2, 6);
+
+        // Encore Ready subtle cyan aura under feet
+        if (p.encore >= 100 && Math.floor(time * 8) % 2 === 0) {
+          ctx.strokeStyle = '#5ef6ff';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(sx - 16, sy - 4, 32, 8);
+        }
+
+        // Invulnerability blink
+        if (p.invuln > 0 && p.state !== 'special' && Math.floor(time * 18) % 2 === 0) continue;
+
+        const img = getHunterSprite(p);
+        drawSprite(img, sx, sy - p.z + 4, p.facing, 32 / 72, 50 / 56);
+
+        // Comic speech bubble during Encore Special!
+        if (encoreTimer > 0.25) {
+          const bx = Math.max(86, Math.min(W - 86, sx));
+          const by = Math.max(54, sy - p.z - 66);
+          const bw = encoreBubbleText.length * 6 + 14;
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(bx - bw / 2, by - 12, bw, 16);
+          ctx.strokeStyle = '#1b092e';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(bx - bw / 2, by - 12, bw, 16);
+          drawText(encoreBubbleText, bx, by - 7, '#a81c7e', 1, 'center', null);
+        }
+      }
+    }
+
+    // Particles (hit starbursts, music notes, sparks)
+    for (const pt of particles) {
+      const sx = Math.round(pt.x - camX);
+      const sy = Math.round(pt.y - pt.z);
+      if (pt.type === 'star') {
+        const s = Math.round(pt.size * (pt.life / pt.maxLife + 0.35));
+        ctx.fillStyle = pt.color2;
+        ctx.fillRect(sx - s, sy - 2, s * 2, 4);
+        ctx.fillRect(sx - 2, sy - s, 4, s * 2);
+        ctx.fillStyle = pt.color;
+        ctx.fillRect(sx - Math.round(s * 0.6), sy - Math.round(s * 0.6), Math.round(s * 1.2), Math.round(s * 1.2));
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(sx - 2, sy - 2, 4, 4);
+      } else if (pt.type === 'note') {
+        ctx.fillStyle = pt.color;
+        ctx.fillRect(sx, sy, 3, 2);
+        ctx.fillRect(sx + 2, sy - 5, 1, 6);
+        ctx.fillRect(sx + 2, sy - 5, 3, 2);
+      } else {
+        ctx.fillStyle = pt.color;
+        ctx.fillRect(sx, sy, pt.size, pt.size);
+      }
+    }
+
+    // Floating Damage / Score Popups
+    for (const ft of floatingTexts) {
+      drawText(ft.text, ft.x - camX, ft.y, ft.color, ft.scale, 'center');
+    }
+
+    drawForegroundParapet(camX);
+    ctx.restore();
+  }
+
+  function drawHUD() {
+    const p = player;
+
+    // 1) Top-Left Angled Arcade Character Panel (Inspired by reference image!)
+    ctx.fillStyle = '#200b3d';
+    ctx.fillRect(6, 5, 198, 34);
+    ctx.fillStyle = '#38166b';
+    ctx.fillRect(8, 7, 194, 30);
+    // Neon border
+    ctx.fillStyle = '#5ef6ff';
+    ctx.fillRect(6, 5, 198, 2);
+    ctx.fillRect(6, 37, 190, 2);
+    ctx.fillRect(6, 5, 2, 34);
+    ctx.fillStyle = '#ff42b3';
+    ctx.fillRect(202, 5, 2, 30);
+
+    // Portrait frame
+    ctx.fillStyle = '#140626';
+    ctx.fillRect(10, 9, 26, 26);
+    const port = SPRITES.portraits[p.def.id];
+    if (port) ctx.drawImage(port, 12, 11, 22, 22);
+    ctx.strokeStyle = p.def.accent;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(10.5, 9.5, 25, 25);
+
+    // Name, Lives & Score
+    drawText(p.def.name, 41, 9, '#ff85d0', 1, 'left');
+    drawText('X' + p.lives, 74, 9, '#ffe066', 1, 'left');
+    drawText(String(score).padStart(7, '0'), 198, 9, '#ffffff', 1, 'right');
+
+    // Health Bar (Yellow -> Orange -> Red)
+    const hpPct = Math.max(0, p.hp / p.maxHp);
+    ctx.fillStyle = '#120521';
+    ctx.fillRect(40, 19, 158, 8);
+    ctx.fillStyle = '#4a1438';
+    ctx.fillRect(41, 20, 156, 6);
+    const fillW = Math.round(156 * hpPct);
+    ctx.fillStyle = hpPct > 0.5 ? '#ffd43b' : hpPct > 0.25 ? '#ff8833' : '#ff3355';
+    ctx.fillRect(41, 20, fillW, 6);
+    ctx.fillStyle = '#fff3b0';
+    ctx.fillRect(41, 20, fillW, 2);
+
+    // Segmented ENCORE Special Meter
+    drawText('ENCORE', 41, 29, p.encore >= 100 ? '#ffe066' : '#5ef6ff', 1, 'left');
+    const barX = 82;
+    const barW = 116;
+    ctx.fillStyle = '#120521';
+    ctx.fillRect(barX, 29, barW, 7);
+    const segs = 10;
+    const segW = 10;
+    const filledSegs = Math.floor((p.encore / 100) * segs);
+    const readyPulse = p.encore >= 100 && Math.floor(time * 10) % 2 === 0;
+    for (let s = 0; s < segs; s++) {
+      const sx = barX + 2 + s * (segW + 1);
+      if (s < filledSegs) {
+        ctx.fillStyle = readyPulse ? '#ffe066' : (p.encore >= 100 ? '#ff42b3' : '#3ff5ff');
+      } else {
+        ctx.fillStyle = '#29154a';
+      }
+      ctx.fillRect(sx, 30, segW, 5);
+    }
+    if (p.encore >= 100) {
+      drawText('PRESS [L/C] ENCORE!', 104, 42, readyPulse ? '#ffe066' : '#5ef6ff', 1, 'center');
+    }
+
+    // 2) Top-Center Wave Indicator
+    const waveLabel = waveIndex === 2 ? 'MINI-BOSS' : `WAVE ${waveIndex + 1}/2`;
+    ctx.fillStyle = '#200b3d';
+    ctx.fillRect(216, 5, 114, 22);
+    ctx.fillStyle = '#ff42b3';
+    ctx.fillRect(216, 5, 114, 2);
+    drawText(waveLabel, 273, 10, '#ffe066', 1, 'center');
+    const rem = enemies.filter(e => e.state !== 'ko').length;
+    drawText('DEMONS:' + rem, 273, 19, '#d8c2ff', 1, 'center');
+
+    // 3) Top-Right Dynamic COMBO METER
+    if (comboCount > 0) {
+      const bounce = comboTimer > 2.45 ? -2 : 0;
+      ctx.fillStyle = '#240b42';
+      ctx.fillRect(352, 6 + bounce, 122, 32);
+      ctx.fillStyle = '#ff42b3';
+      ctx.fillRect(352, 6 + bounce, 122, 2);
+      ctx.fillStyle = '#5ef6ff';
+      ctx.fillRect(352, 36 + bounce, 122, 2);
+
+      const rank = comboCount >= 18 ? 'IDOL GOD!' : comboCount >= 12 ? 'ENCORE!!' : comboCount >= 7 ? 'SLAY!!' : comboCount >= 4 ? 'GROOVE!' : 'HYPE!';
+      drawText(comboCount + ' HIT!', 413, 11 + bounce, '#ffe066', 2, 'center', '#6e1152');
+      drawText(rank, 413, 27 + bounce, '#5ef6ff', 1, 'center');
+
+      // Combo decay bar
+      const pct = Math.max(0, comboTimer / 2.6);
+      ctx.fillStyle = '#ff42b3';
+      ctx.fillRect(356, 34 + bounce, Math.round(114 * pct), 2);
+    } else {
+      drawText('HI ' + String(highScore).padStart(7, '0'), 472, 10, '#bfa2db', 1, 'right');
+    }
+
+    // 4) Mini-Boss Health Bar (Bottom Center)
+    const boss = enemies.find(e => e.type === 'boss' && e.state !== 'ko');
+    if (boss) {
+      const bx = 90, by = 248, bw = 300;
+      ctx.fillStyle = '#18062b';
+      ctx.fillRect(bx - 2, by - 11, bw + 4, 20);
+      ctx.fillStyle = '#ff2e93';
+      ctx.fillRect(bx - 2, by - 11, bw + 4, 2);
+      drawText('MINI-BOSS: ' + boss.name, bx + 4, by - 8, '#ff85d0', 1, 'left');
+      ctx.fillStyle = '#381036';
+      ctx.fillRect(bx, by + 1, bw, 6);
+      const bFill = Math.round(bw * Math.max(0, boss.hp / boss.maxHp));
+      ctx.fillStyle = boss.enraged ? '#ff2468' : '#b833ff';
+      ctx.fillRect(bx, by + 1, bFill, 6);
+      ctx.fillStyle = '#ffb8e6';
+      ctx.fillRect(bx, by + 1, bFill, 2);
+    }
+
+    // 5) Classic Arcade Blinking "GO ->" Prompt Between Waves
+    if (wavePhase === 'go' && Math.floor(time * 5) % 2 === 0) {
+      ctx.fillStyle = '#240942';
+      ctx.fillRect(398, 72, 68, 28);
+      ctx.fillStyle = '#ffe066';
+      ctx.fillRect(398, 72, 68, 2);
+      ctx.fillRect(398, 98, 68, 2);
+      drawText('GO >>', 432, 80, '#ffe066', 2, 'center', '#d91656');
+    }
+
+    // 6) Stage / Wave / Warning Center Banner
+    if (bannerTimer > 0) {
+      const isWarn = bannerText.includes('WARNING');
+      ctx.fillStyle = isWarn ? 'rgba(140, 12, 54, 0.85)' : 'rgba(26, 8, 52, 0.84)';
+      ctx.fillRect(0, 96, W, 42);
+      ctx.fillStyle = isWarn ? '#ffe066' : '#5ef6ff';
+      ctx.fillRect(0, 96, W, 2);
+      ctx.fillRect(0, 136, W, 2);
+      drawText(bannerText, W / 2, 103, isWarn ? '#ffe066' : '#ff69c0', 2, 'center');
+      drawText(bannerSub, W / 2, 122, '#ffffff', 1, 'center');
+    }
+  }
+
+  function drawTitleScreen() {
+    drawBackground(180 + Math.sin(time * 0.4) * 40, time, 0.25);
+
+    // Title Banner
+    drawText('HUNTRIX', W / 2, 18, '#ff45b5', 4, 'center', '#1b0736');
+    drawText('HUNTRIX', W / 2, 16, '#ffe066', 4, 'center', null);
+    drawText('K-POP DEMON HUNTERS  16-BIT', W / 2, 50, '#5ef6ff', 1, 'center');
+
+    // Character Select Cards
+    drawText('SELECT YOUR HUNTER  [A/D OR ARROWS]', W / 2, 68, '#ffffff', 1, 'center');
+
+    HUNTERS.forEach((h, idx) => {
+      const sel = idx === selectedHunterIdx;
+      const cx = 96 + idx * 144;
+      const cy = 84;
+      const cw = 124;
+      const ch = 122;
+
+      ctx.fillStyle = sel ? 'rgba(64, 22, 117, 0.92)' : 'rgba(24, 10, 48, 0.82)';
+      ctx.fillRect(cx - cw / 2, cy, cw, ch);
+      ctx.strokeStyle = sel ? (Math.floor(time * 8) % 2 === 0 ? '#ffe066' : '#5ef6ff') : '#5d3a96';
+      ctx.lineWidth = sel ? 2 : 1;
+      ctx.strokeRect(cx - cw / 2, cy, cw, ch);
+
+      // Animated sprite preview!
+      const pose = sel ? (Math.floor(time * 6) % 2 === 0 ? 'atk2' : 'walk0') : 'idle0';
+      const img = SPRITES.hunters[h.id][pose];
+      drawSprite(img, cx, cy + 68, 1, 32 / 72, 50 / 56);
+
+      drawText(h.name, cx, cy + 74, sel ? '#ffe066' : '#ffffff', 2, 'center');
+      drawText(h.title, cx, cy + 92, h.accent, 1, 'center');
+
+      // Mini stat bars
+      const drawStat = (lbl, val, sy, col) => {
+        drawText(lbl, cx - 54, sy, '#c9b5ea', 1, 'left');
+        ctx.fillStyle = '#140626';
+        ctx.fillRect(cx - 26, sy + 1, 76, 4);
+        ctx.fillStyle = col;
+        ctx.fillRect(cx - 26, sy + 1, Math.round(76 * val), 4);
+      };
+      drawStat('PWR', h.power / 1.2, cy + 102, '#ff59b8');
+      drawStat('SPD', h.speed / 145, cy + 111, '#5ef6ff');
+    });
+
+    // Blinking Press Start Prompt
+    const blink = Math.floor(time * 3) % 2 === 0;
+    ctx.fillStyle = 'rgba(22, 7, 44, 0.9)';
+    ctx.fillRect(54, 218, 372, 38);
+    ctx.fillStyle = '#5ef6ff';
+    ctx.fillRect(54, 218, 372, 2);
+    drawText(blink ? 'PRESS [ENTER] OR [J] TO START' : '>>> SHOWTIME! <<<', W / 2, 226, '#ffe066', 1, 'center');
+    drawText('2 WAVES + MINI-BOSS | 3-HIT COMBO | ENCORE SPECIAL', W / 2, 241, '#d8c2ff', 1, 'center');
+  }
+
+  function drawOverlayScreen(isVictory) {
+    ctx.fillStyle = 'rgba(14, 5, 30, 0.8)';
+    ctx.fillRect(0, 0, W, H);
+
+    const boxX = 76, boxY = 38, boxW = 328, boxH = 194;
+    ctx.fillStyle = '#230b42';
+    ctx.fillRect(boxX, boxY, boxW, boxH);
+    ctx.strokeStyle = isVictory ? '#ffe066' : '#ff3b6b';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(boxX, boxY, boxW, boxH);
+
+    if (isVictory) {
+      drawText('STAGE CLEAR!!', W / 2, 52, '#ffe066', 3, 'center', '#991b6b');
+      drawText('SEOUL IS SAFE — ENCORE COMPLETE!', W / 2, 82, '#5ef6ff', 1, 'center');
+
+      // Show all 3 HUNTRIX idols celebrating!
+      ['mira', 'rumi', 'zoey'].forEach((id, idx) => {
+        const pose = Math.floor(time * 5 + idx) % 2 === 0 ? 'special' : 'idle0';
+        drawSprite(SPRITES.hunters[id][pose], 168 + idx * 72, 144, 1, 32 / 72, 50 / 56);
+      });
+
+      const rank = score >= 9500 ? 'S' : score >= 6500 ? 'A' : score >= 4000 ? 'B' : 'C';
+      drawText('SCORE: ' + score, 110, 158, '#ffffff', 1, 'left');
+      drawText('MAX COMBO: ' + maxCombo, 110, 170, '#ff85d0', 1, 'left');
+      drawText('DEMONS SLAIN: ' + enemiesDefeated, 110, 182, '#5ef6ff', 1, 'left');
+      drawText('RANK', 330, 155, '#c9b5ea', 1, 'center');
+      drawText(rank, 330, 168, '#ffe066', 3, 'center', '#b82575');
+    } else {
+      drawText('GAME OVER', W / 2, 68, '#ff3b6b', 3, 'center', '#140524');
+      drawText('THE DEMONS CRASHED THE STAGE...', W / 2, 108, '#d8c2ff', 1, 'center');
+      drawText('FINAL SCORE: ' + score, W / 2, 134, '#ffe066', 2, 'center');
+      drawText('MAX COMBO: ' + maxCombo + '   DEMONS SLAIN: ' + enemiesDefeated, W / 2, 162, '#5ef6ff', 1, 'center');
+    }
+
+    if (scoreSyncStatus) {
+      drawText(scoreSyncStatus, W / 2, 193, '#5ef6ff', 1, 'center');
+    }
+
+    const blink = Math.floor(time * 3) % 2 === 0;
+    drawText(blink ? 'PRESS [ENTER] OR [J] TO PLAY AGAIN' : 'PRESS [K] FOR CHARACTER SELECT', W / 2, 209, '#ffe066', 1, 'center');
+  }
+
+  function drawPauseOverlay() {
+    ctx.fillStyle = 'rgba(14, 5, 30, 0.65)';
+    ctx.fillRect(0, 0, W, H);
+    drawText('PAUSED', W / 2, 114, '#ffe066', 3, 'center');
+    drawText('PRESS [P] OR [ESC] TO RESUME', W / 2, 148, '#5ef6ff', 1, 'center');
+  }
+
+  // =========================================================================
+  // 12. MAIN GAME LOOP
+  // =========================================================================
+  let lastTs = 0;
+
+  function step(ts) {
+    const dt = Math.min(0.05, (ts - lastTs) / 1000 || 0.016);
+    lastTs = ts;
+    time += dt;
+
+    if (gameState === 'title') {
+      if (justPressed.left) {
+        selectedHunterIdx = (selectedHunterIdx + HUNTERS.length - 1) % HUNTERS.length;
+        sfx.playSelect();
+      }
+      if (justPressed.right) {
+        selectedHunterIdx = (selectedHunterIdx + 1) % HUNTERS.length;
+        sfx.playSelect();
+      }
+      if (justPressed.confirm || justPressed.attack || justPressed.jump) {
+        sfx.playConfirm();
+        startNewGame();
+      }
+      drawTitleScreen();
+    } else if (gameState === 'playing') {
+      if (justPressed.pause) {
+        gameState = 'paused';
+      } else {
+        if (bannerTimer > 0) bannerTimer -= dt;
+        if (shakeTime > 0) shakeTime -= dt;
+        if (encoreTimer > 0) encoreTimer -= dt;
+        if (comboTimer > 0) {
+          comboTimer -= dt;
+          if (comboTimer <= 0) comboCount = 0;
+        }
+
+        if (hitstop > 0) {
+          hitstop -= dt;
+        } else {
+          updatePlayer(dt);
+          updateEnemies(dt);
+          updateWaves(dt);
+          updateWorldObjects(dt);
+        }
+      }
+      drawWorld();
+      drawHUD();
+    } else if (gameState === 'paused') {
+      if (justPressed.pause) gameState = 'playing';
+      drawWorld();
+      drawHUD();
+      drawPauseOverlay();
+    } else if (gameState === 'victory' || gameState === 'gameover') {
+      if (justPressed.confirm || justPressed.attack) {
+        sfx.playConfirm();
+        startNewGame();
+      } else if (justPressed.jump) {
+        sfx.playSelect();
+        gameState = 'title';
+      }
+      drawWorld();
+      drawHUD();
+      drawOverlayScreen(gameState === 'victory');
+    }
+
+    clearJustPressed();
+    requestAnimationFrame(step);
+  }
+
+  // Allow clicking directly on canvas in title screen to select hunter or start
+  canvas.addEventListener('click', (e) => {
+    sfx.init();
+    const rect = canvas.getBoundingClientRect();
+    const mx = ((e.clientX - rect.left) / rect.width) * W;
+    const my = ((e.clientY - rect.top) / rect.height) * H;
+    if (gameState === 'title') {
+      if (my >= 80 && my <= 208) {
+        const idx = Math.floor((mx - 24) / 144);
+        if (idx >= 0 && idx < HUNTERS.length) {
+          if (selectedHunterIdx === idx) {
+            sfx.playConfirm();
+            startNewGame();
+          } else {
+            selectedHunterIdx = idx;
+            sfx.playSelect();
+          }
+        }
+      } else if (my > 210) {
+        sfx.playConfirm();
+        startNewGame();
+      }
+    } else if (gameState === 'victory' || gameState === 'gameover') {
+      sfx.playConfirm();
+      startNewGame();
+    }
+  });
+
+  // Boot!
+  initSprites();
+  requestAnimationFrame(step);
+})();
+</script>
+</body>
+</html>

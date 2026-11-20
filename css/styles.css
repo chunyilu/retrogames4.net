@@ -207,9 +207,522 @@
     .animate-star-twinkle,
     .animate-star-twinkle-delayed,
     .animate-interceptor-flight,
-    .meteor-streak {
-        animation: none;
+    .meteor-streak,
+    .genre-icon-shooter,
+    .genre-icon-platformer,
+    .genre-icon-strategy,
+    #sidebar,
+    #sidebar .sub-menu,
+    #sidebar .sidebar-chevron,
+    #toggle-btn i {
+        animation: none !important;
+        transition: none !important;
     }
+}
+
+/* =========================================================================
+   Responsive Genre Sidebar Menu with Animated Dropdowns
+   (Inspired by Coding2GO Responsive Sidebar + Neon Synthwave Arcade Theme)
+   ========================================================================= */
+.portal-shell {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    width: 100%;
+}
+
+.portal-main {
+    min-width: 0;
+}
+
+#sidebar {
+    box-sizing: border-box;
+    width: 256px;
+    height: calc(100vh - 5rem);
+    position: sticky;
+    top: 5rem;
+    align-self: start;
+    background: linear-gradient(180deg, rgba(14, 14, 30, 0.98) 0%, rgba(10, 10, 18, 0.98) 100%);
+    backdrop-filter: blur(12px);
+    border-right: 1px solid rgba(0, 243, 255, 0.28);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.45), inset -1px 0 0 rgba(157, 0, 255, 0.18);
+    padding: 0.75rem 0.65rem 1.25rem;
+    z-index: 35;
+    overflow-y: auto;
+    overflow-x: hidden;
+    transition: width 300ms ease-in-out, padding 300ms ease-in-out;
+    scrollbar-width: thin;
+}
+
+#sidebar.close {
+    width: 66px;
+    padding: 0.75rem 0.45rem 1.25rem;
+}
+
+#sidebar > ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+/* Sidebar Top Header Row (Brand + Collapse Toggle) */
+#sidebar .sidebar-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding: 0.25rem 0.25rem 0.75rem;
+    border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+}
+
+#sidebar .sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: opacity 200ms ease, width 300ms ease;
+}
+
+#sidebar.close .sidebar-brand {
+    opacity: 0;
+    width: 0;
+    pointer-events: none;
+}
+
+#toggle-btn {
+    margin-left: auto;
+    width: 2.25rem;
+    height: 2.25rem;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(0, 243, 255, 0.4);
+    background: rgba(18, 18, 37, 0.9);
+    color: #00f3ff;
+    cursor: pointer;
+    transition: background-color 200ms ease, border-color 200ms ease, box-shadow 200ms ease, color 200ms ease;
+}
+
+#toggle-btn:hover {
+    background: rgba(0, 243, 255, 0.14);
+    border-color: #00f3ff;
+    box-shadow: 0 0 12px rgba(0, 243, 255, 0.45);
+}
+
+#toggle-btn i {
+    transition: transform 300ms ease-in-out;
+}
+
+#toggle-btn.rotate i {
+    transform: rotate(180deg);
+}
+
+#sidebar.close .sidebar-header-row {
+    justify-content: center;
+    gap: 0;
+}
+
+#sidebar.close #toggle-btn {
+    margin-left: 0;
+}
+
+/* Section Divider Label inside Sidebar */
+#sidebar .sidebar-section-label {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    letter-spacing: 0.08em;
+    color: rgba(156, 163, 175, 0.75);
+    padding: 0.65rem 0.75rem 0.25rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: opacity 200ms ease, height 250ms ease, padding 250ms ease;
+}
+
+#sidebar.close .sidebar-section-label {
+    opacity: 0;
+    height: 0;
+    padding: 0;
+    margin: 0;
+    pointer-events: none;
+}
+
+/* Primary Links & Dropdown Buttons */
+#sidebar .sidebar-link,
+#sidebar .dropdown-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 0.55rem;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #d1d5db;
+    text-decoration: none;
+    text-align: left;
+    cursor: pointer;
+    white-space: nowrap;
+    position: relative;
+    transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease, box-shadow 200ms ease, transform 150ms ease;
+}
+
+#sidebar .sidebar-link:hover,
+#sidebar .dropdown-btn:hover {
+    background: rgba(0, 243, 255, 0.09);
+    border-color: rgba(0, 243, 255, 0.35);
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(0, 243, 255, 0.16);
+}
+
+#sidebar .sidebar-link:focus-visible,
+#sidebar .dropdown-btn:focus-visible,
+#toggle-btn:focus-visible {
+    outline: 2px solid #00f3ff;
+    outline-offset: 2px;
+}
+
+#sidebar .sidebar-icon {
+    width: 1.35rem;
+    text-align: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+    transition: transform 200ms ease, filter 200ms ease;
+}
+
+#sidebar .sidebar-label {
+    flex-grow: 1;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#sidebar .genre-count-badge {
+    font-family: 'Courier New', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.1rem 0.42rem;
+    border-radius: 9999px;
+    background: rgba(18, 18, 37, 0.95);
+    border: 1px solid rgba(157, 0, 255, 0.45);
+    color: #00f3ff;
+    flex-shrink: 0;
+}
+
+#sidebar .genre-count-badge.is-soon {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 6px;
+    padding: 0.18rem 0.35rem;
+    border-color: rgba(107, 114, 128, 0.45);
+    color: #9ca3af;
+}
+
+#sidebar .sidebar-chevron {
+    font-size: 0.72rem;
+    color: #9ca3af;
+    flex-shrink: 0;
+    transition: transform 300ms ease-in-out, color 200ms ease;
+}
+
+#sidebar .dropdown-btn.rotate .sidebar-chevron {
+    transform: rotate(180deg);
+    color: #00f3ff;
+}
+
+/* Active Genre State */
+#sidebar .sidebar-link.active {
+    background: linear-gradient(90deg, rgba(255, 0, 127, 0.22) 0%, rgba(157, 0, 255, 0.14) 100%);
+    border-color: rgba(255, 0, 127, 0.75);
+    color: #ffffff;
+    box-shadow: 0 0 14px rgba(255, 0, 127, 0.28), inset 3px 0 0 #ff007f;
+}
+
+#sidebar .sidebar-link.active .genre-count-badge {
+    background: #ff007f;
+    border-color: #ff007f;
+    color: #ffffff;
+}
+
+#sidebar .dropdown-btn.has-active-child {
+    background: rgba(0, 243, 255, 0.08);
+    border-color: rgba(0, 243, 255, 0.45);
+    color: #00f3ff;
+}
+
+/* Collapsed Icon-Rail Adjustments (Desktop) */
+#sidebar.close .sidebar-link,
+#sidebar.close .dropdown-btn {
+    justify-content: center;
+    padding: 0.7rem 0.4rem;
+    gap: 0;
+}
+
+#sidebar.close .sidebar-label,
+#sidebar.close .genre-count-badge,
+#sidebar.close .sidebar-chevron,
+#sidebar.close .sidebar-footer-tip {
+    display: none;
+}
+
+/* Coding2GO Signature Animated Dropdown (CSS Grid 0fr -> 1fr) */
+#sidebar .sub-menu {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 300ms ease-in-out;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#sidebar .sub-menu.show {
+    grid-template-rows: 1fr;
+}
+
+#sidebar .sub-menu > div {
+    overflow: hidden;
+}
+
+#sidebar .sub-menu-list {
+    list-style: none;
+    margin: 0.2rem 0 0.35rem 1.05rem;
+    padding: 0.2rem 0 0.2rem 0.65rem;
+    border-left: 1px dashed rgba(0, 243, 255, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+#sidebar .sub-menu .sidebar-link {
+    padding: 0.5rem 0.65rem;
+    font-size: 0.85rem;
+}
+
+#sidebar .sub-menu .sidebar-label {
+    font-size: 0.85rem;
+}
+
+#sidebar .sidebar-footer-tip {
+    margin-top: 0.85rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 0.6rem;
+    background: rgba(18, 18, 37, 0.85);
+    border: 1px solid rgba(157, 0, 255, 0.35);
+}
+
+/* Micro-interaction triggers inside sidebar */
+#sidebar .sidebar-link:hover .genre-icon-shooter {
+    animation: crosshairLock 0.7s ease-in-out infinite;
+}
+
+#sidebar .sidebar-link:hover .genre-icon-platformer {
+    animation: platformerBounce 0.6s ease-in-out infinite;
+}
+
+#sidebar .sidebar-link:hover .genre-icon-strategy {
+    animation: strategyTacticalPulse 0.8s ease-in-out infinite;
+}
+
+/* =========================================================================
+   Mobile Viewport Adaptation (< 768px): Bottom Icon Bar + Pop-Up Submenus
+   (Coding2GO Responsive Sidebar Pattern)
+   ========================================================================= */
+@media (max-width: 767px) {
+    body {
+        padding-bottom: 66px;
+    }
+
+    .portal-shell {
+        grid-template-columns: 1fr;
+    }
+
+    #sidebar,
+    #sidebar.close {
+        height: 62px;
+        width: 100%;
+        position: fixed;
+        top: unset;
+        bottom: 0;
+        left: 0;
+        padding: 0 0.25rem;
+        background: rgba(10, 10, 20, 0.98);
+        backdrop-filter: none;
+        border-right: none;
+        border-top: 1px solid rgba(0, 243, 255, 0.45);
+        box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.7), 0 -1px 14px rgba(0, 243, 255, 0.22);
+        z-index: 45;
+        overflow: visible;
+        display: flex;
+        align-items: center;
+    }
+
+    #sidebar > ul {
+        width: 100%;
+        height: 100%;
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(64px, 1fr);
+        align-items: center;
+        gap: 0.15rem;
+        overflow-x: auto;
+    }
+
+    #sidebar > ul::-webkit-scrollbar {
+        display: none;
+    }
+
+    #sidebar .sidebar-header-row,
+    #sidebar .sidebar-section-label,
+    #sidebar .sidebar-footer-tip,
+    #sidebar > ul > li > .sidebar-link .genre-count-badge,
+    #sidebar > ul > li > .dropdown-btn .sidebar-chevron {
+        display: none !important;
+    }
+
+    #sidebar > ul > li {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #sidebar > ul > li > .sidebar-link,
+    #sidebar > ul > li > .dropdown-btn {
+        height: 52px;
+        width: 100%;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 0.22rem;
+        padding: 0.25rem 0.2rem;
+        border-radius: 0.5rem;
+    }
+
+    #sidebar > ul > li > .sidebar-link .sidebar-label,
+    #sidebar > ul > li > .dropdown-btn .sidebar-label {
+        display: block !important;
+        flex-grow: 0;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 6.5px;
+        letter-spacing: 0.02em;
+        line-height: 1.1;
+        max-width: 100%;
+    }
+
+    #sidebar > ul > li > .sidebar-link.active {
+        box-shadow: 0 0 12px rgba(255, 0, 127, 0.35), inset 0 -2px 0 #ff007f;
+    }
+
+    /* Mobile Upward Floating Submenu Tray (appears above the 62px bottom bar) */
+    #sidebar .sub-menu {
+        display: none;
+        position: fixed;
+        bottom: 62px;
+        left: 0;
+        right: 0;
+        width: 100%;
+        background: rgba(12, 12, 26, 0.98);
+        backdrop-filter: blur(14px);
+        border-top: 2px solid rgba(0, 243, 255, 0.55);
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.75), 0 -2px 16px rgba(255, 0, 127, 0.2);
+        z-index: 46;
+        padding: 0.65rem 0.75rem;
+    }
+
+    #sidebar .sub-menu.show {
+        display: block;
+    }
+
+    #sidebar .sub-menu > div {
+        overflow: visible;
+    }
+
+    #sidebar .sub-menu-list {
+        margin: 0;
+        padding: 0;
+        border-left: none;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.45rem;
+    }
+
+    #sidebar .sub-menu .sidebar-link {
+        width: auto;
+        flex-direction: row;
+        height: auto;
+        padding: 0.5rem 0.75rem;
+        background: rgba(18, 18, 37, 0.95);
+        border: 1px solid rgba(157, 0, 255, 0.45);
+        border-radius: 9999px;
+    }
+
+    #sidebar .sub-menu .sidebar-label {
+        display: inline !important;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 8px;
+    }
+
+    #sidebar .sub-menu .genre-count-badge {
+        display: inline-flex !important;
+    }
+}
+
+/* Tablet Width Adjustment (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+    #sidebar:not(.close) {
+        width: 224px;
+    }
+}
+
+/* Genre Navigation Micro-Interactions (GamesNostalgia Style) */
+@keyframes crosshairLock {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.18) rotate(12deg); }
+}
+
+@keyframes platformerBounce {
+    0%, 100% { transform: translateY(0px); }
+    45% { transform: translateY(-7px) scale(1.1); }
+}
+
+@keyframes strategyTacticalPulse {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 4px rgba(255, 230, 0, 0.5)); }
+    50% { transform: scale(1.14) rotate(-8deg); filter: drop-shadow(0 0 12px rgba(255, 230, 0, 0.95)); }
+}
+
+.genre-card:hover .genre-icon-shooter,
+.genre-nav-pill:hover .genre-icon-shooter {
+    animation: crosshairLock 0.7s ease-in-out infinite;
+}
+
+.genre-card:hover .genre-icon-platformer,
+.genre-nav-pill:hover .genre-icon-platformer {
+    animation: platformerBounce 0.6s ease-in-out infinite;
+}
+
+.genre-card:hover .genre-icon-strategy,
+.genre-nav-pill:hover .genre-icon-strategy {
+    animation: strategyTacticalPulse 0.8s ease-in-out infinite;
+}
+
+/* Hide scrollbar on mobile genre strip while keeping swipe usability */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 /* Synthwave Grid Background */
