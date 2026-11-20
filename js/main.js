@@ -53,33 +53,251 @@ function checkFestivalBanner() {
     } catch (e) {}
 }
 
+// Genre Route Metadata (GamesNostalgia Style — Full 12 Genres)
+const GENRE_METADATA = {
+    'all': { label: 'ALL RETRO CLASSICS', path: '/games/all', filterId: 'vaultFilter-all' },
+    'shooter': { label: 'SHOOTER GAMES', path: '/games/shooter', filterId: 'vaultFilter-shooter' },
+    'platformer': { label: 'PLATFORMER & SIDE-SCROLLERS', path: '/games/platformer', filterId: 'vaultFilter-platformer' },
+    'strategy': { label: 'STRATEGY & TACTICAL LOGIC', path: '/games/strategy', filterId: 'vaultFilter-strategy' },
+    'arcade': { label: 'ARCADE CLASSICS', path: '/games/arcade', filterId: 'vaultFilter-arcade' },
+    'brawler': { label: 'BEAT \'EM UP BRAWLERS', path: '/games/brawler', filterId: 'vaultFilter-brawler' },
+    'rpg': { label: 'RETRO RPG & MATH QUESTS', path: '/games/rpg', filterId: 'vaultFilter-rpg' },
+    'adventure': { label: 'ADVENTURE QUESTS', path: '/games/adventure', filterId: 'vaultFilter-rpg' },
+    'action-adventure': { label: 'ACTION-ADVENTURE', path: '/games/action-adventure', filterId: 'vaultFilter-platformer' },
+    'puzzle': { label: 'PUZZLER & POLYOMINO', path: '/games/puzzler', filterId: 'vaultFilter-puzzle' },
+    'puzzler': { label: 'PUZZLER & POLYOMINO', path: '/games/puzzler', filterId: 'vaultFilter-puzzle' },
+    'racing': { label: 'ARCADE RACING & DRIFT', path: '/games/racing', filterId: 'vaultFilter-racing' },
+    'sports': { label: 'RETRO SPORTS ARENA', path: '/games/sports', filterId: 'vaultFilter-sports' },
+    'simulation': { label: 'SIMULATION & MANAGEMENT', path: '/games/simulation', filterId: 'vaultFilter-simulation' },
+    'action': { label: 'ACTION ARCADE', path: '/games/action-adventure', filterId: 'vaultFilter-shooter' },
+    'featured': { label: 'NOVEMBER SHOWCASE', path: '/games/featured', filterId: 'vaultFilter-featured' },
+    'moon-festival': { label: 'COSMIC EVENT SHOWCASE', path: '/games/featured', filterId: 'vaultFilter-featured' }
+};
+
+// --- Responsive Genre Sidebar Menu (Coding2GO Pattern: toggleSidebar, toggleSubMenu, closeAllSubMenus) ---
+function closeAllSubMenus() {
+    const sidebar = document.getElementById('sidebar');
+    if (!sidebar) return;
+    Array.from(sidebar.getElementsByClassName('show')).forEach(ul => {
+        ul.classList.remove('show');
+        const btn = ul.previousElementSibling;
+        if (btn) {
+            btn.classList.remove('rotate');
+            btn.setAttribute('aria-expanded', 'false');
+        }
+    });
+}
+
+function toggleSidebar() {
+    playRetroSound('click');
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggle-btn');
+    if (!sidebar || !toggleBtn) return;
+
+    const isNowClosed = sidebar.classList.toggle('close');
+    toggleBtn.classList.toggle('rotate', isNowClosed);
+    toggleBtn.setAttribute('aria-expanded', String(!isNowClosed));
+
+    closeAllSubMenus();
+
+    try {
+        localStorage.setItem('retrogames4_sidebar_collapsed', isNowClosed ? 'true' : 'false');
+    } catch (e) {}
+
+    // Recalculate embedded canvas sizes after the 300ms CSS width transition completes
+    setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+    }, 320);
+}
+
+function toggleSubMenu(button) {
+    if (!button) return;
+    playRetroSound('click');
+
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggle-btn');
+    const subMenu = button.nextElementSibling;
+    if (!subMenu) return;
+
+    const willOpen = !subMenu.classList.contains('show');
+    if (willOpen) {
+        closeAllSubMenus();
+    }
+
+    subMenu.classList.toggle('show', willOpen);
+    button.classList.toggle('rotate', willOpen);
+    button.setAttribute('aria-expanded', String(willOpen));
+
+    // If desktop sidebar is collapsed when a dropdown is clicked, expand it automatically
+    if (sidebar && sidebar.classList.contains('close') && window.innerWidth >= 768) {
+        sidebar.classList.remove('close');
+        if (toggleBtn) {
+            toggleBtn.classList.remove('rotate');
+            toggleBtn.setAttribute('aria-expanded', 'true');
+        }
+        try {
+            localStorage.setItem('retrogames4_sidebar_collapsed', 'false');
+        } catch (e) {}
+        setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+        }, 320);
+    }
+}
+
+function syncSidebarActiveState(normalizedGenre) {
+    const sidebar = document.getElementById('sidebar');
+    if (!sidebar) return;
+
+    const genreKey = normalizedGenre === 'puzzle' ? 'puzzler' : (normalizedGenre === 'moon-festival' ? 'featured' : normalizedGenre);
+    const links = sidebar.querySelectorAll('.sidebar-link[data-genre]');
+    const dropdownBtns = sidebar.querySelectorAll('.dropdown-btn');
+
+    dropdownBtns.forEach(btn => btn.classList.remove('has-active-child'));
+
+    links.forEach(link => {
+        const linkGenre = (link.getAttribute('data-genre') || '').toLowerCase();
+        const isMatch = linkGenre === genreKey;
+        link.classList.toggle('active', isMatch);
+        if (isMatch) {
+            link.setAttribute('aria-current', 'page');
+            const parentSubMenu = link.closest('.sub-menu');
+            if (parentSubMenu && parentSubMenu.previousElementSibling) {
+                parentSubMenu.previousElementSibling.classList.add('has-active-child');
+            }
+        } else {
+            link.removeAttribute('aria-current');
+        }
+    });
+}
+
+function updateSidebarGenreCounts() {
+    const cards = Array.from(document.querySelectorAll('.game-card'));
+    const badges = document.querySelectorAll('#sidebar .genre-count-badge[data-genre-count]');
+    badges.forEach(badge => {
+        const genre = (badge.getAttribute('data-genre-count') || '').toLowerCase();
+        const count = genre === 'all'
+            ? cards.length
+            : cards.filter(card => card.classList.contains(genre)).length;
+
+        if (count > 0) {
+            badge.textContent = String(count);
+            badge.classList.remove('is-soon');
+        } else {
+            badge.textContent = 'SOON';
+            badge.classList.add('is-soon');
+        }
+    });
+}
+
+function initGenreSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggle-btn');
+    if (!sidebar) return;
+
+    updateSidebarGenreCounts();
+
+    // Restore collapsed preference on desktop screens
+    try {
+        if (window.innerWidth >= 768 && localStorage.getItem('retrogames4_sidebar_collapsed') === 'true') {
+            sidebar.classList.add('close');
+            if (toggleBtn) {
+                toggleBtn.classList.add('rotate');
+                toggleBtn.setAttribute('aria-expanded', 'false');
+            }
+        }
+    } catch (e) {}
+
+    // Close open mobile pop-up submenus when tapping outside the sidebar
+    document.addEventListener('click', (e) => {
+        if (window.innerWidth < 768 && !sidebar.contains(e.target)) {
+            closeAllSubMenus();
+        }
+    });
+
+    // Close open submenus on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeAllSubMenus();
+        }
+    });
+}
+
 // Vault Filtering function
 function filterVault(category, btnElement) {
     playRetroSound('click');
+    const normalized = (category || 'all').toLowerCase();
+    const meta = GENRE_METADATA[normalized] || {
+        label: normalized.toUpperCase(),
+        path: `/games/${normalized}`,
+        filterId: `vaultFilter-${normalized}`
+    };
+
     const buttons = document.querySelectorAll('.vault-filter-btn');
     buttons.forEach(btn => {
         btn.classList.remove('bg-neon-pink', 'text-white', 'bg-neon-yellow', 'text-black', 'border-neon-yellow', 'bg-gradient-to-r', 'from-yellow-400', 'to-amber-500');
         btn.classList.add('bg-neon-card', 'text-gray-300', 'border-gray-700');
     });
 
-    const activeBtn = btnElement || (typeof window !== 'undefined' && window.event?.currentTarget ? window.event.currentTarget : null);
-    if (activeBtn && activeBtn.classList) {
+    const activeBtn = btnElement || document.getElementById(meta.filterId) || (typeof window !== 'undefined' && window.event?.currentTarget ? window.event.currentTarget : null);
+    if (activeBtn && activeBtn.classList && activeBtn.classList.contains('vault-filter-btn')) {
         activeBtn.classList.remove('bg-neon-card', 'text-gray-300', 'border-gray-700');
-        if (category === 'moon-festival' || category === 'featured') {
+        if (normalized === 'moon-festival' || normalized === 'featured') {
             activeBtn.classList.add('bg-gradient-to-r', 'from-yellow-400', 'to-amber-500', 'text-black', 'font-bold');
         } else {
             activeBtn.classList.add('bg-neon-pink', 'text-white', 'font-bold');
         }
     }
 
+    const labelEl = document.getElementById('activeGenreLabel');
+    const pathEl = document.getElementById('activeGenrePath');
+    if (labelEl) labelEl.textContent = meta.label;
+    if (pathEl) pathEl.textContent = `(${meta.path})`;
+
     const cards = document.querySelectorAll('.game-card');
+    let visibleCount = 0;
     cards.forEach(card => {
-        if (category === 'all' || card.classList.contains(category)) {
+        if (normalized === 'all' || card.classList.contains(normalized)) {
             card.style.display = 'block';
+            visibleCount++;
         } else {
             card.style.display = 'none';
         }
     });
+
+    // Show/hide Coming Soon empty state when a genre has no playable titles yet
+    const emptyState = document.getElementById('emptyGenreState');
+    const emptyTitle = document.getElementById('emptyGenreTitle');
+    const emptyDesc = document.getElementById('emptyGenreDesc');
+    if (emptyState) {
+        if (visibleCount === 0) {
+            if (emptyTitle) emptyTitle.textContent = `${meta.label} — COMING SOON`;
+            if (emptyDesc) emptyDesc.textContent = `New retro cabinets for ${meta.label.toLowerCase()} (${meta.path}) are currently in development! Meanwhile, explore all playable classics in the vault.`;
+            emptyState.classList.remove('hidden');
+        } else {
+            emptyState.classList.add('hidden');
+        }
+    }
+
+    syncSidebarActiveState(normalized);
+}
+
+function selectGenreCategory(genre, evt) {
+    if (evt && typeof evt.preventDefault === 'function') {
+        evt.preventDefault();
+    }
+    const meta = GENRE_METADATA[genre] || GENRE_METADATA['all'];
+    const targetBtn = document.getElementById(meta.filterId);
+    filterVault(genre, targetBtn);
+
+    // Close mobile floating submenu tray after picking a genre
+    if (window.innerWidth < 768) {
+        closeAllSubMenus();
+    }
+
+    const catalogEl = document.getElementById('catalog');
+    if (catalogEl) {
+        catalogEl.scrollIntoView({ behavior: 'smooth' });
+    }
 }
 
 // Launch demo function
@@ -107,6 +325,9 @@ function launchDemo(title) {
     } else if (title === 'LCM Hero Adventure' || title === 'LCM Hero' || title === 'lcm-hero') {
         // Open LCM Hero Adventure math JRPG game
         window.location.href = 'games/lcm-hero/index.html';
+    } else if (title === 'K-Pop Demon Hunters' || title === 'HUNTRIX: K-Pop Demon Hunters' || title === 'HUNTRIX' || title === 'kpop-demon-hunters' || title === 'KPopDemonHunters') {
+        // Open HUNTRIX: K-Pop Demon Hunters 16-bit beat 'em up game
+        window.location.href = 'games/kpop-demon-hunters/index.html';
     } else {
         alert(`Loading demo instance for [${title}] on retrogames4.net!`);
     }
@@ -1266,12 +1487,14 @@ if (document.readyState === 'loading') {
         checkFestivalBanner();
         initAuth();
         initMobileMenu();
+        initGenreSidebar();
         loadLeaderboard('breakout');
     });
 } else {
     checkFestivalBanner();
     initAuth();
     initMobileMenu();
+    initGenreSidebar();
     loadLeaderboard('breakout');
 }
 
@@ -1279,6 +1502,7 @@ if (document.readyState === 'loading') {
 GAME_NAMES['raiden'] = 'Raiden';
 GAME_NAMES['streets-of-neon'] = 'Streets of Neon';
 GAME_NAMES['lcm-hero'] = 'LCM Hero Adventure';
+GAME_NAMES['kpop-demon-hunters'] = 'K-Pop Demon Hunters';
 
 const _origRenderFallbackLeaderboard = renderFallbackLeaderboard;
 renderFallbackLeaderboard = function(gameId) {
@@ -1306,6 +1530,14 @@ renderFallbackLeaderboard = function(gameId) {
         ], 'lcm-hero');
         return;
     }
+    if (gameId === 'kpop-demon-hunters') {
+        renderLeaderboard([
+            { player: 'HUNTRIX_RUMI', score: 14850 },
+            { player: 'MIRA_ENCORE', score: 11200 },
+            { player: 'ZOEY_SLAYER', score: 8900 }
+        ], 'kpop-demon-hunters');
+        return;
+    }
     _origRenderFallbackLeaderboard(gameId);
 };
 
@@ -1313,6 +1545,10 @@ renderFallbackLeaderboard = function(gameId) {
 window.toggleSound = toggleSound;
 window.playRetroSound = playRetroSound;
 window.filterVault = filterVault;
+window.selectGenreCategory = selectGenreCategory;
+window.toggleSidebar = toggleSidebar;
+window.toggleSubMenu = toggleSubMenu;
+window.closeAllSubMenus = closeAllSubMenus;
 window.launchDemo = launchDemo;
 window.startCyberMazeGame = startCyberMazeGame;
 window.switchArcadeCabinet = switchArcadeCabinet;

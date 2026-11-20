@@ -16,6 +16,7 @@
 2. **遊戲寶庫（Games Vault）獨立遊戲：**
    - **🚀 Raiden（雷電：星際空襲）** `games/raiden/` — 縱向捲軸空戰射擊遊戲，包含 8 個關卡、武器升級系統、全畫面炸彈與巨型 Boss 戰。
    - **🥊 Streets of Neon（霓虹街頭）** `games/streets-of-neon/` — 2.5D 街機橫向捲軸動作格鬥遊戲，支援三連擊、跳躍飛踢與旋風必殺技（AoE）。
+   - **🎤 HUNTRIX: K-Pop Demon Hunters（韓流惡魔獵人）** `games/kpop-demon-hunters/` — 16-Bit 像素風橫向捲軸清版動作遊戲，可操作 Rumi、Mira、Zoey 三位獵人，施展三連擊、空中飛踢與全畫面 Encore 演唱會必殺技對抗惡魔與 Saja Overlord。
    - **⚔️ LCM Hero Adventure（最小公倍數勇者大冒險）** `games/lcm-hero/` — 2D 數學教育 JRPG，包含四大數學關卡區域、數學護盾回合制戰鬥、**短除法（Short Division）教學仙子**、裝備商店與 **Adaptive Edge AI** 離線自適應難度模型。
    - **🌕 Moon Festival: Jade Rabbit（中秋保衛戰：玉兔戰柚子怪）** `games/moon-festival/` — 玉兔太空射擊遊戲，橫跨多個星系保衛滿月。
    - **🧱 Block Stacker（霓虹俄羅斯方塊）** `games/block-stacker/` — 經典多格骨牌消除益智遊戲，支援暫存佇列（Hold）、連擊與加速挑戰。
@@ -41,6 +42,7 @@
 ├── games/                      # 獨立可玩遊戲目錄
 │   ├── raiden/                 # 雷電縱向射擊遊戲及貼圖資源
 │   ├── streets-of-neon/        # 2.5D 街頭橫向格鬥遊戲
+│   ├── kpop-demon-hunters/     # 16-Bit 韓流惡魔獵人橫向清版格鬥遊戲
 │   ├── lcm-hero/               # 2D 最小公倍數數學 JRPG
 │   ├── moon-festival/          # 玉兔星際保衛戰射擊遊戲
 │   ├── block-stacker/          # 霓虹方塊益智遊戲

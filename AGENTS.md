@@ -42,8 +42,10 @@ This document provides project context, architecture overview, conventions, and 
 │   │   └── assets/             # Spritesheets, stage backgrounds, tilemaps, and boss graphics
 │   ├── streets-of-neon/
 │   │   └── index.html          # Self-contained 2.5D retro arcade beat-'em-up game ("Streets of Neon")
-│   └── lcm-hero/
-│       └── index.html          # Self-contained 2D educational math JRPG ("LCM Hero Adventure")
+│   ├── lcm-hero/
+│   │   └── index.html          # Self-contained 2D educational math JRPG ("LCM Hero Adventure")
+│   └── kpop-demon-hunters/
+│       └── index.html          # Self-contained 16-bit beat-'em-up ("HUNTRIX: K-Pop Demon Hunters")
 └── docs/
     └── REGISTER_TROUBLESHOOTING.md # Troubleshooting guide for backend cold starts, CORS, and `/register`
 ```
